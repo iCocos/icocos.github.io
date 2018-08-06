@@ -1,0 +1,2301 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.3.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.3.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.3.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="Go语言中和其他语言一样，存在数组，Map(iOS中的字典)，但是还有一个比较特殊的Slice，他其实底层还是数组，今天我们来简单说说Go语言中的Array、Slice、Map和Set">
+<meta name="keywords" content="Go基础,Array、Slice、Map、Set">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Go语言中的Array、Slice、Map和Set">
+<meta property="og:url" content="https://icocos.github.io/2018/05/22/Go语言中的Array、Slice、Map和Set/index.html">
+<meta property="og:site_name" content="iCocos">
+<meta property="og:description" content="Go语言中和其他语言一样，存在数组，Map(iOS中的字典)，但是还有一个比较特殊的Slice，他其实底层还是数组，今天我们来简单说说Go语言中的Array、Slice、Map和Set">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-08-06T17:26:26.322Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Go语言中的Array、Slice、Map和Set">
+<meta name="twitter:description" content="Go语言中和其他语言一样，存在数组，Map(iOS中的字典)，但是还有一个比较特殊的Slice，他其实底层还是数组，今天我们来简单说说Go语言中的Array、Slice、Map和Set">
+
+
+
+  <link rel="alternate" href="/atom.xml" title="iCocos" type="application/atom+xml" />
+
+
+
+
+  <link rel="canonical" href="https://icocos.github.io/2018/05/22/Go语言中的Array、Slice、Map和Set/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>Go语言中的Array、Slice、Map和Set | iCocos</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">iCocos</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">www.icocos.cn</p>
+      
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-首页">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-归档">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-分类">
+    <a href="/categories/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-标签">
+    <a href="/tags/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-关于">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="st-search-show-outputs">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup search-popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+    <div class="reading-progress-bar"></div>
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://icocos.github.io/2018/05/22/Go语言中的Array、Slice、Map和Set/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="曹理鹏@iCocos">
+      <meta itemprop="description" content="纯码迷、爱学习、爱交友、喜欢接触新鲜事物、迎接新的挑战，更爱游离于错综复杂的编码与逻辑中！">
+      <meta itemprop="image" content="http://pd1l3bbt7.bkt.clouddn.com/icocos_user_icon.JPG">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="iCocos">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Go语言中的Array、Slice、Map和Set
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-05-22 23:01:33" itemprop="dateCreated datePublished" datetime="2018-05-22T23:01:33+08:00">2018-05-22</time>
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Go/" itemprop="url" rel="index"><span itemprop="name">Go</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+              <span class="post-meta-divider">|</span>
+              <span class="post-meta-item-icon">
+                <i class="fa fa-comment-o"></i>
+              </span>
+              
+                <a href="/2018/05/22/Go语言中的Array、Slice、Map和Set/#SOHUCS" itemprop="discussionUrl">
+                  <span class="post-meta-item-text">评论数：</span> <span id="changyan_count_unit" class="post-comments-count hc-comment-count" data-xid="2018/05/22/Go语言中的Array、Slice、Map和Set/" itemprop="commentsCount"></span>
+                </a>
+              
+            
+          
+
+          
+          
+             <span id="/2018/05/22/Go语言中的Array、Slice、Map和Set/" class="leancloud_visitors" data-flag-title="Go语言中的Array、Slice、Map和Set">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数：</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon"
+            >
+            <i class="fa fa-eye"></i>
+             阅读次数： 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+            <div class="post-symbolscount">
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">本文字数：</span>
+                
+                <span title="本文字数">13k</span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">12 分钟</span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>Go语言中和其他语言一样，存在数组，Map(iOS中的字典)，但是还有一个比较特殊的Slice，他其实底层还是数组，今天我们来简单说说Go语言中的Array、Slice、Map和Set</p>
+<a id="more"></a>
+<h2 id="Array-数组"><a href="#Array-数组" class="headerlink" title="Array(数组)"></a>Array(数组)</h2><h5 id="内部机制"><a href="#内部机制" class="headerlink" title="内部机制"></a>内部机制</h5><blockquote>
+<p>在 Go 语言中数组是固定长度的数据类型，它包含相同类型的连续的元素，这些元素可以是内建类型，像数字和字符串，也可以是结构类型，元素可以通过唯一的索引值访问，从 0 开始。</p>
+</blockquote>
+<p>数组是很有价值的数据结构，因为它的内存分配是连续的，内存连续意味着可是让它在 CPU 缓存中待更久，所以迭代数组和移动元素都会非常迅速。</p>
+<h5 id="数组声明和初始化"><a href="#数组声明和初始化" class="headerlink" title="数组声明和初始化"></a>数组声明和初始化</h5><p>通过指定数据类型和元素个数(数组长度)来声明数组。</p>
+<pre><code>// 声明一个长度为5的整数数组
+var array [5]int
+</code></pre><p>一旦数组被声明了，那么它的数据类型跟长度都不能再被改变。如果你需要更多的元素，那么只能创建一个你想要长度的新的数组，然后把原有数组的元素拷贝过去。</p>
+<blockquote>
+<p>Go 语言中任何变量被声明时，都会被默认初始化为各自类型对应的 0 值，数组当然也不例外。当一个数组被声明时，它里面包含的每个元素都会被初始化为 0 值。</p>
+</blockquote>
+<p>一种快速创建和初始化数组的方法是使用数组字面值。数组字面值允许我们声明我们需要的元素个数并指定数据类型：</p>
+<pre><code>// 声明一个长度为5的整数数组
+// 初始化每个元素
+array := [5]int{7, 77, 777, 7777, 77777}
+</code></pre><p>如果你把长度写成 …，Go 编译器将会根据你的元素来推导出长度：</p>
+<pre><code>// 通过初始化值的个数来推导出数组容量
+array := [...]int{7, 77, 777, 7777, 77777}
+</code></pre><p>如果我们知道想要数组的长度，但是希望对指定位置元素初始化，可以这样：</p>
+<pre><code>// 声明一个长度为5的整数数组
+// 为索引为1和2的位置指定元素初始化
+// 剩余元素为0值
+array := [5]int{1: 77, 2: 777}
+</code></pre><h5 id="使用数组"><a href="#使用数组" class="headerlink" title="使用数组"></a>使用数组</h5><p>使用 [] 操作符来访问数组元素：</p>
+<pre><code>array := [5]int{7, 77, 777, 7777, 77777}
+// 改变索引为2的元素的值
+array[2] = 1
+</code></pre><p>我们可以定义一个指针数组：</p>
+<pre><code>array := [5]*int{0: new(int), 1: new(int)}
+
+// 为索引为0和1的元素赋值
+*array[0] = 7
+*array[1] = 77
+</code></pre><p>在 Go 语言中数组是一个值，所以可以用它来进行赋值操作。一个数组可以被赋值给任意相同类型的数组：</p>
+<pre><code>var array1 [5]string
+array2 := [5]string{&quot;Red&quot;, &quot;Blue&quot;, &quot;Green&quot;, &quot;Yellow&quot;, &quot;Pink&quot;}
+array1 = array2
+</code></pre><p>注意数组的类型同时包括数组的长度和可以被存储的元素类型，数组类型完全相同才可以互相赋值，比如下面这样就不可以：</p>
+<pre><code>var array1 [4]string
+array2 := [5]string{&quot;Red&quot;, &quot;Blue&quot;, &quot;Green&quot;, &quot;Yellow&quot;, &quot;Pink&quot;}
+array1 = array2
+
+// 编译器会报错
+Compiler Error:
+cannot use array2 (type [5]string) as type [4]string in assignment
+</code></pre><p>拷贝一个指针数组实际上是拷贝指针值，而不是指针指向的值：</p>
+<pre><code>var array1 [3]*string
+array2 := [3]*string{new(string), new(string), new(string)}
+*array2[0] = &quot;Red&quot;
+*array2[1] = &quot;Blue&quot;
+*array2[2] = &quot;Green&quot;
+
+array1 = array2
+// 赋值完成后，两组指针数组指向同一字符串
+</code></pre><h5 id="多维数组"><a href="#多维数组" class="headerlink" title="多维数组"></a>多维数组</h5><p>数组总是一维的，但是可以组合成多维的。多维数组通常用于有父子关系的数据或者是坐标系数据：</p>
+<pre><code>// 声明一个二维数组
+var array [4][2]int
+
+// 使用数组字面值声明并初始化
+array := [4][2]int{{10, 11}, {20, 21}, {30, 31}, {40, 41}}
+
+// 指定外部数组索引位置初始化
+array := [4][2]int{1: {20, 21}, 3: {40, 41}}
+
+// 同时指定内外部数组索引位置初始化
+array := [4][2]int{1: {0: 20}, 3: {1: 41}}
+</code></pre><p>同样通过 [] 操作符来访问数组元素：</p>
+<pre><code>var array [2][2]int
+
+array[0][0] = 0
+array[0][1] = 1
+array[1][0] = 2
+array[1][1] = 3
+</code></pre><p>也同样的相同类型的多维数组可以相互赋值：</p>
+<pre><code>var array1 = [2][2]int
+var array2 = [2][2]int
+
+array[0][0] = 0
+array[0][1] = 1
+array[1][0] = 2
+array[1][1] = 3
+
+array1 = array2
+</code></pre><p>因为数组是值，我们可以拷贝单独的维：</p>
+<pre><code>var array3 [2]int = array1[1]
+var value int = array1[1][0]
+</code></pre><h5 id="在函数中传递数组"><a href="#在函数中传递数组" class="headerlink" title="在函数中传递数组"></a>在函数中传递数组</h5><p>在函数中传递数组是非常昂贵的行为，因为在函数之间传递变量永远是传递值，所以如果变量是数组，那么意味着传递整个数组，即使它很大很大很大。。。</p>
+<p>举个栗子，创建一个有百万元素的整形数组，在64位的机器上它需要8兆的内存空间，来看看我们声明它和传递它时发生了什么：</p>
+<pre><code>var array [1e6]int
+foo(array)
+func foo(array [1e6]int) {
+  ...
+}
+</code></pre><p>每一次 foo 被调用，8兆内存将会被分配在栈上。一旦函数返回，会弹栈并释放内存，每次都需要8兆空间。</p>
+<p>Go 语言当然不会这么傻，有更好的方法来在函数中传递数组，那就是传递指向数组的指针，这样每次只需要分配8字节内存：</p>
+<pre><code>var array [1e6]int
+foo(&amp;array)
+func foo(array *[1e6]int){
+  ...
+}
+</code></pre><p>但是注意如果你在函数中改变指针指向的值，那么原始数组的值也会被改变。幸运的是 slice(切片)可以帮我们处理好这些问题，来一起看看。</p>
+<h2 id="Slice-切片"><a href="#Slice-切片" class="headerlink" title="Slice(切片)"></a>Slice(切片)</h2><h5 id="内部机制和基础"><a href="#内部机制和基础" class="headerlink" title="内部机制和基础"></a>内部机制和基础</h5><p>slice 是一种可以动态数组，可以按我们的希望增长和收缩。它的增长操作很容易使用，因为有内建的 append 方法。我们也可以通过 relice 操作化简 slice。因为 slice 的底层内存是连续分配的，所以 slice 的索引，迭代和垃圾回收性能都很好。</p>
+<p>slice 是对底层数组的抽象和控制。它包含 Go 需要对底层数组管理的三种元数据，分别是：</p>
+<ol>
+<li>指向底层数组的指针</li>
+<li>slice 中元素的长度</li>
+<li>slice 的容量(可供增长的最大值)</li>
+</ol>
+<h5 id="创建和初始化"><a href="#创建和初始化" class="headerlink" title="创建和初始化"></a>创建和初始化</h5><p>Go 中创建 slice 有很多种方法，我们一个一个来看。</p>
+<p>第一个方法是使用内建的函数 make。当我们使用 make 创建时，一个选项是可以指定 slice 的长度：</p>
+<pre><code>slice := make([]string, 5)
+</code></pre><p>如果只指定了长度，那么容量默认等于长度。我们可以分别指定长度和容量：</p>
+<pre><code>slice := make([]int, 3, 5)
+</code></pre><p>当我们分别指定了长度和容量，我们创建的 slice 就可以拥有一开始并没有访问的底层数组的容量。上面代码的 slice 中，可以访问3个元素，但是底层数组有5个元素。两个与长度不相干的元素可以被 slice 来用。新创建的 slice 同样可以共享底层数组和已存在的容量。</p>
+<p>不允许创建长度大于容量的 slice：</p>
+<pre><code>slice := make([]int, 5, 3)
+
+Compiler Error:
+len larger than cap in make([]int)
+</code></pre><p>惯用的创建 slice 的方法是使用 slice 字面量。跟创建数组很类似，不过不用指定 []里的值。初始的长度和容量依赖于元素的个数：</p>
+<pre><code>// 创建一个字符串 slice
+// 长度和容量都是 5
+slice := []string{&quot;Red&quot;, &quot;Blue&quot;, &quot;Green&quot;, &quot;Yellow&quot;, &quot;Pink&quot;}
+</code></pre><p>在使用 slice 字面量创建 slice 时有一种方法可以初始化长度和容量，那就是初始化索引。下面是个例子：</p>
+<pre><code>// 创建一个字符串 slice
+// 初始化一个有100个元素的空的字符串 slice
+slice := []string{99: &quot;&quot;}
+
+nil 和 empty slice
+</code></pre><p>有的时候我们需要创建一个 nil slice，创建一个 nil slice 的方法是声明它但不初始化它：</p>
+<pre><code>var slice []int
+</code></pre><p>创建一个 nil slice 是创建 slice 最基本的方法，很多标准库和内建函数都可以使用它。当我们想要表示一个并不存在的 slice 时它变得非常有用，比如一个返回 slice 的函数中发生异常的时候。</p>
+<p>创建 empty slice 的方法就是声明并初始化一下：</p>
+<pre><code>// 使用 make 创建
+silce := make([]int, 0)
+
+// 使用 slice 字面值创建
+slice := []int{}
+</code></pre><p>empty slice 包含0个元素并且底层数组没有分配存储空间。当我们想要表示一个空集合时它很有用处，比如一个数据库查询返回0个结果。</p>
+<blockquote>
+<p>不管我们用 nil slice 还是 empty slice，内建函数 append，len和cap的工作方式完全相同。</p>
+</blockquote>
+<h5 id="使用-slice"><a href="#使用-slice" class="headerlink" title="使用 slice"></a>使用 slice</h5><p>为一个指定索引值的 slice 赋值跟之前数组赋值的做法完全相同。改变单个元素的值使用 [] 操作符：</p>
+<pre><code>slice := []int{10, 20, 30, 40, 50}
+slice[1] = 25
+</code></pre><p>我们可以在底层数组上对一部分数据进行 slice 操作，来创建一个新的 slice：</p>
+<pre><code>// 长度为5，容量为5
+slice := []int{10, 20, 30, 40, 50}
+
+// 长度为2，容量为4
+newSlice := slice[1:3]
+</code></pre><p>在 slice 操作之后我们得到了两个 slice，它们共享底层数组。但是它们能访问底层数组的范围却不同，newSlice 不能访问它头指针前面的值。</p>
+<p>计算任意 new slice 的长度和容量可以使用下面的公式：</p>
+<pre><code>对于 slice[i:j] 和底层容量为 k 的数组
+长度：j - i
+容量：k - i
+</code></pre><p>必须再次明确一下现在是两个 slice 共享底层数组，因此只要有一个 slice 改变了底层数组的值，那么另一个也会随之改变：</p>
+<pre><code>slice := []int{10, 20, 30, 40, 50}
+newSlice := slice[1:3]
+newSlice[1] = 35
+</code></pre><p>改变 newSlice 的第二个元素的值，也会同样改变 slice 的第三个元素的值。</p>
+<p>一个 slice 只能访问它长度范围内的索引，试图访问超出长度范围的索引会产生一个运行时错误。容量只可以用来增长，它只有被合并到长度才可以被访问：</p>
+<pre><code>slice := []int{10, 20, 30, 40, 50}
+newSlice := slice[1:3]
+newSlice[3] = 45
+
+Runtime Exception:
+panic: runtime error: index out of range
+</code></pre><p>容量可以被合并到长度里，通过内建的 append 函数。</p>
+<h5 id="slice-增长"><a href="#slice-增长" class="headerlink" title="slice 增长"></a>slice 增长</h5><p>slice 比 数组的优势就在于它可以按照我们的需要增长，我们只需要使用 append 方法，然后 Go 会为我们做好一切。</p>
+<p>使用 append 方法时我们需要一个源 slice 和需要附加到它里面的值。当 append 方法返回时，它返回一个新的 slice，append 方法总是增长 slice 的长度，另一方面，如果源 slice 的容量足够，那么底层数组不会发生改变，否则会重新分配内存空间。</p>
+<pre><code>// 创建一个长度和容量都为5的 slice
+slice := []int{10, 20, 30, 40, 50}
+
+// 创建一个新的 slice
+newSlice := slice[1:3]
+
+// 为新的 slice append 一个值
+newSlice = append(newSlice, 60)
+</code></pre><p>因为 newSlice 有可用的容量，所以在 append 操作之后 slice 索引为 3 的值也变成了 60，之前说过这是因为 slice 和 newSlice 共享同样的底层数组。</p>
+<p>如果没有足够可用的容量，append 函数会创建一个新的底层数组，拷贝已存在的值和将要被附加的新值：</p>
+<pre><code>// 创建长度和容量都为4的 slice
+slice := []int{10, 20, 30, 40}
+
+// 附加一个新值到 slice，因为超出了容量，所以会创建新的底层数组
+newSlice := append(slice, 50)
+</code></pre><p>append 函数重新创建底层数组时，容量会是现有元素的两倍(前提是元素个数小于1000)，如果元素个数超过1000，那么容量会以 1.25 倍来增长。</p>
+<h5 id="slice-的第三个索引参数"><a href="#slice-的第三个索引参数" class="headerlink" title="slice 的第三个索引参数"></a>slice 的第三个索引参数</h5><p>slice 还可以有第三个索引参数来限定容量，它的目的不是为了增加容量，而是提供了对底层数组的一个保护机制，以方便我们更好的控制 append 操作，举个栗子：</p>
+<pre><code>source := []string{&quot;apple&quot;, &quot;orange&quot;, &quot;plum&quot;, &quot;banana&quot;, &quot;grape&quot;}
+
+// 接着我们在源 slice 之上创建一个新的 slice
+slice := source[2:3:4]
+</code></pre><p>新创建的 slice 长度为 1，容量为 2，可以看出长度和容量的计算公式也很简单：</p>
+<pre><code>对于 slice[i:j:k]  或者 [2:3:4]
+
+长度： j - i       或者   3 - 2
+容量： k - i       或者   4 - 2
+</code></pre><p>如果我们试图设置比可用容量更大的容量，会得到一个运行时错误：</p>
+<pre><code>slice := source[2:3:6]
+
+Runtime Error:
+panic: runtime error: slice bounds out of range
+</code></pre><p>限定容量最大的用处是我们在创建新的 slice 时候限定容量与长度相同，这样以后再给新的 slice 增加元素时就会分配新的底层数组，而不会影响原有 slice 的值：</p>
+<pre><code>source := []string{&quot;apple&quot;, &quot;orange&quot;, &quot;plum&quot;, &quot;banana&quot;, &quot;grape&quot;}
+
+// 接着我们在源 slice 之上创建一个新的 slice
+// 并且设置长度和容量相同
+slice := source[2:3:3]
+
+// 添加一个新元素
+slice = append(slice, &quot;kiwi&quot;)
+</code></pre><p>如果没有第三个索引参数限定，添加 kiwi 这个元素时就会覆盖掉 banana。</p>
+<p>内建函数 append 是一个变参函数，意思就是你可以一次添加多个元素，比如：</p>
+<pre><code>s1 := []int{1, 2}
+s2 := []int{3, 4}
+
+fmt.Printf(&quot;%v\n&quot;, append(s1, s2...))
+
+Output:
+[1 2 3 4]
+</code></pre><h5 id="迭代-slice"><a href="#迭代-slice" class="headerlink" title="迭代 slice"></a>迭代 slice</h5><p>slice 也是一种集合，所以可以被迭代，用 for 配合 range 来迭代：</p>
+<pre><code>slice := []int{10, 20, 30, 40, 50}
+
+for index, value := range slice {
+  fmt.Printf(&quot;Index: %d  Value: %d\n&quot;, index, value)
+}
+
+Output:
+Index: 0  Value: 10
+Index: 1  Value: 20
+Index: 2  Value: 30
+Index: 3  Value: 40
+Index: 4  Value: 50
+</code></pre><p>当迭代时 range 关键字会返回两个值，第一个是索引值，第二个是索引位置值的拷贝。注意：返回的是值的拷贝而不是引用，如果我们把值的地址作为指针使用，会得到一个错误，来看看为啥：</p>
+<pre><code>slice := []int{10, 20, 30 ,40}
+
+for index, value := range slice {
+  fmt.Printf(&quot;Value: %d  Value-Addr: %X  ElemAddr: %X\n&quot;, value, &amp;value, &amp;slice[index])
+}
+
+Output:
+Value: 10  Value-Addr: 10500168  ElemAddr: 1052E100
+Value: 20  Value-Addr: 10500168  ElemAddr: 1052E104
+Value: 30  Value-Addr: 10500168  ElemAddr: 1052E108
+Value: 40  Value-Addr: 10500168  ElemAddr: 1052E10C
+</code></pre><p>value 变量的地址总是相同的因为它只是包含一个拷贝。如果想得到每个元素的真是地址可以使用 &amp;slice[index]。</p>
+<p>如果不需要索引值，可以使用 _ 操作符来忽略它：</p>
+<pre><code>slice := []int{10, 20, 30, 40}
+
+for _, value := range slice {
+  fmt.Printf(&quot;Value: %d\n&quot;, value)
+}
+
+Output:
+Value: 10
+Value: 20
+Value: 30
+Value: 40
+</code></pre><p>range 总是从开始一次遍历，如果你想控制遍历的step，就用传统的 for 循环：</p>
+<pre><code>slice := []int{10, 20, 30, 40}
+
+for index := 2; index &lt; len(slice); index++ {
+  fmt.Printf(&quot;Index: %d  Value: %d\n&quot;, index, slice[index])
+}
+
+Output:
+Index: 2  Value: 30
+Index: 3  Value: 40
+</code></pre><p>同数组一样，另外两个内建函数 len 和 cap 分别返回 slice 的长度和容量。</p>
+<h5 id="多维-slice"><a href="#多维-slice" class="headerlink" title="多维 slice"></a>多维 slice</h5><p>也是同数组一样，slice 可以组合为多维的 slice：</p>
+<pre><code>slice := [][]int{{10}, {20, 30}}
+</code></pre><p>需要注意的是使用 append 方法时的行为，比如我们现在对 slice[0] 增加一个元素：</p>
+<pre><code>slice := [][]int{{10}, {20, 30}}
+slice[0] = append(slice[0], 20)
+</code></pre><p>那么只有 slice[0] 会重新创建底层数组，slice[1] 则不会。</p>
+<h5 id="在函数间传递-slice"><a href="#在函数间传递-slice" class="headerlink" title="在函数间传递 slice"></a>在函数间传递 slice</h5><p>在函数间传递 slice 是很廉价的，因为 slice 相当于是指向底层数组的指针，让我们创建一个很大的 slice 然后传递给函数调用它：</p>
+<pre><code>slice := make([]int, 1e6)
+
+slice = foo(slice)
+
+func foo(slice []int) []int {
+    ...
+    return slice
+}
+</code></pre><h2 id="Map"><a href="#Map" class="headerlink" title="Map"></a>Map</h2><h5 id="内部机制-1"><a href="#内部机制-1" class="headerlink" title="内部机制"></a>内部机制</h5><ul>
+<li><p>map 是一种无序的键值对的集合。map 最重要的一点是通过 key 来快速检索数据，key 类似于索引，指向数据的值。</p>
+</li>
+<li><p>map 是一种集合，所以我们可以像迭代数组和 slice 那样迭代它。不过，map 是无序的，我们无法决定它的返回顺序，这是因为 map 是使用 hash 表来实现的。</p>
+</li>
+</ul>
+<p>map 的 hash 表包含了一个桶集合(collection of buckets)。当我们存储，移除或者查找键值对(key/value pair)时，都会从选择一个桶开始。在映射(map)操作过程中，我们会把指定的键值(key)传递给 hash 函数(又称散列函数)。hash 函数的作用是生成索引，索引均匀的分布在所有可用的桶上。hash 表算法详见：July的博客—从头到尾彻底解析 hash 表算法</p>
+<h5 id="创建和初始化-1"><a href="#创建和初始化-1" class="headerlink" title="创建和初始化"></a>创建和初始化</h5><p>Go 语言中有多种方法创建和初始化 map。我们可以使用内建函数 make 也可以使用 map 字面值：</p>
+<pre><code>// 通过 make 来创建
+dict := make(map[string]int)
+
+// 通过字面值创建
+dict := map[string]string{&quot;Red&quot;: &quot;#da1337&quot;, &quot;Orange&quot;: &quot;#e95a22&quot;}
+</code></pre><p>使用字面值是创建 map 惯用的方法(为什么不使用make)。初始化 map 的长度依赖于键值对的数量。</p>
+<p>map 的键可以是任意内建类型或者是 struct 类型，map 的值可以是使用 ==操作符的表达式。slice，function 和 包含 slice 的 struct 类型不可以作为 map 的键，否则会编译错误：</p>
+<pre><code>dict := map[[]string]int{}
+
+Compiler Exception:
+invalid map key type []string
+</code></pre><h5 id="使用-map"><a href="#使用-map" class="headerlink" title="使用 map"></a>使用 map</h5><p>给 map 赋值就是指定合法类型的键，然后把值赋给键：</p>
+<pre><code>colors := map[string]string{}
+colors[&quot;Red&quot;] = &quot;#da1337&quot;
+</code></pre><p>如果不初始化 map，那么就会创建一个 nil map。nil map 不能用来存放键值对，否则会报运行时错误：</p>
+<pre><code>var colors map[string]string
+colors[&quot;Red&quot;] = &quot;#da1337&quot;
+
+Runtime Error:
+panic: runtime error: assignment to entry in nil map
+</code></pre><p>测试 map 的键是否存在是 map 操作的重要部分，因为它可以让我们判断是否可以执行一个操作，或者是往 map 里缓存一个值。它也可以被用来比较两个 map 的键值对是否匹配或者缺失。</p>
+<p>从 map 里检索一个值有两种选择，我们可以同时检索值并且判断键是否存在：</p>
+<pre><code>value, exists := colors[&quot;Blue&quot;]
+if exists {
+  fmt.Println(value)
+}
+</code></pre><p>另一种选择是只返回值，然后判断是否是零值来确定键是否存在。但是只有你确定零值是非法值的时候这招才管用：</p>
+<pre><code>value := colors[&quot;Blue&quot;]
+if value != &quot;&quot; {
+  fmt.Println(value)
+}
+</code></pre><p>当索引一个 map 取值时它总是会返回一个值，即使键不存在。上面的例子就返回了对应类型的零值。</p>
+<p>迭代一个 map 和迭代数组和 slice 是一样的，使用 range 关键字，不过在迭代 map 时我们不使用 index/value 而使用 key/value 结构：</p>
+<pre><code>colors := map[string]string{
+    &quot;AliceBlue&quot;:   &quot;#f0f8ff&quot;,
+    &quot;Coral&quot;:       &quot;#ff7F50&quot;,
+    &quot;DarkGray&quot;:    &quot;#a9a9a9&quot;,
+    &quot;ForestGreen&quot;: &quot;#228b22&quot;,
+}
+
+for key, value := range colors {
+  fmt.Printf(&quot;Key: %s  Value: %s\n&quot;, key, value)
+}
+</code></pre><p>如果我们想要从 map 中移除一个键值对，使用内建函数 delete(要是也能返回移除是否成功就好了，哎。。。)：</p>
+<pre><code>delete(colors, &quot;Coral&quot;)
+
+for key, value := range colors {
+  fmt.Println(&quot;Key: %s  Value: %s\n&quot;, key, value)
+}
+</code></pre><h5 id="在函数间传递-map"><a href="#在函数间传递-map" class="headerlink" title="在函数间传递 map"></a>在函数间传递 map</h5><p>在函数间传递 map 不是传递 map 的拷贝。所以如果我们在函数中改变了 map，那么所有引用 map 的地方都会改变：</p>
+<pre><code>func main() {
+  colors := map[string]string{
+     &quot;AliceBlue&quot;:   &quot;#f0f8ff&quot;,
+     &quot;Coral&quot;:       &quot;#ff7F50&quot;,
+     &quot;DarkGray&quot;:    &quot;#a9a9a9&quot;,
+     &quot;ForestGreen&quot;: &quot;#228b22&quot;,
+  }
+
+  for key, value := range colors {
+      fmt.Printf(&quot;Key: %s  Value: %s\n&quot;, key, value)
+  }
+
+  removeColor(colors, &quot;Coral&quot;)
+
+  for key, value := range colors {
+      fmt.Printf(&quot;Key: %s  Value: %s\n&quot;, key, value)
+  }
+}
+
+func removeColor(colors map[string]string, key string) {
+    delete(colors, key)
+}
+</code></pre><p>执行会得到以下结果：</p>
+<pre><code>Key: AliceBlue Value: #F0F8FF
+Key: Coral Value: #FF7F50
+Key: DarkGray Value: #A9A9A9
+Key: ForestGreen Value: #228B22
+
+Key: AliceBlue Value: #F0F8FF
+Key: DarkGray Value: #A9A9A9
+Key: ForestGreen Value: #228B22
+</code></pre><p>可以看出来传递 map 也是十分廉价的，类似 slice。</p>
+<h2 id="Set"><a href="#Set" class="headerlink" title="Set"></a>Set</h2><p>Go 语言本身是不提供 set 的，但是我们可以自己实现它，下面就来试试：</p>
+<pre><code>package main
+
+import(
+  &quot;fmt&quot;
+  &quot;sync&quot;
+)
+
+type Set struct {
+  m map[int]bool
+  sync.RWMutex
+}
+
+func New() *Set {
+  return &amp;Set{
+    m: map[int]bool{},
+  }
+}
+
+func (s *Set) Add(item int) {
+  s.Lock()
+  defer s.Unlock()
+  s.m[item] = true
+}
+
+func (s *Set) Remove(item int) {
+  s.Lock()
+  s.Unlock()
+  delete(s.m, item)
+}
+
+func (s *Set) Has(item int) bool {
+  s.RLock()
+  defer s.RUnlock()
+  _, ok := s.m[item]
+  return ok
+}
+
+func (s *Set) Len() int {
+  return len(s.List())
+}
+
+func (s *Set) Clear() {
+  s.Lock
+  defer s.Unlock()
+  s.m = map[int]bool{}
+}
+
+func (s *Set) IsEmpty() bool {
+  if s.Len() == 0 {
+    return true
+  }
+  return false
+}
+
+func (s *Set) List() []int {
+  s.RLock()
+  defer s.RUnlock()
+  list := []int{}
+  for item := range s.m {
+    list = append(list, item)
+  }
+  return list
+}
+
+func main() {
+  // 初始化
+  s := New()
+
+  s.Add(1)
+  s.Add(1)
+  s.Add(2)
+
+  s.Clear()
+  if s.IsEmpty() {
+    fmt.Println(&quot;0 item&quot;)
+  }
+
+  s.Add(1)
+  s.Add(2)
+  s.Add(3)
+
+  if s.Has(2) {
+    fmt.Println(&quot;2 does exist&quot;)
+  }
+
+  s.Remove(2)
+  s.Remove(3)
+  fmt.Println(&quot;list of all items&quot;, S.List())
+}
+</code></pre><ul>
+<li>注意我们只是使用了 int 作为键，你可以自己实现用 interface{} 作为键，做成更通用的 Set，另外，这个实现是线程安全的。</li>
+</ul>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><ol>
+<li>数组是 slice 和 map 的底层结构。</li>
+<li>slice 是 Go 里面惯用的集合数据的方法，map 则是用来存储键值对。</li>
+<li>内建函数 make 用来创建 slice 和 map，并且为它们指定长度和容量等等。slice 和 map 字面值也可以做同样的事。</li>
+<li>slice 有容量的约束，不过可以通过内建函数 append 来增加元素。</li>
+<li>map 没有容量一说，所以也没有任何增长限制。</li>
+<li>内建函数 len 可以用来获得 slice 和 map 的长度。</li>
+<li>内建函数 cap 只能作用在 slice 上。</li>
+<li>可以通过组合方式来创建多维数组和 slice。map 的值可以是 slice 或者另一个 map。slice 不能作为 map 的键。</li>
+<li>在函数之间传递 slice 和 map 是相当廉价的，因为他们不会传递底层数组的拷贝。</li>
+</ol>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wechatpay.jpg" alt="曹理鹏@iCocos 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>曹理鹏@iCocos</li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://icocos.github.io/2018/05/22/Go语言中的Array、Slice、Map和Set/" title="Go语言中的Array、Slice、Map和Set">https://icocos.github.io/2018/05/22/Go语言中的Array、Slice、Map和Set/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明出处！</li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Go基础/" rel="tag"># Go基础</a>
+          
+            <a href="/tags/Array、Slice、Map、Set/" rel="tag"># Array、Slice、Map、Set</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/05/10/Golang知识图谱/" rel="next" title="Golang知识图谱">
+                <i class="fa fa-chevron-left"></i> Golang知识图谱
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/05/25/Go——函数与方法的奇妙之处/" rel="prev" title="Go——函数与方法的奇妙之处">
+                Go——函数与方法的奇妙之处 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="SOHUCS"></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="http://pd1l3bbt7.bkt.clouddn.com/icocos_user_icon.JPG"
+                alt="曹理鹏@iCocos" />
+            
+              <p class="site-author-name" itemprop="name">曹理鹏@iCocos</p>
+              <p class="site-description motion-element" itemprop="description">纯码迷、爱学习、爱交友、喜欢接触新鲜事物、迎接新的挑战，更爱游离于错综复杂的编码与逻辑中！</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives">
+                
+                    <span class="site-state-item-count">76</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">16</span>
+                    <span class="site-state-item-name">分类</span>
+                  
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">81</span>
+                    <span class="site-state-item-name">标签</span>
+                  
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/al1020119" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:al1020119@163.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://stackoverflow.com/users/10186720" target="_blank" title="StackOverflow"><i class="fa fa-fw fa-stack-overflow"></i>StackOverflow</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.icocos.cn/" title="梦工厂" target="_blank">梦工厂</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://al1020119.github.io/" title="iOS梦工厂" target="_blank">iOS梦工厂</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Array-数组"><span class="nav-number">1.</span> <span class="nav-text">Array(数组)</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#内部机制"><span class="nav-number">1.0.0.1.</span> <span class="nav-text">内部机制</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#数组声明和初始化"><span class="nav-number">1.0.0.2.</span> <span class="nav-text">数组声明和初始化</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#使用数组"><span class="nav-number">1.0.0.3.</span> <span class="nav-text">使用数组</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#多维数组"><span class="nav-number">1.0.0.4.</span> <span class="nav-text">多维数组</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#在函数中传递数组"><span class="nav-number">1.0.0.5.</span> <span class="nav-text">在函数中传递数组</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Slice-切片"><span class="nav-number">2.</span> <span class="nav-text">Slice(切片)</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#内部机制和基础"><span class="nav-number">2.0.0.1.</span> <span class="nav-text">内部机制和基础</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#创建和初始化"><span class="nav-number">2.0.0.2.</span> <span class="nav-text">创建和初始化</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#使用-slice"><span class="nav-number">2.0.0.3.</span> <span class="nav-text">使用 slice</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#slice-增长"><span class="nav-number">2.0.0.4.</span> <span class="nav-text">slice 增长</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#slice-的第三个索引参数"><span class="nav-number">2.0.0.5.</span> <span class="nav-text">slice 的第三个索引参数</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#迭代-slice"><span class="nav-number">2.0.0.6.</span> <span class="nav-text">迭代 slice</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#多维-slice"><span class="nav-number">2.0.0.7.</span> <span class="nav-text">多维 slice</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#在函数间传递-slice"><span class="nav-number">2.0.0.8.</span> <span class="nav-text">在函数间传递 slice</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Map"><span class="nav-number">3.</span> <span class="nav-text">Map</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#内部机制-1"><span class="nav-number">3.0.0.1.</span> <span class="nav-text">内部机制</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#创建和初始化-1"><span class="nav-number">3.0.0.2.</span> <span class="nav-text">创建和初始化</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#使用-map"><span class="nav-number">3.0.0.3.</span> <span class="nav-text">使用 map</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#在函数间传递-map"><span class="nav-number">3.0.0.4.</span> <span class="nav-text">在函数间传递 map</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Set"><span class="nav-number">4.</span> <span class="nav-text">Set</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number">4.1.</span> <span class="nav-text">总结</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">曹理鹏@iCocos</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">站点总字数：</span>
+    
+    <span title="站点总字数">348k</span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    
+    <span title="站点阅读时长">5:16</span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv" title="总访客量">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="site-pv" title="总访问量">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/reading_progress/reading_progress.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.3.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.3.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.3.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.3.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+  
+    <script type="text/javascript">
+    (function(){
+      var appid = 'cytKHBEtW';
+      var conf = '43989b8e63b25c4e9f1fde821c996a39';
+      var width = window.innerWidth || document.documentElement.clientWidth;
+      if (width < 960) {
+      window.document.write('<script id="changyan_mobile_js" charset="utf-8" type="text/javascript" src="https://changyan.sohu.com/upload/mobile/wap-js/changyan_mobile.js?client_id=' + appid + '&conf=' + conf + '"><\/script>'); } else { var loadJs=function(d,a){var c=document.getElementsByTagName("head")[0]||document.head||document.documentElement;var b=document.createElement("script");b.setAttribute("type","text/javascript");b.setAttribute("charset","UTF-8");b.setAttribute("src",d);if(typeof a==="function"){if(window.attachEvent){b.onreadystatechange=function(){var e=b.readyState;if(e==="loaded"||e==="complete"){b.onreadystatechange=null;a()}}}else{b.onload=a}}c.appendChild(b)};loadJs("https://changyan.sohu.com/upload/changyan.js",function(){
+        window.changyan.api.config({appid:appid,conf:conf})});
+      }
+    })();
+    </script>
+    <script type="text/javascript" src="https://assets.changyan.sohu.com/upload/plugins/plugins.count.js"></script>
+  
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=6.3.0"></script>
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("Tc7k1mbaieCUSgmM8LPk1IBO-gzGzoHsz", "sAb7L2vwENJTteRrvFKQacUU");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            
+              var $element = $(document.getElementById(url));
+              $element.find('.leancloud-visitors-count').text(counter.get('time'));
+            
+            counter.save(null, {
+              success: function(counter) {
+                
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            
+              var $element = $(document.getElementById(url));
+              $element.find('.leancloud-visitors-count').text('Counter not initialized! See more at console err msg.');
+              console.error('ATTENTION! LeanCloud counter has security bug, see here how to solve it: https://github.com/theme-next/hexo-leancloud-counter-security. \n But you also can use LeanCloud without security, by set \'security\' option to \'false\'.');
+            
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #333;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #eee;
+      background-image: linear-gradient(#fcfcfc, #eee);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('复制').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+          if(result)$(this).text('复制成功')
+          else $(this).text('复制失败')
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('复制')
+        }, 300)
+      }).append(e)
+    })
+  </script>
+
+
+  
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("Tc7k1mbaieCUSgmM8LPk1IBO-gzGzoHsz", "sAb7L2vwENJTteRrvFKQacUU");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+  
+</body>
+</html>

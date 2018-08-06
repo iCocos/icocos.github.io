@@ -1,0 +1,2078 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.3.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.3.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.3.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="Go 语言中的 channel 是实现  goroutine 间无锁通信的关键机制，他使得写多线程并发程序变得简单、灵活、触手可得，今天我们来简单说说goroutine和channel">
+<meta name="keywords" content="Go基础,goroutine和channel">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Go——简单说说goroutine和channel">
+<meta property="og:url" content="https://icocos.github.io/2018/05/29/Go——简单说说goroutine和channel/index.html">
+<meta property="og:site_name" content="iCocos">
+<meta property="og:description" content="Go 语言中的 channel 是实现  goroutine 间无锁通信的关键机制，他使得写多线程并发程序变得简单、灵活、触手可得，今天我们来简单说说goroutine和channel">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-08-06T17:26:22.452Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Go——简单说说goroutine和channel">
+<meta name="twitter:description" content="Go 语言中的 channel 是实现  goroutine 间无锁通信的关键机制，他使得写多线程并发程序变得简单、灵活、触手可得，今天我们来简单说说goroutine和channel">
+
+
+
+  <link rel="alternate" href="/atom.xml" title="iCocos" type="application/atom+xml" />
+
+
+
+
+  <link rel="canonical" href="https://icocos.github.io/2018/05/29/Go——简单说说goroutine和channel/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>Go——简单说说goroutine和channel | iCocos</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">iCocos</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">www.icocos.cn</p>
+      
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-首页">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-归档">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-分类">
+    <a href="/categories/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-标签">
+    <a href="/tags/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-关于">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="st-search-show-outputs">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup search-popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+    <div class="reading-progress-bar"></div>
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://icocos.github.io/2018/05/29/Go——简单说说goroutine和channel/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="曹理鹏@iCocos">
+      <meta itemprop="description" content="纯码迷、爱学习、爱交友、喜欢接触新鲜事物、迎接新的挑战，更爱游离于错综复杂的编码与逻辑中！">
+      <meta itemprop="image" content="http://pd1l3bbt7.bkt.clouddn.com/icocos_user_icon.JPG">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="iCocos">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Go——简单说说goroutine和channel
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-05-29 23:41:55" itemprop="dateCreated datePublished" datetime="2018-05-29T23:41:55+08:00">2018-05-29</time>
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Go/" itemprop="url" rel="index"><span itemprop="name">Go</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+              <span class="post-meta-divider">|</span>
+              <span class="post-meta-item-icon">
+                <i class="fa fa-comment-o"></i>
+              </span>
+              
+                <a href="/2018/05/29/Go——简单说说goroutine和channel/#SOHUCS" itemprop="discussionUrl">
+                  <span class="post-meta-item-text">评论数：</span> <span id="changyan_count_unit" class="post-comments-count hc-comment-count" data-xid="2018/05/29/Go——简单说说goroutine和channel/" itemprop="commentsCount"></span>
+                </a>
+              
+            
+          
+
+          
+          
+             <span id="/2018/05/29/Go——简单说说goroutine和channel/" class="leancloud_visitors" data-flag-title="Go——简单说说goroutine和channel">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数：</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon"
+            >
+            <i class="fa fa-eye"></i>
+             阅读次数： 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+            <div class="post-symbolscount">
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">本文字数：</span>
+                
+                <span title="本文字数">7.2k</span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">7 分钟</span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>Go 语言中的 channel 是实现  goroutine 间无锁通信的关键机制，他使得写多线程并发程序变得简单、灵活、触手可得，今天我们来简单说说goroutine和channel</p>
+<a id="more"></a>
+<h4 id="引言："><a href="#引言：" class="headerlink" title="引言："></a>引言：</h4><ul>
+<li>Go 语言中的 channel 是实现  goroutine 间无锁通信的关键机制，他使得写多线程并发程序变得简单、灵活、触手可得</li>
+</ul>
+<p>channel是消息传递的机制，用于多线程环境下lock free synchronization.</p>
+<ul>
+<li>它同时具备2个特性：<ol>
+<li>消息传递</li>
+<li>同步</li>
+</ol>
+</li>
+</ul>
+<ul>
+<li>参考文章：<ul>
+<li><a href="https://blog.csdn.net/kongdefei5000/article/details/75209005" target="_blank" rel="noopener">https://blog.csdn.net/kongdefei5000/article/details/75209005</a></li>
+<li><a href="https://blog.csdn.net/nobugtodebug/article/details/45396507" target="_blank" rel="noopener">https://blog.csdn.net/nobugtodebug/article/details/45396507</a></li>
+</ul>
+</li>
+</ul>
+<h2 id="channel"><a href="#channel" class="headerlink" title="channel"></a>channel</h2><blockquote>
+<p>channel 分类： 不带缓存 channel， 带缓存 channel</p>
+</blockquote>
+<p>无缓冲的与有缓冲channel有着重大差别，那就是一个是同步的 一个是非同步的。</p>
+<pre><code>c1:=make(chan int)         无缓冲
+c2:=make(chan int,1)      有缓冲
+c1&lt;-1
+</code></pre><ul>
+<li>无缓冲： 不仅仅是向 c1 通道放 1，而是一直要等有别的携程 &lt;-c1 接手了这个参数，那么c1&lt;-1才会继续下去，要不然就一直阻塞着。</li>
+<li>有缓冲： c2&lt;-1 则不会阻塞，因为缓冲大小是1(其实是缓冲大小为0)，只有当放第二个值的时候，第一个还没被人拿走，这时候才会阻塞。</li>
+</ul>
+<h5 id="不带缓存-channel"><a href="#不带缓存-channel" class="headerlink" title="不带缓存 channel"></a>不带缓存 channel</h5><pre><code>（a）创建channel
+    make(chan type)
+    e.g.   ch := make(chan int)
+（b）通信方式(由于chan操作类似于Queue，为便于理解这里用EnQueue,DeQueue来描述通信操作)
+    EnQueue:    ch &lt;- typevar        DeQueue:   var :=  &lt;- ch
+    e.g.    ch &lt;- 1    v := &lt;-ch
+</code></pre><ul>
+<li>关键：<ul>
+<li>调用channel EnQueue 操作之后被阻塞住（不管channel是否为空），直到写的数据被读取掉。</li>
+<li>调用channel DeQueue 操作时，如果channel中有数据则被读出，如果为空则阻塞住，直到有人往里面EnQueue数据。</li>
+</ul>
+</li>
+</ul>
+<h5 id="带缓存-channel"><a href="#带缓存-channel" class="headerlink" title="带缓存 channel"></a>带缓存 channel</h5><pre><code>（a）创建channel
+    make(chan type, size)
+    e.g.  ch := make(chan int, 9)
+（b）通信方式
+    同不带缓存channel
+</code></pre><ul>
+<li>关键：<ul>
+<li>当channel中元素小于等于channel size时，调用channel EnQueue 操作后数据被放入到缓存中（非阻塞）；</li>
+<li>当channel满以后，如果再调用EnQueue操作就会被阻塞住直到有元素被DeQueue出来。</li>
+<li>调用channel DeQueue 操作时，如果channel 为空则阻塞住直到有人往里面EnQueue数据，否则直接DeQueue出元素。</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>注意: </p>
+</blockquote>
+<blockquote>
+<p>需要特别注意的是两者对于range操作的区别：</p>
+</blockquote>
+<blockquote>
+<p>无缓存channel是EnQueue一个数据被range读一个；</p>
+</blockquote>
+<blockquote>
+<p>而带缓存channel是EnQueue满之后被range整个一起拿出来用(这个机制对于用户是透明的，用户看到的还是一个一个拿出来)，或者timeout时间到之后即使channel没有满也会被range拿出来。</p>
+</blockquote>
+<blockquote>
+<p>另外，channel 关闭之后，循环读channel操作(e.g. for v:=range channel) 读完channel中剩余数据会自动跳出循环。</p>
+</blockquote>
+<ul>
+<li>参考网络介绍：</li>
+</ul>
+<blockquote>
+<p>顾名思义，就是通道。通道的目的是用来传递数据。在一个通道上我们可以执行数据的发送(Send)和接受(Receive)操作。对于非缓冲的 channel 而言，Receive 方法执行时，会判断该通道上是否有值，如果没有就会等待(阻塞)，直到有一个值为止。同样，在 channel 上有值，而尚未被一个 Receiver 接受的时候，Send 方法也会阻塞，直到 Channel 变空。这样，通过一个简单的机制就可以保证 Send 和 Receive 总是在不同的时间执行的，而且只有 Send 之后才能 Receive. 这样就避免了常规的多线程编程中数据共享的问题。正如 Go 语言的文档一句话所说：</p>
+</blockquote>
+<blockquote>
+<p>Do not communicate by sharing memory; instead, share memory by communicating.</p>
+</blockquote>
+<blockquote>
+<p>不要通过共享内存来沟通;而是通过沟通来共享内存。</p>
+</blockquote>
+<blockquote>
+<p>在常规的多线程编程里，我们总是定义好一些类变量，如果这些变量有可能被多个线程同时访问，那么就需要加锁。这样带来了一定的编程复杂性，如果代码写的稍有bug，则会导致读/写到错误的值。</p>
+</blockquote>
+<blockquote>
+<p>而通过 channel 来沟通，我们得到了一个更为清晰的沟通方式。两个线程(或者 goroutine)要读写相同的数据，则创建一个通道，双方通过对这个通道执行 Send / Receive 的操作来设值或取值即可，相对而言，比较不容易出错。</p>
+</blockquote>
+<h2 id="goroutine"><a href="#goroutine" class="headerlink" title="goroutine"></a>goroutine</h2><ul>
+<li>goroutine的并发模型定义为以下几个要点：<ul>
+<li>基于Thread的轻量级协程</li>
+<li>通过channel来进行协程间的消息传递</li>
+<li>只暴露协程，屏蔽线程操作的接口</li>
+</ul>
+</li>
+</ul>
+<h4 id="goroutine原理"><a href="#goroutine原理" class="headerlink" title="goroutine原理"></a>goroutine原理</h4><blockquote>
+<p>Golang的runtime实现了goroutine和OS thread的M:N模型，因此实际的goroutine是基于线程的更加轻量级的实现，我们便可以在Golang中大量创建goroutine而不用担心昂贵的context swtich所带来的开销。goroutine之间，我们可以通过channel来进行交互。由于go已将将所有system call都wrap到了标准库中，在针对这些systemcall进行调用时会主动标记goroutine为阻塞状态并保存现场，交由scheduler执行。所以在golang中，在大部分情况下我们可以非常安心地在goroutine中使用阻塞操作而不用担心并发性受到影响。</p>
+</blockquote>
+<p>在操作系统的OS Thread和编程语言的User Thread之间，实际上存在3中线程对应模型，也就是：1:1，1:N，M:N。</p>
+<ul>
+<li>N:1是说，多个（N）用户线程始终在一个内核线程上跑，context上下文切换确实很快，但是无法真正的利用多核。</li>
+<li>1:1是说，一个用户线程就只在一个内核线程上跑，这时可以利用多核，但是上下文switch很慢，频繁切换效率很低。</li>
+<li>M:N是说， 多个goroutine在多个内核线程上跑，这个看似可以集齐上面两者的优势，但是无疑增加了调度的难度。</li>
+</ul>
+<p>goroutine google runtime默认的实现为M:N的模型，于是这样可以根据具体的操作类型（操作系统阻塞或非阻塞操作）调整goroutine和OS Thread的映射情况，显得更加的灵活。</p>
+<h5 id="在goroutine实现中，有三个最重要的数据结构，分别为G-M-P："><a href="#在goroutine实现中，有三个最重要的数据结构，分别为G-M-P：" class="headerlink" title="在goroutine实现中，有三个最重要的数据结构，分别为G M P："></a>在goroutine实现中，有三个最重要的数据结构，分别为G M P：</h5><pre><code>G：代表一个goroutine
+M：代表 一个OS Thread
+P：一个P和一个M进行绑定，代表在这个OS Thread上的调度器
+</code></pre><blockquote>
+<p>goroutine - 可以大致理解为一种轻量级的线程(或微线程)，它是一种“分配在同一个地址空间内的，能够并行执行的函数”。同时，它是轻量级的，不需要像分配线程那样分配独立的栈空间。所以理论上讲，我们可以很容易的分配很多个 goroutine, 让它们并发执行，而其开销则比多线程程序要小得多，从而可以让程序支持比较大的并发性。</p>
+</blockquote>
+<h5 id="goroutinue，本质上就是协程。但有两点不同："><a href="#goroutinue，本质上就是协程。但有两点不同：" class="headerlink" title="goroutinue，本质上就是协程。但有两点不同："></a>goroutinue，本质上就是协程。但有两点不同：</h5><ol>
+<li>goroutinue可以实现并行，也就是说，多个协程可以在多个处理器同时跑。而协程同一时刻只能在一个处理器上跑（把宿主语言想象成单线程的就好了）。</li>
+<li>goroutine之间的通信是通过channel，而协程的通信是通过yield和resume()操作。</li>
+</ol>
+<h5 id="那么如果有两个A-B两个协程-在放入和取出数据时都只能用int类型的数据进行通信"><a href="#那么如果有两个A-B两个协程-在放入和取出数据时都只能用int类型的数据进行通信" class="headerlink" title="那么如果有两个A,B两个协程 在放入和取出数据时都只能用int类型的数据进行通信"></a>那么如果有两个A,B两个协程 在放入和取出数据时都只能用int类型的数据进行通信</h5><ul>
+<li>如 取数据 &lt;- channel 放数据 channel &lt;- 1</li>
+</ul>
+<blockquote>
+<p>协程之间可以通过在通道中放入-取出数据的方式进行通信</p>
+</blockquote>
+<h2 id="3种优雅的Go-channel用法"><a href="#3种优雅的Go-channel用法" class="headerlink" title="3种优雅的Go channel用法"></a>3种优雅的Go channel用法</h2><p>写Go的人应该都听过Rob Pike的这句话</p>
+<pre><code>Do not communicate by sharing memory; instead, share memory by communicating.
+</code></pre><p>相信很多朋友和我一样，在实际应用中总感觉不到好处，为了用channel而用。但以我的切身体会来说，这是写代码时碰到的场景不复杂、对channel不熟悉导致的，所以希望这篇文章能给大家带来点新思路，对Golang优雅的channel有更深的认识 ：）</p>
+<h3 id="Fan-In-Out"><a href="#Fan-In-Out" class="headerlink" title="Fan In/Out"></a>Fan In/Out</h3><p>数据的输出有时候需要做扇出／入（FanIn／Out），但是在函数中调用常常得修改接口，而且上下游对于数据的依赖程度非常高，所以一般使用通过channel进行Fan In／Out，这样就可以轻易实现类似于shell里的管道。</p>
+<pre><code>func fanIn(input1, input2 &lt;-chan string) &lt;-chan string {
+    c := make(chan string)
+    go func() {
+        for {
+            select {
+                case s := &lt;-input1:  c &lt;- s
+                case s := &lt;-input2:  c &lt;- s
+            }
+        }
+    }()
+    return c
+}
+</code></pre><h3 id="同步Goroutine"><a href="#同步Goroutine" class="headerlink" title="同步Goroutine"></a>同步Goroutine</h3><p>两个goroutine之间同步状态，例如A goroutine需要让B goroutine退出，一般做法如下：</p>
+<pre><code>func main() {
+    g = make(chan int)
+    quit = make(chan bool)
+    go B()
+    for i := 0; i &lt; 3; i++ {
+        g &lt;- i
+    }
+    quit &lt;- true // 没办法等待B的退出只能Sleep
+    fmt.Println(&quot;Main quit&quot;)
+}
+
+func B() {
+    for {
+        select {
+            case i := &lt;-g:
+            fmt.Println(i + 1)
+            case &lt;-quit:
+            fmt.Println(&quot;B quit&quot;)
+            return
+        }
+    }
+}
+</code></pre><h5 id="Log"><a href="#Log" class="headerlink" title="Log"></a>Log</h5><pre><code>/*
+Output:
+1
+2
+3
+Main quit
+*/
+</code></pre><p>可是了main函数没办法等待B合适地退出，所以B quit 没办法打印，程序直接退出了。然而，chan是Go里的第一对象，所以可以把chan传入chan中，所以上面的代码可以把quit 定义为chan chan bool，以此控制两个goroutine的同步</p>
+<pre><code>func main() {
+    g = make(chan int)
+    quit = make(chan chan bool)
+    go B()
+    for i := 0; i &lt; 5; i++ {
+        g &lt;- i
+    }
+    wait := make(chan bool)
+    quit &lt;- wait
+    &lt;-wait //这样就可以等待B的退出了
+    fmt.Println(&quot;Main Quit&quot;)
+}
+
+func B() {
+    for {
+        select {
+            case i := &lt;-g:
+            fmt.Println(i + 1)
+            case c := &lt;-quit:
+            c &lt;- true
+            fmt.Println(&quot;B Quit&quot;)
+            return
+        }
+    }
+}
+</code></pre><h5 id="Log-1"><a href="#Log-1" class="headerlink" title="Log"></a>Log</h5><pre><code>/* Output
+1
+2
+3
+B Quit
+Main Quit
+*/
+</code></pre><h3 id="分布式递归调用"><a href="#分布式递归调用" class="headerlink" title="分布式递归调用"></a>分布式递归调用</h3><p>在现实生活中，如果你要找美国总统聊天，你会怎么做？第一步打电话给在美国的朋友，然后他们也会发动自己的关系网，再找可能认识美国总统的人，以此类推，直到找到为止。这在Kadmelia分布式系统中也是一样的，如果需要获取目标ID信息，那么就不停地查询，被查询节点就算没有相关信息，也会返回它觉得最近节点，直到找到ID或者等待超时。 好了，这个要用Go来实现怎么做呢？</p>
+<pre><code>func recursiveCall(ctx context.Context, id []byte, initialNodes []*node){
+    seen := map[string]*node{} //已见过的节点记录
+    request := make(chan *node, 3) //设置请求节点channel
+
+    // 输入初始节点
+    go func() {
+        for _, n := range initialNodes {
+            request &lt;- n
+        }
+    }()
+
+    OUT:
+    for {
+        //循环直到找到数据
+        if data != nil {
+            return
+        }
+
+        // 在新的请求，超时和上层取消请求中select
+        select {
+            case n := &lt;-request:
+            go func() {
+                // 发送新的请求
+                response := s.sendQuery(ctx, n, MethodFindValue, id)
+                select {
+                    case &lt;-ctx.Done():
+                    case msg :=&lt;-response:
+                    seen[responseToNode(response)] = n //更新已见过的节点信息
+                    // 加载新的节点
+                    for _, rn := range LoadNodeInfoFromByte(msg[PayLoadStart:]) {
+                        mu.Lock()
+                        _, ok := seen[rn.HexID()]
+                        mu.Unlock()
+                        // 见过了，跳过这个节点
+                        if ok {
+                            continue
+                        }
+                        AddNode(rn)
+                        // 将新的节点送入channel
+                        request &lt;- rn
+                        }
+                    }
+                }
+            }()
+            case &lt;-time.After(500 * time.Millisecond):
+            break OUT // break至外层，否则仅仅是跳至loop外
+            case &lt;-ctx.Done():
+            break OUT
+        }
+    }
+    return
+}
+</code></pre><p>这时的buffered channel类似于一个局部queue，对需要的节点进行处理，但这段代码的精妙之处在于，这里的block操作是select的，随时可以取消，而不是要等待或者对queue的长度有认识。</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wechatpay.jpg" alt="曹理鹏@iCocos 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>曹理鹏@iCocos</li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://icocos.github.io/2018/05/29/Go——简单说说goroutine和channel/" title="Go——简单说说goroutine和channel">https://icocos.github.io/2018/05/29/Go——简单说说goroutine和channel/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明出处！</li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Go基础/" rel="tag"># Go基础</a>
+          
+            <a href="/tags/goroutine和channel/" rel="tag"># goroutine和channel</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/05/25/Go——函数与方法的奇妙之处/" rel="next" title="Go——函数与方法的奇妙之处">
+                <i class="fa fa-chevron-left"></i> Go——函数与方法的奇妙之处
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/06/01/Go——Golang-Response-Snippets/" rel="prev" title="Go——Golang Response Snippets">
+                Go——Golang Response Snippets <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="SOHUCS"></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="http://pd1l3bbt7.bkt.clouddn.com/icocos_user_icon.JPG"
+                alt="曹理鹏@iCocos" />
+            
+              <p class="site-author-name" itemprop="name">曹理鹏@iCocos</p>
+              <p class="site-description motion-element" itemprop="description">纯码迷、爱学习、爱交友、喜欢接触新鲜事物、迎接新的挑战，更爱游离于错综复杂的编码与逻辑中！</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives">
+                
+                    <span class="site-state-item-count">76</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">16</span>
+                    <span class="site-state-item-name">分类</span>
+                  
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">81</span>
+                    <span class="site-state-item-name">标签</span>
+                  
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/al1020119" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:al1020119@163.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://stackoverflow.com/users/10186720" target="_blank" title="StackOverflow"><i class="fa fa-fw fa-stack-overflow"></i>StackOverflow</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.icocos.cn/" title="梦工厂" target="_blank">梦工厂</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://al1020119.github.io/" title="iOS梦工厂" target="_blank">iOS梦工厂</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#引言："><span class="nav-number">1.</span> <span class="nav-text">引言：</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#channel"><span class="nav-number"></span> <span class="nav-text">channel</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#不带缓存-channel"><span class="nav-number">0.1.</span> <span class="nav-text">不带缓存 channel</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#带缓存-channel"><span class="nav-number">0.2.</span> <span class="nav-text">带缓存 channel</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#goroutine"><span class="nav-number"></span> <span class="nav-text">goroutine</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#goroutine原理"><span class="nav-number">1.</span> <span class="nav-text">goroutine原理</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#在goroutine实现中，有三个最重要的数据结构，分别为G-M-P："><span class="nav-number">1.1.</span> <span class="nav-text">在goroutine实现中，有三个最重要的数据结构，分别为G M P：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#goroutinue，本质上就是协程。但有两点不同："><span class="nav-number">1.2.</span> <span class="nav-text">goroutinue，本质上就是协程。但有两点不同：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#那么如果有两个A-B两个协程-在放入和取出数据时都只能用int类型的数据进行通信"><span class="nav-number">1.3.</span> <span class="nav-text">那么如果有两个A,B两个协程 在放入和取出数据时都只能用int类型的数据进行通信</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3种优雅的Go-channel用法"><span class="nav-number"></span> <span class="nav-text">3种优雅的Go channel用法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Fan-In-Out"><span class="nav-number"></span> <span class="nav-text">Fan In/Out</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#同步Goroutine"><span class="nav-number"></span> <span class="nav-text">同步Goroutine</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Log"><span class="nav-number">0.1.</span> <span class="nav-text">Log</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Log-1"><span class="nav-number">0.2.</span> <span class="nav-text">Log</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#分布式递归调用"><span class="nav-number"></span> <span class="nav-text">分布式递归调用</span></a></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">曹理鹏@iCocos</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">站点总字数：</span>
+    
+    <span title="站点总字数">348k</span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    
+    <span title="站点阅读时长">5:16</span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv" title="总访客量">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="site-pv" title="总访问量">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/reading_progress/reading_progress.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.3.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.3.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.3.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.3.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+  
+    <script type="text/javascript">
+    (function(){
+      var appid = 'cytKHBEtW';
+      var conf = '43989b8e63b25c4e9f1fde821c996a39';
+      var width = window.innerWidth || document.documentElement.clientWidth;
+      if (width < 960) {
+      window.document.write('<script id="changyan_mobile_js" charset="utf-8" type="text/javascript" src="https://changyan.sohu.com/upload/mobile/wap-js/changyan_mobile.js?client_id=' + appid + '&conf=' + conf + '"><\/script>'); } else { var loadJs=function(d,a){var c=document.getElementsByTagName("head")[0]||document.head||document.documentElement;var b=document.createElement("script");b.setAttribute("type","text/javascript");b.setAttribute("charset","UTF-8");b.setAttribute("src",d);if(typeof a==="function"){if(window.attachEvent){b.onreadystatechange=function(){var e=b.readyState;if(e==="loaded"||e==="complete"){b.onreadystatechange=null;a()}}}else{b.onload=a}}c.appendChild(b)};loadJs("https://changyan.sohu.com/upload/changyan.js",function(){
+        window.changyan.api.config({appid:appid,conf:conf})});
+      }
+    })();
+    </script>
+    <script type="text/javascript" src="https://assets.changyan.sohu.com/upload/plugins/plugins.count.js"></script>
+  
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=6.3.0"></script>
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("Tc7k1mbaieCUSgmM8LPk1IBO-gzGzoHsz", "sAb7L2vwENJTteRrvFKQacUU");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            
+              var $element = $(document.getElementById(url));
+              $element.find('.leancloud-visitors-count').text(counter.get('time'));
+            
+            counter.save(null, {
+              success: function(counter) {
+                
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            
+              var $element = $(document.getElementById(url));
+              $element.find('.leancloud-visitors-count').text('Counter not initialized! See more at console err msg.');
+              console.error('ATTENTION! LeanCloud counter has security bug, see here how to solve it: https://github.com/theme-next/hexo-leancloud-counter-security. \n But you also can use LeanCloud without security, by set \'security\' option to \'false\'.');
+            
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #333;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #eee;
+      background-image: linear-gradient(#fcfcfc, #eee);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('复制').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+          if(result)$(this).text('复制成功')
+          else $(this).text('复制失败')
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('复制')
+        }, 300)
+      }).append(e)
+    })
+  </script>
+
+
+  
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("Tc7k1mbaieCUSgmM8LPk1IBO-gzGzoHsz", "sAb7L2vwENJTteRrvFKQacUU");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+  
+</body>
+</html>

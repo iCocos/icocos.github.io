@@ -1,0 +1,2128 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.3.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.3.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.3.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="在Swift中，可选类型其根源是一个枚举型，里面有None和Some两种类型。其实所谓的nil就是Optional.None, 非nil就是Optional.Some, 然后会通过Some(T)包装（wrap）原始值，这也是为什么在使用Optional的时候要拆包（从enum里取出来原始值）的原因, 也是PlayGround会把Optional值显示为类似{Some “hello world”}的">
+<meta name="keywords" content="Swift,可选类型总结">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Swift篇——可选类型总结">
+<meta property="og:url" content="https://icocos.github.io/2017/07/18/Swift篇——可选类型总结/index.html">
+<meta property="og:site_name" content="iCocos">
+<meta property="og:description" content="在Swift中，可选类型其根源是一个枚举型，里面有None和Some两种类型。其实所谓的nil就是Optional.None, 非nil就是Optional.Some, 然后会通过Some(T)包装（wrap）原始值，这也是为什么在使用Optional的时候要拆包（从enum里取出来原始值）的原因, 也是PlayGround会把Optional值显示为类似{Some “hello world”}的">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-08-06T17:26:22.508Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Swift篇——可选类型总结">
+<meta name="twitter:description" content="在Swift中，可选类型其根源是一个枚举型，里面有None和Some两种类型。其实所谓的nil就是Optional.None, 非nil就是Optional.Some, 然后会通过Some(T)包装（wrap）原始值，这也是为什么在使用Optional的时候要拆包（从enum里取出来原始值）的原因, 也是PlayGround会把Optional值显示为类似{Some “hello world”}的">
+
+
+
+  <link rel="alternate" href="/atom.xml" title="iCocos" type="application/atom+xml" />
+
+
+
+
+  <link rel="canonical" href="https://icocos.github.io/2017/07/18/Swift篇——可选类型总结/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>Swift篇——可选类型总结 | iCocos</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">iCocos</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">www.icocos.cn</p>
+      
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-首页">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-归档">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-分类">
+    <a href="/categories/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-标签">
+    <a href="/tags/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-关于">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="st-search-show-outputs">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup search-popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+    <div class="reading-progress-bar"></div>
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://icocos.github.io/2017/07/18/Swift篇——可选类型总结/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="曹理鹏@iCocos">
+      <meta itemprop="description" content="纯码迷、爱学习、爱交友、喜欢接触新鲜事物、迎接新的挑战，更爱游离于错综复杂的编码与逻辑中！">
+      <meta itemprop="image" content="http://pd1l3bbt7.bkt.clouddn.com/icocos_user_icon.JPG">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="iCocos">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Swift篇——可选类型总结
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2017-07-18 14:30:08" itemprop="dateCreated datePublished" datetime="2017-07-18T14:30:08+08:00">2017-07-18</time>
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Swift/" itemprop="url" rel="index"><span itemprop="name">Swift</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+              <span class="post-meta-divider">|</span>
+              <span class="post-meta-item-icon">
+                <i class="fa fa-comment-o"></i>
+              </span>
+              
+                <a href="/2017/07/18/Swift篇——可选类型总结/#SOHUCS" itemprop="discussionUrl">
+                  <span class="post-meta-item-text">评论数：</span> <span id="changyan_count_unit" class="post-comments-count hc-comment-count" data-xid="2017/07/18/Swift篇——可选类型总结/" itemprop="commentsCount"></span>
+                </a>
+              
+            
+          
+
+          
+          
+             <span id="/2017/07/18/Swift篇——可选类型总结/" class="leancloud_visitors" data-flag-title="Swift篇——可选类型总结">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数：</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon"
+            >
+            <i class="fa fa-eye"></i>
+             阅读次数： 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+            <div class="post-symbolscount">
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">本文字数：</span>
+                
+                <span title="本文字数">9.5k</span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">9 分钟</span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>在Swift中，可选类型其根源是一个枚举型，里面有None和Some两种类型。其实所谓的nil就是Optional.None, 非nil就是Optional.Some, 然后会通过Some(T)包装（wrap）原始值，这也是为什么在使用Optional的时候要拆包（从enum里取出来原始值）的原因, 也是PlayGround会把Optional值显示为类似{Some “hello world”}的原因，……</p>
+<a id="more"></a>
+<p>首先我们先看下Objective-C与Swift语言对于可选nil的不同理解:</p>
+<blockquote>
+<p>Objective-C中的nil:表示缺少一个合法的对象，是指向不存在对象的指针，对结构体、枚举等类型不起作用(会返回NSNotFound)</p>
+</blockquote>
+<p>Swift中的nil:表示任意类型的值缺失，是一个确定的值，要么是该类型的一个值要么什么都没有(即为nil)</p>
+<h3 id="一、申明可选常量或变量"><a href="#一、申明可选常量或变量" class="headerlink" title="一、申明可选常量或变量"></a>一、申明可选常量或变量</h3><pre><code>let status: Int? = 1   // 申明可选Int类型的常量,初始值为1
+var defaultAddress: String? = &quot;江苏南京&quot;   // 申明可选String类型的变量,初始值为&quot;江苏南京&quot;
+var student: Person? // 申明可选Person(自定义的类)的变量，初始值为nil
+</code></pre><blockquote>
+<p>注意：Int?与Int不相同，Int?表示可选的Int类型，可以赋值为nil，而Int不可以赋值为nil</p>
+</blockquote>
+<h3 id="二、使用”-”强制解析获取可选类型的值-不建议直接使用"><a href="#二、使用”-”强制解析获取可选类型的值-不建议直接使用" class="headerlink" title="二、使用”!”强制解析获取可选类型的值(不建议直接使用)"></a>二、使用”!”强制解析获取可选类型的值(不建议直接使用)</h3><pre><code>var defaultAddress: String? = &quot;江苏南京&quot;
+if defaultAddress != nil { // !=或==可以用来判断是否为nil
+    print(&quot;您的地址是\(defaultAddress!)&quot;) // 使用!强制解析
+} else {
+    print(&quot;对不起，您不存在地址信息&quot;)
+}
+
+var student: Person?
+print(&quot;学生为\(student!)&quot;) // XCode会提示运行错误，因为student初始值为nil，强制解析不行
+</code></pre><h3 id="三、使用可选绑定获取可选类型的值-建议的用法"><a href="#三、使用可选绑定获取可选类型的值-建议的用法" class="headerlink" title="三、使用可选绑定获取可选类型的值(建议的用法)"></a>三、使用可选绑定获取可选类型的值(建议的用法)</h3><pre><code>var defaultAddress: String? = &quot;江苏南京&quot;
+if let address = defaultAddress { // 如果defaultAddress有值或类型转换成功，则将值赋值给address直接使用
+    print(&quot;您的地址是\(address)&quot;)  // 使用address代替defaultAddress，且不需要加!强制解析
+} else {
+    print(&quot;对不起，您不存在地址信息&quot;)
+}
+</code></pre><h3 id="四、隐式解析可选类型-用于申明时肯定有初始值，但后面可能为nil"><a href="#四、隐式解析可选类型-用于申明时肯定有初始值，但后面可能为nil" class="headerlink" title="四、隐式解析可选类型(用于申明时肯定有初始值，但后面可能为nil)"></a>四、隐式解析可选类型(用于申明时肯定有初始值，但后面可能为nil)</h3><pre><code>var mobileNumber: Int64! = 13912345678 // 第一次申明有初始值
+print(&quot;您的电话号码是\(mobileNumber)&quot;) // 不需要使用!强制解析
+// 打印内容:**您的电话号码是****Optional(13912345678)**
+// 还是不建议直接强制解析，因为实际项目中可能中间已经对该值做了改变，若为nil则会运行错误导致APP崩溃
+if let number = mobileNumber { // 建议的做法
+    print(&quot;您的电话号码是\(number)&quot;)
+    // 打印内容:**您的电话号码是****13912345678**
+} else {
+    print(&quot;您没有记录电话号码&quot;)
+}
+</code></pre><h3 id="五、空合运算符-用于判断变量或常量是否为nil"><a href="#五、空合运算符-用于判断变量或常量是否为nil" class="headerlink" title="五、空合运算符(用于判断变量或常量是否为nil)"></a>五、空合运算符(用于判断变量或常量是否为nil)</h3><pre><code>// 空合运算符：a ?? b 判断a是否为nil，若a不为nil对a解封，否则返回b的值
+var status: Int? // 申明可选Int类型的变量status，初始值为nil
+status ?? 0 // 因为status为nil，则返回0
+// ?? 即为以下if else的缩写
+func testOption() -&gt; Int {
+    let status: Int? = 1
+    if status == nil {
+        return 0
+    } else {
+        return status!
+    }
+}
+</code></pre><h3 id="六、函数-方法返回类型为可选类型"><a href="#六、函数-方法返回类型为可选类型" class="headerlink" title="六、函数/方法返回类型为可选类型"></a>六、函数/方法返回类型为可选类型</h3><p>A:返回值为可选类型的值(如Int?、String?、(Int, String)?、[Int]?、[Int: String]?等)</p>
+<pre><code>func returnPossibleValue(value: Bool) -&gt; String? { // 返回类型为可选String类型
+    if value {
+        return &quot;返回类型是可选类型值&quot; // 如果为真，返回Int类型的值1
+    } else {
+        return nil // 如果为假，返回nil
+    }
+}
+
+let possibleValue = returnPossibleValue(value: true) // 要用可选绑定判断再使用，因为possibleValue为String？可选类型
+if let value = possibleValue {
+    print(value)
+} else {
+    print(&quot;none value&quot;)
+}
+</code></pre><p>B:返回值为可选类型的类(如URL?、自定义Person?等)</p>
+<pre><code>class SomeClass {
+    var someValue: Int
+    init?(someValue: Int) { // 可失败构造器
+    if someValue == 1 { return nil }
+        self.someValue = someValue
+    }
+}
+
+func returnPossibleClass(value: Bool) -&gt; SomeClass? { // 返回的类实例可能为nil
+    if value {
+        return SomeClass(someValue: 1) // 返回的为nil
+    } else {
+        return SomeClass(someValue: 2) // 返回的SomeClass?实例，不为nil
+    }
+}
+</code></pre><p>C:返回值为可选类型的闭包(如(()-&gt; (void))? )</p>
+<pre><code>func returnOptionalFunc(value: Bool) -&gt; (() -&gt; (Void))? { // 返回类型为可选类型的闭包
+    if value {
+        return { () in
+            print(&quot;返回类型是可选类型闭包&quot;)
+        }
+    } else {
+        return nil
+    }
+}
+
+let possibleFunc = returnOptionalFunc(value: true) // 要用可选绑定判断再使用，因为possibleFunc 为可选类型的闭包，类型为() -&gt; (Void)
+if let aFunc = possibleFunc {
+    print(aFunc())  // 注意增加()调用闭包，因为没有参数则是空括号
+} else {
+    print(&quot;none func&quot;)
+}
+</code></pre><h3 id="七、可选类型在类或结构体中的运用"><a href="#七、可选类型在类或结构体中的运用" class="headerlink" title="七、可选类型在类或结构体中的运用"></a>七、可选类型在类或结构体中的运用</h3><p>A:可选类型在类中的运用</p>
+<pre><code>class PossibleClass {
+    var someValue: Int
+    var possibleValue: String? // 可选存储属性，默认值为nil
+    init(someValue: Int) { // 构造方法中可以不对possibleValue属性初始化
+        self.someValue = someValue
+    }
+}
+
+let someClass = PossibleClass(someValue: 4) // 实例化对象时不需要对possibleValue初始化，someClass实例中：someValue为4，possibleValue为nil
+</code></pre><blockquote>
+<p>注意：类中所有属性都需要有默认值。属性可以在申明时赋予初始值，也可以在构造方法中赋予初始值；子类继承父类时，必须先给自身属性先初始化后再继承父类构造方法初始化。一般的，出于安全的因素，子类的属性都赋予初始值或直接定义为可选类型。</p>
+</blockquote>
+<p>B:可选类型在结构体中的运用</p>
+<pre><code>struct PossibleStruct {
+    var someValue: Int
+    var possibleValue: String? // 可选存储属性，默认值为nil
+    // 结构体中可以自定义一个init构造器对属性初始化，也可以不自定义
+}
+
+let someStruct = PossibleStruct(someValue: 4, possibleValue: nil)
+</code></pre><p>调用默认的逐一构造器</p>
+<blockquote>
+<p>说明：从上图可看出实例化,PossibleStruct会调用默认逐一构造器，其中possibleValue可传String类型的值或nil</p>
+</blockquote>
+<h3 id="八、可选类型在构造器中的运用"><a href="#八、可选类型在构造器中的运用" class="headerlink" title="八、可选类型在构造器中的运用"></a>八、可选类型在构造器中的运用</h3><blockquote>
+<p>概念：可失败构造器是 一个类、结构体或枚举类型的对象，在构造过程中有可能失败；这里所指的“失败”是指，如给构造器传入无效的参数值，或缺少某种所需的外部资源，又或是不满足某种必要的条件等。</p>
+</blockquote>
+<p>A:结构体的可失败构造器</p>
+<pre><code>struct PossibleStructInit {
+    let someValue: String
+    init?(someValue: String) { // 可失败构造器
+        if someValue.isEmpty { return nil } // 如果实例化为空串，则返回nil(即实例化失败)
+        self.someValue = someValue
+    }
+}
+
+let oneStruct = PossibleStructInit(someValue: &quot;abc&quot;) // abc不是空串，oneStruct为PossibleStructInit？可选类型
+if let one = oneStruct { // 使用if let可选绑定判断
+    print(one.someValue)
+} else {
+    print(&quot;none value&quot;)
+}
+// 结果打印 abc
+
+let twoStruct = PossibleStructInit(someValue: &quot;&quot;) // 传参为空串
+if let two = twoStruct {
+    print(two.someValue)
+} else {
+    print(&quot;none value&quot;)
+}
+// 结果打印 none value
+</code></pre><p>B:枚举的可失败构造器</p>
+<pre><code>enum PossibleEnmuInit {
+    case East, West, South, North // 不带原始值，带原始值也可以使用可失败构造器
+    init?(director: Character) {
+        switch director {
+            case &quot;E&quot;:
+            self = .East
+            case &quot;W&quot;:
+            self = .West
+            case &quot;S&quot;:
+            self = .South
+            case &quot;N&quot;:
+            self = .North
+            default:
+            return nil // 如果实例化时不是E/W/S/N字符，则返回nil(即实例化失败)
+        }
+    }
+}
+
+let oneEnmu = PossibleEnmuInit(director: &quot;E&quot;)  // 传值E，返回PossibleEnmuInit?可选类型
+if let one = oneEnmu { // 使用可选绑定判断
+    print(one)
+} else {
+    print(&quot;none value&quot;)
+}
+// 结果打印 East
+
+let twoEnmu = PossibleEnmuInit(director: &quot;A&quot;)  // 传值A，返回PossibleEnmuInit?可选类型
+if let two = twoEnmu { // 使用可选绑定判断
+    print(two)
+} else {
+    print(&quot;none value&quot;)
+}
+// 结果打印 none value
+</code></pre><p>C:类的可失败构造器</p>
+<pre><code>class Product {
+    let name: String
+    init?(name: String) {
+        if name.isEmpty { return nil }
+        self.name = name
+    }
+}
+
+class CartItem: Product {
+    let quantity: Int
+    init?(name: String, quantity: Int) {
+        if quantity &lt; 1 { return nil } // 实例化时如果quantity小于1，则立即终止构造过程
+        self.quantity = quantity
+        super.init(name: name) // 如果name为空串，则立即终止构造过程
+    }
+}
+
+if let twoSocks = CartItem(name: &quot;sock&quot;, quantity: 2) {
+    print(&quot;Item: \(twoSocks.name), quantity: \(twoSocks.quantity)&quot;)
+}
+// 打印 &quot;Item: sock, quantity: 2”
+
+if let zeroShirts = CartItem(name: &quot;shirt&quot;, quantity: 0) {
+    print(&quot;Item: \(zeroShirts.name), quantity: \(zeroShirts.quantity)&quot;)
+} else {
+    print(&quot;Unable to initialize zero shirts&quot;)
+}
+// 打印 &quot;Unable to initialize zero shirts”
+</code></pre><h3 id="九、可选类型在可选链中的运用"><a href="#九、可选类型在可选链中的运用" class="headerlink" title="九、可选类型在可选链中的运用"></a>九、可选类型在可选链中的运用</h3><p>概念：可选链为一种可以在当前值可能为nil的可选值上请求和调用属性、方法及下标的方法。如果可选值有值，那么调用就会成功；如果可选值是nil，那么调用将返回nil。多个调用可以连接在一起形成一个调用链，如果其中任何一个节点为nil，整个调用链都会失败，即返回nil。</p>
+<pre><code>class Person {
+    var name: String
+    var room: Room? // 不是每个人都买房，定义为可选类型
+    init(name: String) {
+        self.name = name
+    }
+}
+
+class Room {
+    var roomAddr: String
+    var roomArea: Int
+    init(roomAddr: String, roomArea: Int) {
+        self.roomAddr = roomAddr
+        self.roomArea = roomArea
+    }
+}
+
+let xiaoming = Person(name: &quot;xiaoming&quot;) // 此时xiaoming实例中属性：name为&quot;xiaoming&quot;,room为nil
+if let address = xiaoming.room?.roomAddr, let area = xiaoming.room?.roomArea { // 使用?可选链式调用，如果含有值则返回该值(不需要手动强制解析),如果没有值则返回nil
+    print(&quot;\(xiaoming.name)的房子地址在:\(address), 面积:\(area)&quot;)
+} else {
+    print(&quot;\(xiaoming.name)没有房子&quot;)
+}
+// 打印：xiaoming没有房子
+
+xiaoming.room = Room(roomAddr: &quot;南京雨花台区&quot;, roomArea: 95) // 定义xiaoming实例的room属性
+// 再次调用以上可选绑定，打印 xiaoming的房子地址在:南京雨花台区, 面积:95
+</code></pre><h3 id="十、可选类型在错误处理中的运用"><a href="#十、可选类型在错误处理中的运用" class="headerlink" title="十、可选类型在错误处理中的运用"></a>十、可选类型在错误处理中的运用</h3><p>概念：错误处理即为响应错误一级从错误中恢复的过程</p>
+<p>A:一般的错误处理写法（一般使用于需要对不同的返回结果较为清晰的捕捉并做相应的处理）</p>
+<pre><code>// 操作错误处理枚举
+enum OperationError: Error {
+    case ErrorOne
+    case ErrorTwo(String) // 带关联值的枚举属性
+    case ErrorOthers
+}
+
+// 错误处理抛出
+func throwDriver(num: Int) throws {
+    if num == 1 {
+        throw OperationError.ErrorOne
+    } else if num == 2 {
+        throw OperationError.ErrorTwo(&quot;数据类型错误&quot;)
+    } else {
+        throw OperationError.ErrorOthers
+    }
+}
+
+do {
+    print(&quot;使用do-catch捕获错误&quot;)
+    try throwDriver(num: 2) // 使用try尝试请求
+    print(&quot;未捕获到错误&quot;)
+} catch OperationError.ErrorOne { // catch去捕捉是否又throw出来的错误
+    print(&quot;捕捉到错误：ErrorOne&quot;)
+} catch OperationError.ErrorTwo(let message) { // 可以使用let 获取枚举关联值
+    print(&quot;捕捉到错误：ErrorTwo&quot; + message)
+} catch OperationError.ErrorOthers {
+    print(&quot;捕捉到错误：ErrorOthers&quot;)
+}
+// 打印结果如下：
+// 使用do-catch捕获错误
+// 捕捉到错误：ErrorTwo数据类型错误
+</code></pre><p>B:错误处理(try!)（不建议使用，可能会导致App崩溃）</p>
+<pre><code>let photo = try! loadImage(atPath: &quot;./Resources/John Appleseed.jpg&quot;)
+// 上述语句中在执行loadImage方法时如果执行失败，使用try!来禁用错误传递，会有运行错误导致App崩溃
+</code></pre><p>C:错误处理(try?)（一般使用于不需要对错误进行过多的处理）</p>
+<pre><code>func someThrowingFunction() throws -&gt; Int {
+    // ...
+}
+
+let x = try? someThrowingFunction() // x可能正常返回一个Int类型的值也有可能抛出一个错误异常，使用时对x用if let可选绑定判断
+</code></pre><h3 id="十一、可选类型在类型转换中的运用"><a href="#十一、可选类型在类型转换中的运用" class="headerlink" title="十一、可选类型在类型转换中的运用"></a>十一、可选类型在类型转换中的运用</h3><p>类型转换在向上转型时一般不会出现失败，例如从子类向父类转型，直接用as即可<br>类型转换在向下转型时可能会出现失败，例如从父类向子类转型，要使用as?转型，使用时需要可选绑定后再用</p>
+<h4 id="使用as-类型转换"><a href="#使用as-类型转换" class="headerlink" title="使用as?类型转换"></a>使用as?类型转换</h4><p>值得注意的是：从Any转成Int为向下转型，Swift从安全因素考虑，会直接返回nil，所以在日常项目中若遇到从父类向子类转型时，一定要使用可选绑定，如以下代码：</p>
+<pre><code>class SuperClass {
+    // 这是一个父类
+}
+
+class SubClass: SuperClass {
+    // 这是一个子类
+}
+
+let superClass = SuperClass()
+if let someClass = superClass as? SubClass {
+    // 如果转换成功，则用someClass使用即可
+} else {
+    // 转换失败
+}
+</code></pre><p>其他、调用公共库时注意API的返回值</p>
+<p>返回值类型</p>
+<pre><code>var score: [String: Int] = [&quot;语文&quot;: 87, &quot;数学&quot;: 99, &quot;英语&quot;: 61]
+let removedValue = score.removeValue(forKey: &quot;物理&quot;) // 返回nil
+</code></pre><blockquote>
+<p>注意：从以上代码中可看出，removeValue方法会返回被删除key对应的Value值，发现不存在key为“物理”，即返回nil(removedValue常量值)</p>
+</blockquote>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wechatpay.jpg" alt="曹理鹏@iCocos 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>曹理鹏@iCocos</li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://icocos.github.io/2017/07/18/Swift篇——可选类型总结/" title="Swift篇——可选类型总结">https://icocos.github.io/2017/07/18/Swift篇——可选类型总结/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明出处！</li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Swift/" rel="tag"># Swift</a>
+          
+            <a href="/tags/可选类型总结/" rel="tag"># 可选类型总结</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/07/15/Swift——类-结构体-枚举总结/" rel="next" title="Swift——类&结构体&枚举总结">
+                <i class="fa fa-chevron-left"></i> Swift——类&结构体&枚举总结
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/07/22/Swift篇——ARC中循环引用问题/" rel="prev" title="Swift篇——ARC中循环引用问题">
+                Swift篇——ARC中循环引用问题 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="SOHUCS"></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="http://pd1l3bbt7.bkt.clouddn.com/icocos_user_icon.JPG"
+                alt="曹理鹏@iCocos" />
+            
+              <p class="site-author-name" itemprop="name">曹理鹏@iCocos</p>
+              <p class="site-description motion-element" itemprop="description">纯码迷、爱学习、爱交友、喜欢接触新鲜事物、迎接新的挑战，更爱游离于错综复杂的编码与逻辑中！</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives">
+                
+                    <span class="site-state-item-count">76</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">16</span>
+                    <span class="site-state-item-name">分类</span>
+                  
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">81</span>
+                    <span class="site-state-item-name">标签</span>
+                  
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/al1020119" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:al1020119@163.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://stackoverflow.com/users/10186720" target="_blank" title="StackOverflow"><i class="fa fa-fw fa-stack-overflow"></i>StackOverflow</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.icocos.cn/" title="梦工厂" target="_blank">梦工厂</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://al1020119.github.io/" title="iOS梦工厂" target="_blank">iOS梦工厂</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#一、申明可选常量或变量"><span class="nav-number">1.</span> <span class="nav-text">一、申明可选常量或变量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#二、使用”-”强制解析获取可选类型的值-不建议直接使用"><span class="nav-number">2.</span> <span class="nav-text">二、使用”!”强制解析获取可选类型的值(不建议直接使用)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#三、使用可选绑定获取可选类型的值-建议的用法"><span class="nav-number">3.</span> <span class="nav-text">三、使用可选绑定获取可选类型的值(建议的用法)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#四、隐式解析可选类型-用于申明时肯定有初始值，但后面可能为nil"><span class="nav-number">4.</span> <span class="nav-text">四、隐式解析可选类型(用于申明时肯定有初始值，但后面可能为nil)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#五、空合运算符-用于判断变量或常量是否为nil"><span class="nav-number">5.</span> <span class="nav-text">五、空合运算符(用于判断变量或常量是否为nil)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#六、函数-方法返回类型为可选类型"><span class="nav-number">6.</span> <span class="nav-text">六、函数/方法返回类型为可选类型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#七、可选类型在类或结构体中的运用"><span class="nav-number">7.</span> <span class="nav-text">七、可选类型在类或结构体中的运用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#八、可选类型在构造器中的运用"><span class="nav-number">8.</span> <span class="nav-text">八、可选类型在构造器中的运用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#九、可选类型在可选链中的运用"><span class="nav-number">9.</span> <span class="nav-text">九、可选类型在可选链中的运用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#十、可选类型在错误处理中的运用"><span class="nav-number">10.</span> <span class="nav-text">十、可选类型在错误处理中的运用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#十一、可选类型在类型转换中的运用"><span class="nav-number">11.</span> <span class="nav-text">十一、可选类型在类型转换中的运用</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#使用as-类型转换"><span class="nav-number">11.1.</span> <span class="nav-text">使用as?类型转换</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">曹理鹏@iCocos</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">站点总字数：</span>
+    
+    <span title="站点总字数">348k</span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    
+    <span title="站点阅读时长">5:16</span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv" title="总访客量">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="site-pv" title="总访问量">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/reading_progress/reading_progress.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.3.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.3.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.3.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.3.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+  
+    <script type="text/javascript">
+    (function(){
+      var appid = 'cytKHBEtW';
+      var conf = '43989b8e63b25c4e9f1fde821c996a39';
+      var width = window.innerWidth || document.documentElement.clientWidth;
+      if (width < 960) {
+      window.document.write('<script id="changyan_mobile_js" charset="utf-8" type="text/javascript" src="https://changyan.sohu.com/upload/mobile/wap-js/changyan_mobile.js?client_id=' + appid + '&conf=' + conf + '"><\/script>'); } else { var loadJs=function(d,a){var c=document.getElementsByTagName("head")[0]||document.head||document.documentElement;var b=document.createElement("script");b.setAttribute("type","text/javascript");b.setAttribute("charset","UTF-8");b.setAttribute("src",d);if(typeof a==="function"){if(window.attachEvent){b.onreadystatechange=function(){var e=b.readyState;if(e==="loaded"||e==="complete"){b.onreadystatechange=null;a()}}}else{b.onload=a}}c.appendChild(b)};loadJs("https://changyan.sohu.com/upload/changyan.js",function(){
+        window.changyan.api.config({appid:appid,conf:conf})});
+      }
+    })();
+    </script>
+    <script type="text/javascript" src="https://assets.changyan.sohu.com/upload/plugins/plugins.count.js"></script>
+  
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=6.3.0"></script>
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("Tc7k1mbaieCUSgmM8LPk1IBO-gzGzoHsz", "sAb7L2vwENJTteRrvFKQacUU");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            
+              var $element = $(document.getElementById(url));
+              $element.find('.leancloud-visitors-count').text(counter.get('time'));
+            
+            counter.save(null, {
+              success: function(counter) {
+                
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            
+              var $element = $(document.getElementById(url));
+              $element.find('.leancloud-visitors-count').text('Counter not initialized! See more at console err msg.');
+              console.error('ATTENTION! LeanCloud counter has security bug, see here how to solve it: https://github.com/theme-next/hexo-leancloud-counter-security. \n But you also can use LeanCloud without security, by set \'security\' option to \'false\'.');
+            
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #333;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #eee;
+      background-image: linear-gradient(#fcfcfc, #eee);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('复制').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+          if(result)$(this).text('复制成功')
+          else $(this).text('复制失败')
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('复制')
+        }, 300)
+      }).append(e)
+    })
+  </script>
+
+
+  
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("Tc7k1mbaieCUSgmM8LPk1IBO-gzGzoHsz", "sAb7L2vwENJTteRrvFKQacUU");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+  
+</body>
+</html>

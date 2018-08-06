@@ -1,0 +1,2013 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.3.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.3.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.3.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="自从去年中旬电脑被我整挂了之后，大部分插件和脚本配置都失效了，重新安装也试了好几次，最近上班要上线了，不得不重新整理和配置一下，还好没有遇到什么坑……">
+<meta name="keywords" content="iOS,重整iOS技术（Fastlane完整打包流程）">
+<meta property="og:type" content="article">
+<meta property="og:title" content="iOS——重整iOS技术（Fastlane完整打包流程）">
+<meta property="og:url" content="https://icocos.github.io/2018/03/09/iOS——重整iOS技术（Fastlane完整打包流程）/index.html">
+<meta property="og:site_name" content="iCocos">
+<meta property="og:description" content="自从去年中旬电脑被我整挂了之后，大部分插件和脚本配置都失效了，重新安装也试了好几次，最近上班要上线了，不得不重新整理和配置一下，还好没有遇到什么坑……">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/201801Images/fastlane/0001.png">
+<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/201801Images/fastlane/0002.png">
+<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/201801Images/fastlane/0003.png">
+<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/201801Images/fastlane/0004.png">
+<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/201801Images/fastlane/0005.png">
+<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/201801Images/fastlane/0006.png">
+<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/201801Images/fastlane/0007.png">
+<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/201801Images/fastlane/0008.png">
+<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/201801Images/fastlane/0009.png">
+<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/201801Images/fastlane/0010.png">
+<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/201801Images/fastlane/0011.png">
+<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/201801Images/fastlane/0012.png">
+<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/201801Images/fastlane/0013.png">
+<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/201801Images/fastlane/0015.png">
+<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/201801Images/fastlane/0014.png">
+<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/201801Images/fastlane/000.png">
+<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/201801Images/fastlane/111.png">
+<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/201801Images/fastlane/222.png">
+<meta property="og:updated_time" content="2018-08-06T18:33:42.322Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="iOS——重整iOS技术（Fastlane完整打包流程）">
+<meta name="twitter:description" content="自从去年中旬电脑被我整挂了之后，大部分插件和脚本配置都失效了，重新安装也试了好几次，最近上班要上线了，不得不重新整理和配置一下，还好没有遇到什么坑……">
+<meta name="twitter:image" content="http://pd1l3bbt7.bkt.clouddn.com/201801Images/fastlane/0001.png">
+
+
+
+  <link rel="alternate" href="/atom.xml" title="iCocos" type="application/atom+xml" />
+
+
+
+
+  <link rel="canonical" href="https://icocos.github.io/2018/03/09/iOS——重整iOS技术（Fastlane完整打包流程）/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>iOS——重整iOS技术（Fastlane完整打包流程） | iCocos</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">iCocos</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">www.icocos.cn</p>
+      
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-首页">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-归档">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-分类">
+    <a href="/categories/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-标签">
+    <a href="/tags/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-关于">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="st-search-show-outputs">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup search-popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+    <div class="reading-progress-bar"></div>
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://icocos.github.io/2018/03/09/iOS——重整iOS技术（Fastlane完整打包流程）/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="曹理鹏@iCocos">
+      <meta itemprop="description" content="纯码迷、爱学习、爱交友、喜欢接触新鲜事物、迎接新的挑战，更爱游离于错综复杂的编码与逻辑中！">
+      <meta itemprop="image" content="http://pd1l3bbt7.bkt.clouddn.com/icocos_user_icon.JPG">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="iCocos">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">iOS——重整iOS技术（Fastlane完整打包流程）
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-03-09 23:33:36" itemprop="dateCreated datePublished" datetime="2018-03-09T23:33:36+08:00">2018-03-09</time>
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/iOS/" itemprop="url" rel="index"><span itemprop="name">iOS</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+              <span class="post-meta-divider">|</span>
+              <span class="post-meta-item-icon">
+                <i class="fa fa-comment-o"></i>
+              </span>
+              
+                <a href="/2018/03/09/iOS——重整iOS技术（Fastlane完整打包流程）/#SOHUCS" itemprop="discussionUrl">
+                  <span class="post-meta-item-text">评论数：</span> <span id="changyan_count_unit" class="post-comments-count hc-comment-count" data-xid="2018/03/09/iOS——重整iOS技术（Fastlane完整打包流程）/" itemprop="commentsCount"></span>
+                </a>
+              
+            
+          
+
+          
+          
+             <span id="/2018/03/09/iOS——重整iOS技术（Fastlane完整打包流程）/" class="leancloud_visitors" data-flag-title="iOS——重整iOS技术（Fastlane完整打包流程）">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数：</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon"
+            >
+            <i class="fa fa-eye"></i>
+             阅读次数： 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+            <div class="post-symbolscount">
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">本文字数：</span>
+                
+                <span title="本文字数">4.4k</span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">4 分钟</span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>自从去年中旬电脑被我整挂了之后，大部分插件和脚本配置都失效了，重新安装也试了好几次，最近上班要上线了，不得不重新整理和配置一下，还好没有遇到什么坑……</p>
+<a id="more"></a>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><blockquote>
+<p>项目即将进入阶段，每次都要点击那么多，频繁的打包脑子都要晕了，习惯了之前一行命令就搞定的我，只能花一个晚上加班整回之前的Fastlane。</p>
+</blockquote>
+<blockquote>
+<p> 本文采用的方案是：Fastlane + 蒲公英 + ……。</p>
+<blockquote>
+<p>关于具体发布状态可以在这里（app-store, package, ad-hoc, enterprise, development）改，<br>当然后面会结合App store发布最近本文内容，同时支持jenkins或者其他持续集成系统.</p>
+</blockquote>
+</blockquote>
+<h3 id="Fastlane安装"><a href="#Fastlane安装" class="headerlink" title="Fastlane安装"></a>Fastlane安装</h3><p>Fastlane是一套使用Ruby写的自动化工具集，用于iOS和Android的自动化打包、发布等工作，可以节省大量的时间。</p>
+<p>安装过程如下：</p>
+<h4 id="1-检查Ruby版本，需要2-0及以上版本。在终端输入以下命令确认："><a href="#1-检查Ruby版本，需要2-0及以上版本。在终端输入以下命令确认：" class="headerlink" title="1.检查Ruby版本，需要2.0及以上版本。在终端输入以下命令确认："></a>1.检查Ruby版本，需要2.0及以上版本。在终端输入以下命令确认：</h4><pre><code>ruby -v
+</code></pre><p>需要注意的是需要将gem的source改为<a href="https://gems.ruby-china.org/。" target="_blank" rel="noopener">https://gems.ruby-china.org/。</a><br>如何检查?在终端输入以下命令:</p>
+<pre><code>gem sources
+</code></pre><p>结果应为：</p>
+<pre><code>*** CURRENT SOURCES ***
+
+https://gems.ruby-china.org/
+</code></pre><h4 id="2-检查Xcode命令行工具是否安装。在终端输入以下命令："><a href="#2-检查Xcode命令行工具是否安装。在终端输入以下命令：" class="headerlink" title="2.检查Xcode命令行工具是否安装。在终端输入以下命令："></a>2.检查Xcode命令行工具是否安装。在终端输入以下命令：</h4><pre><code>xcode-select --install
+</code></pre><p>如果没有安装会进行安装。如果已经安装了则会提示：</p>
+<pre><code>xcode-select: error: command line tools are already installed, use &quot;Software Update&quot; to install updates
+</code></pre><p> <img src="http://pd1l3bbt7.bkt.clouddn.com/201801Images/fastlane/0001.png" alt="曹理鹏(iCocos)-梦工厂"></p>
+<h4 id="3-安装Fastlane"><a href="#3-安装Fastlane" class="headerlink" title="3.安装Fastlane"></a>3.安装Fastlane</h4><pre><code>sudo gem install fastlane --verbose
+</code></pre><p>如果出现以下错误：</p>
+<pre><code>ERROR:  While executing gem ... (Errno::EPERM)
+    Operation not permitted - /usr/bin/rougify
+</code></pre><p>则输入以下命令：</p>
+<pre><code>sudo gem install -n /usr/local/bin fastlane
+</code></pre><p> <img src="http://pd1l3bbt7.bkt.clouddn.com/201801Images/fastlane/0002.png" alt="曹理鹏(iCocos)-梦工厂"></p>
+<h4 id="4-检查Fastlane是否正确安装。输入以下命令："><a href="#4-检查Fastlane是否正确安装。输入以下命令：" class="headerlink" title="4.检查Fastlane是否正确安装。输入以下命令："></a>4.检查Fastlane是否正确安装。输入以下命令：</h4><pre><code>fastlane --version
+</code></pre><p> <img src="http://pd1l3bbt7.bkt.clouddn.com/201801Images/fastlane/0003.png" alt="曹理鹏(iCocos)-梦工厂"></p>
+<p>可以看到Fastlane版本信息，我的是2.85.0。</p>
+<h3 id="蒲公英的Fastlane插件安装"><a href="#蒲公英的Fastlane插件安装" class="headerlink" title="蒲公英的Fastlane插件安装"></a>蒲公英的Fastlane插件安装</h3><p>打开终端，进入你的项目工程的根目录，输入以下命令：</p>
+<pre><code>fastlane add_plugin pgyer
+</code></pre><p>出现</p>
+<pre><code>Plugin &apos;fastlane-plugin-pgyer&apos; was added to &apos;./fastlane/Pluginfile&apos;
+It looks like fastlane plugins are not yet set up for this project.
+fastlane will create a new Gemfile at path &apos;Gemfile&apos;
+This change is necessary for fastlane plugins to work
+Should fastlane modify the Gemfile at path &apos;Gemfile&apos; for you?
+(y/n)
+</code></pre><p>输入y按回车，出现</p>
+<pre><code>Installing plugin dependencies...
+Successfully installed plugins
+</code></pre><p>便是安装成功了。</p>
+<p> <img src="http://pd1l3bbt7.bkt.clouddn.com/201801Images/fastlane/0004.png" alt="曹理鹏(iCocos)-梦工厂"></p>
+<h3 id="Fastlane配置"><a href="#Fastlane配置" class="headerlink" title="Fastlane配置"></a>Fastlane配置</h3><h4 id="1-打开终端，进入你的项目工程的根目录，输入以下命令："><a href="#1-打开终端，进入你的项目工程的根目录，输入以下命令：" class="headerlink" title="1.打开终端，进入你的项目工程的根目录，输入以下命令："></a>1.打开终端，进入你的项目工程的根目录，输入以下命令：</h4><pre><code>fastlane init
+</code></pre><p><img src="http://pd1l3bbt7.bkt.clouddn.com/201801Images/fastlane/0005.png" alt="曹理鹏(iCocos)-梦工厂"></p>
+<p>中间会让你输入苹果开发者账号的账号和密码，之后会在你项目工程的目录下生成一个fastlane文件夹，里面有Fastlane的配置文件，一个是Appfile文件，一个是Fastfile文件(如果要上传AppStore的话还有Deliverfile文件)。Appfile保存苹果开发者的相关信息、项目的相关信息等。Fastfile是运行脚本。</p>
+<p> <img src="http://pd1l3bbt7.bkt.clouddn.com/201801Images/fastlane/0006.png" alt="曹理鹏(iCocos)-梦工厂"></p>
+<h4 id="2-编辑Fastfile文件"><a href="#2-编辑Fastfile文件" class="headerlink" title="2.编辑Fastfile文件"></a>2.编辑Fastfile文件</h4><p>有时候一天需要打好几个包，为了区分，我们这里实现一个递增build号的功能。</p>
+<h5 id="1-修改项目工程配置"><a href="#1-修改项目工程配置" class="headerlink" title="(1)修改项目工程配置"></a>(1)修改项目工程配置</h5><ul>
+<li>修改Build Settings中的Versioning配置，Current Project Version随便填一个，Versioning System选择Apple Generic。</li>
+</ul>
+<p><img src="http://pd1l3bbt7.bkt.clouddn.com/201801Images/fastlane/0007.png" alt="曹理鹏(iCocos)-梦工厂"></p>
+<ul>
+<li><p>修改Info.plist File路径</p>
+<p><img src="http://pd1l3bbt7.bkt.clouddn.com/201801Images/fastlane/0008.png" alt="曹理鹏(iCocos)-梦工厂"></p>
+</li>
+</ul>
+<h5 id="2-定义一个递增build号的函数，添加到Fastfile中"><a href="#2-定义一个递增build号的函数，添加到Fastfile中" class="headerlink" title="(2)定义一个递增build号的函数，添加到Fastfile中"></a>(2)定义一个递增build号的函数，添加到Fastfile中</h5><pre><code>def updateProjectBuildNumber
+
+currentTime = Time.new.strftime(&quot;%Y%m%d&quot;)
+build = get_build_number()
+if build.include?&quot;#{currentTime}.&quot;
+# =&gt; 为当天版本 计算迭代版本号
+lastStr = build[build.length-2..build.length-1]
+lastNum = lastStr.to_i
+lastNum = lastNum + 1
+lastStr = lastNum.to_s
+if lastNum &lt; 10
+lastStr = lastStr.insert(0,&quot;0&quot;)
+end
+build = &quot;#{currentTime}.#{lastStr}&quot;
+else
+# =&gt; 非当天版本 build 号重置
+build = &quot;#{currentTime}.01&quot;
+end
+puts(&quot;*************| 更新build #{build} |*************&quot;)
+# =&gt; 更改项目 build 号
+increment_build_number(
+build_number: &quot;#{build}&quot;
+)
+end
+</code></pre><h6 id="实现自动打包的完整Fastfile如下：可以直接拷贝修改"><a href="#实现自动打包的完整Fastfile如下：可以直接拷贝修改" class="headerlink" title="实现自动打包的完整Fastfile如下：可以直接拷贝修改"></a>实现自动打包的完整Fastfile如下：可以直接拷贝修改</h6><pre><code># 定义fastlane版本号 ---- 修改
+fastlane_version &quot;2.85.0&quot;
+
+# 定义打包平台
+default_platform :ios
+
+def updateProjectBuildNumber
+
+currentTime = Time.new.strftime(&quot;%Y%m%d&quot;)
+build = get_build_number()
+if build.include?&quot;#{currentTime}.&quot;
+# =&gt; 为当天版本 计算迭代版本号
+lastStr = build[build.length-2..build.length-1]
+lastNum = lastStr.to_i
+lastNum = lastNum + 1
+lastStr = lastNum.to_s
+if lastNum &lt; 10
+lastStr = lastStr.insert(0,&quot;0&quot;)
+end
+build = &quot;#{currentTime}.#{lastStr}&quot;
+else
+# =&gt; 非当天版本 build 号重置
+build = &quot;#{currentTime}.01&quot;
+end
+puts(&quot;*************| 更新build #{build} |*************&quot;)
+# =&gt; 更改项目 build 号
+increment_build_number(
+build_number: &quot;#{build}&quot;
+)
+end
+
+#指定项目的scheme名称 ---- 修改
+scheme=&quot;Fiction_iOS&quot;
+#蒲公英api_key和user_key ---- 修改
+api_key=&quot;264c007c340157969a5e4da77637e60f&quot;
+user_key=&quot;3fdffa475f545097333473b980765ce1&quot;
+
+# 任务脚本
+platform :ios do
+lane :development_build do|options|
+branch = options[:branch]
+
+puts &quot;开始打development ipa&quot;
+
+updateProjectBuildNumber #更改项目build号
+
+# 开始打包
+gym(
+#输出的ipa名称
+output_name:&quot;#{scheme}_#{get_build_number()}&quot;,
+# 是否清空以前的编译信息 true：是
+clean:true,
+# 指定打包方式，Release 或者 Debug
+configuration:&quot;Release&quot;,
+# 指定打包所使用的输出方式，目前支持app-store, package, ad-hoc, enterprise, development
+export_method:&quot;development&quot;,
+# 指定输出文件夹
+output_directory:&quot;./fastlane/build&quot;,
+)
+
+puts &quot;开始上传蒲公英&quot;
+# 开始上传蒲公英
+pgyer(api_key: &quot;#{api_key}&quot;, user_key: &quot;#{user_key}&quot;)
+
+end
+end
+</code></pre><blockquote>
+<p>注意：<br>蒲公英的 api_key 和 user_key，开发者在自己账号下的 账号设置-API信息 中可以找到。打其它类型的包的方法与development类似，可自定义一个新的lane实现。</p>
+</blockquote>
+<h4 id="打包发布"><a href="#打包发布" class="headerlink" title="打包发布"></a>打包发布</h4><ul>
+<li><p>在终端输入</p>
+<ul>
+<li>fastlane development_build</li>
+</ul>
+</li>
+</ul>
+<p>便会进行自动打包并上传蒲公英了。</p>
+<h4 id="下面以执行流程"><a href="#下面以执行流程" class="headerlink" title="下面以执行流程"></a>下面以执行流程</h4><p><img src="http://pd1l3bbt7.bkt.clouddn.com/201801Images/fastlane/0009.png" alt="曹理鹏(iCocos)-梦工厂"></p>
+<p><img src="http://pd1l3bbt7.bkt.clouddn.com/201801Images/fastlane/0010.png" alt="曹理鹏(iCocos)-梦工厂"></p>
+<p><img src="http://pd1l3bbt7.bkt.clouddn.com/201801Images/fastlane/0011.png" alt="曹理鹏(iCocos)-梦工厂"></p>
+<p><img src="http://pd1l3bbt7.bkt.clouddn.com/201801Images/fastlane/0012.png" alt="曹理鹏(iCocos)-梦工厂"></p>
+<p><img src="http://pd1l3bbt7.bkt.clouddn.com/201801Images/fastlane/0013.png" alt="曹理鹏(iCocos)-梦工厂"></p>
+<h4 id="下面以执行结果"><a href="#下面以执行结果" class="headerlink" title="下面以执行结果"></a>下面以执行结果</h4><p><img src="http://pd1l3bbt7.bkt.clouddn.com/201801Images/fastlane/0015.png" alt="曹理鹏(iCocos)-梦工厂"></p>
+<p><img src="http://pd1l3bbt7.bkt.clouddn.com/201801Images/fastlane/0014.png" alt="曹理鹏(iCocos)-梦工厂"></p>
+<h4 id="再来三张：入口，选项与结果"><a href="#再来三张：入口，选项与结果" class="headerlink" title="再来三张：入口，选项与结果"></a>再来三张：入口，选项与结果</h4><p><img src="http://pd1l3bbt7.bkt.clouddn.com/201801Images/fastlane/000.png" alt="曹理鹏(iCocos)-梦工厂"></p>
+<p><img src="http://pd1l3bbt7.bkt.clouddn.com/201801Images/fastlane/111.png" alt="曹理鹏(iCocos)-梦工厂"></p>
+<p><img src="http://pd1l3bbt7.bkt.clouddn.com/201801Images/fastlane/222.png" alt="曹理鹏(iCocos)-梦工厂"></p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wechatpay.jpg" alt="曹理鹏@iCocos 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>曹理鹏@iCocos</li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://icocos.github.io/2018/03/09/iOS——重整iOS技术（Fastlane完整打包流程）/" title="iOS——重整iOS技术（Fastlane完整打包流程）">https://icocos.github.io/2018/03/09/iOS——重整iOS技术（Fastlane完整打包流程）/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明出处！</li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/iOS/" rel="tag"># iOS</a>
+          
+            <a href="/tags/重整iOS技术（Fastlane完整打包流程）/" rel="tag"># 重整iOS技术（Fastlane完整打包流程）</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/01/26/iOS游戏——关于马甲包与审核/" rel="next" title="iOS游戏——关于马甲包与审核">
+                <i class="fa fa-chevron-left"></i> iOS游戏——关于马甲包与审核
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/04/18/iOS——奇葩需求QQ号与QQ群添加与跳转/" rel="prev" title="iOS——奇葩需求QQ号与QQ群添加与跳转">
+                iOS——奇葩需求QQ号与QQ群添加与跳转 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="SOHUCS"></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="http://pd1l3bbt7.bkt.clouddn.com/icocos_user_icon.JPG"
+                alt="曹理鹏@iCocos" />
+            
+              <p class="site-author-name" itemprop="name">曹理鹏@iCocos</p>
+              <p class="site-description motion-element" itemprop="description">纯码迷、爱学习、爱交友、喜欢接触新鲜事物、迎接新的挑战，更爱游离于错综复杂的编码与逻辑中！</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives">
+                
+                    <span class="site-state-item-count">76</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">16</span>
+                    <span class="site-state-item-name">分类</span>
+                  
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">81</span>
+                    <span class="site-state-item-name">标签</span>
+                  
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/al1020119" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:al1020119@163.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://stackoverflow.com/users/10186720" target="_blank" title="StackOverflow"><i class="fa fa-fw fa-stack-overflow"></i>StackOverflow</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.icocos.cn/" title="梦工厂" target="_blank">梦工厂</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://al1020119.github.io/" title="iOS梦工厂" target="_blank">iOS梦工厂</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Fastlane安装"><span class="nav-number">1.1.</span> <span class="nav-text">Fastlane安装</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-检查Ruby版本，需要2-0及以上版本。在终端输入以下命令确认："><span class="nav-number">1.1.1.</span> <span class="nav-text">1.检查Ruby版本，需要2.0及以上版本。在终端输入以下命令确认：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-检查Xcode命令行工具是否安装。在终端输入以下命令："><span class="nav-number">1.1.2.</span> <span class="nav-text">2.检查Xcode命令行工具是否安装。在终端输入以下命令：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-安装Fastlane"><span class="nav-number">1.1.3.</span> <span class="nav-text">3.安装Fastlane</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-检查Fastlane是否正确安装。输入以下命令："><span class="nav-number">1.1.4.</span> <span class="nav-text">4.检查Fastlane是否正确安装。输入以下命令：</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#蒲公英的Fastlane插件安装"><span class="nav-number">1.2.</span> <span class="nav-text">蒲公英的Fastlane插件安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Fastlane配置"><span class="nav-number">1.3.</span> <span class="nav-text">Fastlane配置</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-打开终端，进入你的项目工程的根目录，输入以下命令："><span class="nav-number">1.3.1.</span> <span class="nav-text">1.打开终端，进入你的项目工程的根目录，输入以下命令：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-编辑Fastfile文件"><span class="nav-number">1.3.2.</span> <span class="nav-text">2.编辑Fastfile文件</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1-修改项目工程配置"><span class="nav-number">1.3.2.1.</span> <span class="nav-text">(1)修改项目工程配置</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-定义一个递增build号的函数，添加到Fastfile中"><span class="nav-number">1.3.2.2.</span> <span class="nav-text">(2)定义一个递增build号的函数，添加到Fastfile中</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#实现自动打包的完整Fastfile如下：可以直接拷贝修改"><span class="nav-number">1.3.2.2.1.</span> <span class="nav-text">实现自动打包的完整Fastfile如下：可以直接拷贝修改</span></a></li></ol></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#打包发布"><span class="nav-number">1.3.3.</span> <span class="nav-text">打包发布</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#下面以执行流程"><span class="nav-number">1.3.4.</span> <span class="nav-text">下面以执行流程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#下面以执行结果"><span class="nav-number">1.3.5.</span> <span class="nav-text">下面以执行结果</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#再来三张：入口，选项与结果"><span class="nav-number">1.3.6.</span> <span class="nav-text">再来三张：入口，选项与结果</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">曹理鹏@iCocos</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">站点总字数：</span>
+    
+    <span title="站点总字数">348k</span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    
+    <span title="站点阅读时长">5:16</span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv" title="总访客量">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="site-pv" title="总访问量">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/reading_progress/reading_progress.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.3.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.3.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.3.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.3.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+  
+    <script type="text/javascript">
+    (function(){
+      var appid = 'cytKHBEtW';
+      var conf = '43989b8e63b25c4e9f1fde821c996a39';
+      var width = window.innerWidth || document.documentElement.clientWidth;
+      if (width < 960) {
+      window.document.write('<script id="changyan_mobile_js" charset="utf-8" type="text/javascript" src="https://changyan.sohu.com/upload/mobile/wap-js/changyan_mobile.js?client_id=' + appid + '&conf=' + conf + '"><\/script>'); } else { var loadJs=function(d,a){var c=document.getElementsByTagName("head")[0]||document.head||document.documentElement;var b=document.createElement("script");b.setAttribute("type","text/javascript");b.setAttribute("charset","UTF-8");b.setAttribute("src",d);if(typeof a==="function"){if(window.attachEvent){b.onreadystatechange=function(){var e=b.readyState;if(e==="loaded"||e==="complete"){b.onreadystatechange=null;a()}}}else{b.onload=a}}c.appendChild(b)};loadJs("https://changyan.sohu.com/upload/changyan.js",function(){
+        window.changyan.api.config({appid:appid,conf:conf})});
+      }
+    })();
+    </script>
+    <script type="text/javascript" src="https://assets.changyan.sohu.com/upload/plugins/plugins.count.js"></script>
+  
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=6.3.0"></script>
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("Tc7k1mbaieCUSgmM8LPk1IBO-gzGzoHsz", "sAb7L2vwENJTteRrvFKQacUU");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            
+              var $element = $(document.getElementById(url));
+              $element.find('.leancloud-visitors-count').text(counter.get('time'));
+            
+            counter.save(null, {
+              success: function(counter) {
+                
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            
+              var $element = $(document.getElementById(url));
+              $element.find('.leancloud-visitors-count').text('Counter not initialized! See more at console err msg.');
+              console.error('ATTENTION! LeanCloud counter has security bug, see here how to solve it: https://github.com/theme-next/hexo-leancloud-counter-security. \n But you also can use LeanCloud without security, by set \'security\' option to \'false\'.');
+            
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #333;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #eee;
+      background-image: linear-gradient(#fcfcfc, #eee);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('复制').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+          if(result)$(this).text('复制成功')
+          else $(this).text('复制失败')
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('复制')
+        }, 300)
+      }).append(e)
+    })
+  </script>
+
+
+  
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("Tc7k1mbaieCUSgmM8LPk1IBO-gzGzoHsz", "sAb7L2vwENJTteRrvFKQacUU");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+  
+</body>
+</html>

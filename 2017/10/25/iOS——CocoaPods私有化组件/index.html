@@ -1,0 +1,2058 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.3.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.3.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.3.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="相信你能看到这里，就一定用过cocoapods，cocoapods是什么呢？怎么用？算了吧，都是本文的范围，这里只介绍怎么将自己的项目组件进行私有化，其实严格来说不算什么私有化，只是，想自己写好的框架放到github或者其他平台上让他支持cocoapods管理。这类文章网上已经随处可见，但是由于打算开始写自己的框架，就记录了一下…..">
+<meta name="keywords" content="iOS,CocoaPods私有化组件">
+<meta property="og:type" content="article">
+<meta property="og:title" content="iOS——CocoaPods私有化组件">
+<meta property="og:url" content="https://icocos.github.io/2017/10/25/iOS——CocoaPods私有化组件/index.html">
+<meta property="og:site_name" content="iCocos">
+<meta property="og:description" content="相信你能看到这里，就一定用过cocoapods，cocoapods是什么呢？怎么用？算了吧，都是本文的范围，这里只介绍怎么将自己的项目组件进行私有化，其实严格来说不算什么私有化，只是，想自己写好的框架放到github或者其他平台上让他支持cocoapods管理。这类文章网上已经随处可见，但是由于打算开始写自己的框架，就记录了一下…..">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/newImages/cocoapods/cocoapods001.png">
+<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/newImages/cocoapods/cocoapods002.png">
+<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/newImages/cocoapods/cocoapods003.png">
+<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/newImages/cocoapods/cocoapods004.png">
+<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/newImages/cocoapods/cocoapods005.png">
+<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/newImages/cocoapods/cocoapods006.png">
+<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/newImages/cocoapods/cocoapods007.png">
+<meta property="og:updated_time" content="2018-08-06T18:33:42.406Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="iOS——CocoaPods私有化组件">
+<meta name="twitter:description" content="相信你能看到这里，就一定用过cocoapods，cocoapods是什么呢？怎么用？算了吧，都是本文的范围，这里只介绍怎么将自己的项目组件进行私有化，其实严格来说不算什么私有化，只是，想自己写好的框架放到github或者其他平台上让他支持cocoapods管理。这类文章网上已经随处可见，但是由于打算开始写自己的框架，就记录了一下…..">
+<meta name="twitter:image" content="http://pd1l3bbt7.bkt.clouddn.com/newImages/cocoapods/cocoapods001.png">
+
+
+
+  <link rel="alternate" href="/atom.xml" title="iCocos" type="application/atom+xml" />
+
+
+
+
+  <link rel="canonical" href="https://icocos.github.io/2017/10/25/iOS——CocoaPods私有化组件/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>iOS——CocoaPods私有化组件 | iCocos</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">iCocos</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">www.icocos.cn</p>
+      
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-首页">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-归档">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-分类">
+    <a href="/categories/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-标签">
+    <a href="/tags/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-关于">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="st-search-show-outputs">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup search-popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+    <div class="reading-progress-bar"></div>
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://icocos.github.io/2017/10/25/iOS——CocoaPods私有化组件/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="曹理鹏@iCocos">
+      <meta itemprop="description" content="纯码迷、爱学习、爱交友、喜欢接触新鲜事物、迎接新的挑战，更爱游离于错综复杂的编码与逻辑中！">
+      <meta itemprop="image" content="http://pd1l3bbt7.bkt.clouddn.com/icocos_user_icon.JPG">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="iCocos">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">iOS——CocoaPods私有化组件
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2017-10-25 22:55:42" itemprop="dateCreated datePublished" datetime="2017-10-25T22:55:42+08:00">2017-10-25</time>
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/iOS/" itemprop="url" rel="index"><span itemprop="name">iOS</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+              <span class="post-meta-divider">|</span>
+              <span class="post-meta-item-icon">
+                <i class="fa fa-comment-o"></i>
+              </span>
+              
+                <a href="/2017/10/25/iOS——CocoaPods私有化组件/#SOHUCS" itemprop="discussionUrl">
+                  <span class="post-meta-item-text">评论数：</span> <span id="changyan_count_unit" class="post-comments-count hc-comment-count" data-xid="2017/10/25/iOS——CocoaPods私有化组件/" itemprop="commentsCount"></span>
+                </a>
+              
+            
+          
+
+          
+          
+             <span id="/2017/10/25/iOS——CocoaPods私有化组件/" class="leancloud_visitors" data-flag-title="iOS——CocoaPods私有化组件">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数：</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon"
+            >
+            <i class="fa fa-eye"></i>
+             阅读次数： 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+            <div class="post-symbolscount">
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">本文字数：</span>
+                
+                <span title="本文字数">7.7k</span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">7 分钟</span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>相信你能看到这里，就一定用过cocoapods，cocoapods是什么呢？怎么用？算了吧，都是本文的范围，这里只介绍怎么将自己的项目组件进行私有化，其实严格来说不算什么私有化，只是，想自己写好的框架放到github或者其他平台上让他支持cocoapods管理。这类文章网上已经随处可见，但是由于打算开始写自己的框架，就记录了一下…..</p>
+<a id="more"></a>
+<p>首推荐</p>
+<p><a href="http://blog.devtang.com/2014/05/25/use-cocoapod-to-manage-ios-lib-dependency/" target="_blank" rel="noopener">用CocoaPods做iOS程序的依赖管理</a></p>
+<p><a href="https://objccn.io/issue-6-4/" target="_blank" rel="noopener">深入理解 CocoaPods</a></p>
+<p><a href="https://github.com/Draveness/analyze/blob/master/contents/CocoaPods/CocoaPods%20都做了什么？.md" target="_blank" rel="noopener">CocoaPods 都做了什么?</a></p>
+<p>如果你还不知道sm是CocoaPods，或者想对CocoaPods了解更深入一点的，可以先看看上面的推荐</p>
+<h2 id="1-在github创建仓库完成，然后将仓库检出到本地"><a href="#1-在github创建仓库完成，然后将仓库检出到本地" class="headerlink" title="1. 在github创建仓库完成，然后将仓库检出到本地"></a>1. 在github创建仓库完成，然后将仓库检出到本地</h2><p>注意创建事项：</p>
+<ol>
+<li>LICENSE(许可证)文件不可缺少，否则检测spec文件时，会有警告（选择MIT就OK）</li>
+<li>不要使用中文，最好和库名字直接对应</li>
+<li>其实也可以在其他平台，不一定是github</li>
+</ol>
+<h2 id="2-将写好开源框架-库的Demo或者Example放到Git仓库下，"><a href="#2-将写好开源框架-库的Demo或者Example放到Git仓库下，" class="headerlink" title="2. 将写好开源框架/库的Demo或者Example放到Git仓库下，"></a>2. 将写好开源框架/库的Demo或者Example放到Git仓库下，</h2><p>还要将要开源的文件夹也放入到git仓库中（该文件夹在后面会被用到）</p>
+<p><img src="http://pd1l3bbt7.bkt.clouddn.com/newImages/cocoapods/cocoapods001.png"></p>
+<h2 id="3-项目发布到github后，我们在工程根目录中初始化一个Podspec文件："><a href="#3-项目发布到github后，我们在工程根目录中初始化一个Podspec文件：" class="headerlink" title="3. 项目发布到github后，我们在工程根目录中初始化一个Podspec文件："></a>3. 项目发布到github后，我们在工程根目录中初始化一个Podspec文件：</h2><p>创建自己项目的Podspec描述文件:</p>
+<blockquote>
+<p>pod spec create iCocos</p>
+</blockquote>
+<h2 id="4-编辑修改iCocos-podspec对应信息"><a href="#4-编辑修改iCocos-podspec对应信息" class="headerlink" title="4. 编辑修改iCocos.podspec对应信息"></a>4. 编辑修改iCocos.podspec对应信息</h2><p><img src="http://pd1l3bbt7.bkt.clouddn.com/newImages/cocoapods/cocoapods002.png"></p>
+<p>可以直接参照我的内容进行修改</p>
+<p>具体内容不介绍</p>
+<ul>
+<li>s.name：名称，pod search 搜索的关键词,注意这里一定要和.podspec的名称一样,否则报错</li>
+<li>s.version：版本号</li>
+<li>s.ios.deployment_target:支持的pod最低版本</li>
+<li>s.summary: 简介</li>
+<li>s.homepage:项目主页地址</li>
+<li>s.license:许可证</li>
+<li>s.author:作者</li>
+<li>s.social_media_url:社交网址,这里我写的微博默认是Twitter,如果你写Twitter的话,你的podspec发布成功后会@你</li>
+<li>s.source:项目的地址<ul>
+<li>s.source = { :git =&gt; “<a href="https://github.com/al1020119/iCocos.git&quot;" target="_blank" rel="noopener">https://github.com/al1020119/iCocos.git&quot;</a>, :commit =&gt; “68defea” }</li>
+<li>s.source = { :git =&gt; “<a href="https://github.com/al1020119/iCocos.git&quot;" target="_blank" rel="noopener">https://github.com/al1020119/iCocos.git&quot;</a>, :tag =&gt; 1.0.0 }</li>
+<li>s.source = { :git =&gt; “<a href="https://github.com/al1020119/iCocos.git&quot;" target="_blank" rel="noopener">https://github.com/al1020119/iCocos.git&quot;</a>, :tag =&gt; s.version }</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>commit =&gt; “68defea” 表示将这个Pod版本与Git仓库中某个commit绑定</p>
+</blockquote>
+<blockquote>
+<p>tag =&gt; 1.0.0 表示将这个Pod版本与Git仓库中某个版本的comit绑定</p>
+</blockquote>
+<blockquote>
+<p>tag =&gt; s.version 表示将这个Pod版本与Git仓库中相同版本的comit绑定</p>
+</blockquote>
+<ul>
+<li>s.source_files:需要包含的源文件</li>
+<li>s.resources: 资源文件</li>
+<li>s.requires_arc: 是否支持ARC</li>
+<li>s.dependency：依赖库，不能依赖未发布的库，如 s.dependency = ‘AFNetworking’</li>
+<li>s.dependency：依赖库，如有多个可以这样写。我这里是托管在github上,所以这里将地址copy过来就行了。</li>
+<li>source_files: 核心代码的文件地址。<ul>
+<li>这里是经常出错的地方！—如果使用的是这种方式来显示核心代码地址而不是下面的模块化的话，</li>
+<li>需要将代码文件必须以仓库名命名（也就意味着最多只有两个文件.h和.m文件了，可以有一个.h文件，把它作为头文件就行），这种方式检验podspec文件有点严格，否则就会报错。</li>
+</ul>
+</li>
+<li>source_files:写法及含义建议大家写第一种或者第二种<ul>
+<li><code>&quot;YJSettingTableView/*</code></li>
+<li><code>&quot;&quot;YJSettingTableView/YJSettingTableView/*.{h,m}&quot;</code></li>
+<li><code>&quot;YJSettingTableView/**/*.h&quot;</code></li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p><code>“*”</code> 表示匹配所有文件</p>
+</blockquote>
+<blockquote>
+<p><code>“*.{h,m}”</code> 表示匹配所有以<code>.h</code>和<code>.m</code>结尾的文件</p>
+</blockquote>
+<blockquote>
+<p><code>“**”</code> 表示匹配所有子目录</p>
+</blockquote>
+<h2 id="5-设置tag号，提交修改（注：只要spec文件被修改，就必须重新执行如下命令）"><a href="#5-设置tag号，提交修改（注：只要spec文件被修改，就必须重新执行如下命令）" class="headerlink" title="5. 设置tag号，提交修改（注：只要spec文件被修改，就必须重新执行如下命令）"></a>5. 设置tag号，提交修改（注：只要spec文件被修改，就必须重新执行如下命令）</h2><p>因为cocoapods是依赖tag版本的,所以必须打tag,<br>以后再次更新只需要把你的项目打一个tag<br>然后修改.podspec文件中的版本接着提交到cocoapods官方就可以了,提交命令请看下面</p>
+<ul>
+<li>git commit -m “Release 1.0.0”  (先提交当前修改)</li>
+<li>git tag “v1.0.0”            (添加tag) //为git打tag, 第一次需要在前面加一个v</li>
+<li>git push –tags         (推送tag到远程)</li>
+<li>git push origin master  (推送到远程到代码仓库)</li>
+</ul>
+<p>或许可能有些没有加入的（执行 git add . 就可以）</p>
+<h2 id="6-提交之前先验证-podspec文件是否合法"><a href="#6-提交之前先验证-podspec文件是否合法" class="headerlink" title="6. 提交之前先验证.podspec文件是否合法"></a>6. 提交之前先验证.podspec文件是否合法</h2><ul>
+<li>pod spec lint iCocos.podspec –verbose</li>
+<li>pod spec lint iCocos.podspec –allow-warnings     (忽略警告)</li>
+</ul>
+<p>我这边在验证的时候出现了下面错误</p>
+<blockquote>
+<p>LiudeMacBook:iCocos a115$ pod spec lint iCocos.podspec –verbose</p>
+</blockquote>
+<pre><code>-&gt; iCocos (1.0.0)
+- ERROR | license: Sample license type.
+- ERROR | description: The description is empty.
+- ERROR | [iOS] unknown: Encountered an unknown error (The `iCocos` pod failed to validate due to 2 errors.
+[!] The validator for Swift projects uses Swift 3.0 by default, if you are using a different version of swift you can use a `.swift-version` file to set the version for your Pod. For example to use Swift 2.3, run:
+`echo &quot;2.3&quot; &gt; .swift-version`:
+- ERROR | license: Sample license type.
+- ERROR | description: The description is empty.
+
+) during validation.
+
+Analyzed 1 podspec.
+
+[!] The spec did not pass validation, due to 3 errors.
+[!] The validator for Swift projects uses Swift 3.0 by default, if you are using a different version of swift you can use a `.swift-version` file to set the version for your Pod. For example to use Swift 2.3, run:
+`echo &quot;2.3&quot; &gt; .swift-version`.
+</code></pre><p>根据上面提示了三个错误（due to 3 errors），其实是两个，1，3是一个</p>
+<h3 id="1-description-is-empty"><a href="#1-description-is-empty" class="headerlink" title="1. description is empty"></a>1. description is empty</h3><p>这里原始description是这样的</p>
+<pre><code>`s.description  = &lt;&lt;-DESC`
+`DESC`
+</code></pre><p>需要改成一段属于自己的描述，其他信息类型修改</p>
+<ol start="2">
+<li>关于swift-version</li>
+</ol>
+<p>这里直接执行<code>echo &quot;2.3&quot; &gt; .swift-version</code>就正常的</p>
+<p>但是据需验证又出现如下错误：</p>
+<blockquote>
+<p>LiudeMacBook:iCocos a115$ pod spec lint iCocos.podspec</p>
+</blockquote>
+<pre><code>-&gt; iCocos (1.0.0)
+- ERROR | [iOS] unknown: Encountered an unknown error ([!] /usr/bin/git clone https://github.com/al1020119/iCocos.git /var/folders/4z/d12mnyfx7c37vg91t8h0941h0000gp/T/d20171025-8857-1oau87 --template= --single-branch --depth 1 --branch 1.0.0
+
+Cloning into &apos;/var/folders/4z/d12mnyfx7c37vg91t8h0941h0000gp/T/d20171025-8857-1oau87&apos;...
+warning: Could not find remote branch 1.0.0 to clone.
+fatal: Remote branch 1.0.0 not found in upstream origin
+) during validation.
+
+Analyzed 1 podspec.
+
+[!] The spec did not pass validation, due to 1 error.
+</code></pre><p>这里其实不是错误，是没有更新处理，前面说了：</p>
+<blockquote>
+<p>（注：只要spec文件被修改，就必须重新执行如下命令）</p>
+</blockquote>
+<pre><code>git commit -m &quot;Release 1.0.0&quot;  (先提交当前修改)
+git tag 1.0.0            (添加tag)
+git push --tags         (推送tag到远程)
+git push origin master  (推送到远程到代码仓库)
+</code></pre><p>或许可能有些没有加入的（执行 git add . 就可以）</p>
+<h2 id="7-然后再次验证就会成功"><a href="#7-然后再次验证就会成功" class="headerlink" title="7. 然后再次验证就会成功"></a>7. 然后再次验证就会成功</h2><blockquote>
+<p>LiudeMacBook:iCocos a115$ pod spec lint iCocos.podspec  –verbose</p>
+</blockquote>
+<pre><code>-&gt; iCocos (1.0.0)
+
+Analyzed 1 podspec.
+
+iCocos.podspec passed validation.
+</code></pre><p>或许你还可能遇到下面的错误，不过不要慌，直接按照下面操作就可以</p>
+<pre><code>先删除tag
+// 删除本地tag
+git tag -d 1.0.0
+// 删除远程tag
+git push origin -d tag 1.0.0
+</code></pre><p>修改spec文件（必须修改相应的version和source）<br>重新执行–&gt;设置tag号，提交修改的步骤</p>
+<h2 id="8-trunk推送podspec文件"><a href="#8-trunk推送podspec文件" class="headerlink" title="8. trunk推送podspec文件"></a>8. trunk推送podspec文件</h2><p>podspec文件验证成功，通过trunk推送podspec文件</p>
+<pre><code>pod trunk push iCocos.podspec
+</code></pre><p>如果你是第一次，并且没有帐号你会看到下面一段</p>
+<blockquote>
+<p>LiudeMacBook:iCocos a115$ pod trunk push iCocos.podspec</p>
+</blockquote>
+<pre><code>[!] You need to register a session first.
+
+Usage:
+
+$ pod trunk push [PATH]
+
+Publish the podspec at `PATH` to make it available to all users of the ‘master’
+spec-repo. If `PATH` is not provided, defaults to the current directory.
+
+Before pushing the podspec to cocoapods.org, this will perform a local lint of
+the podspec, including a build of the library. However, it remains *your*
+responsibility to ensure that the published podspec will actually work for your
+users. Thus it is recommended that you *first* try to use the podspec to
+integrate the library into your demo and/or real application.
+
+If this is the first time you publish a spec for this pod, you will
+automatically be registered as the ‘owner’ of this pod. (Note that ‘owner’ in
+this case implies a person that is allowed to publish new versions and add other
+‘owners’, not necessarily the library author.)
+
+Options:
+
+--allow-warnings           Allows push even if there are lint warnings
+--use-libraries            Linter uses static libraries to install the spec
+--swift-version=VERSION    The SWIFT_VERSION that should be used to lint the spec.
+This takes precedence over a .swift-version file.
+--skip-import-validation   Lint skips validating that the pod can be imported
+--skip-tests               Lint skips building and running tests during validation
+--silent                   Show nothing
+--verbose                  Show more debugging information
+--no-ansi                  Show output without ANSI codes
+--help                     Show help banner of specified command
+</code></pre><p>根据上面的提示是告诉你：需要你用邮箱注册一个trunk</p>
+<h2 id="9-我们直接使用终端注册"><a href="#9-我们直接使用终端注册" class="headerlink" title="9. 我们直接使用终端注册"></a>9. 我们直接使用终端注册</h2><pre><code>pod trunk register al10201119@163.com &quot;iCocos&quot; --description=&quot;iCocos&quot;
+</code></pre><p>之后会有一封带有验证链接的邮件发送到你输入的邮箱，点击验证后就可以回来终端继续提交操作了。</p>
+<p><img src="http://pd1l3bbt7.bkt.clouddn.com/newImages/cocoapods/cocoapods003.png"></p>
+<p><img src="http://pd1l3bbt7.bkt.clouddn.com/newImages/cocoapods/cocoapods004.png"></p>
+<p>已经注册过的不需要注册,怎么看自己有没有注册</p>
+<pre><code>pod trunk me
+</code></pre><p><img src="http://pd1l3bbt7.bkt.clouddn.com/newImages/cocoapods/cocoapods005.png"></p>
+<h2 id="10-发布代码到cocoapods"><a href="#10-发布代码到cocoapods" class="headerlink" title="10. 发布代码到cocoapods"></a>10. 发布代码到cocoapods</h2><pre><code>pod trunk push iCocos.podspec --verbose
+pod trunk push iCocos.podspec --allow-warnings
+</code></pre><p>发布时会验证 Pod 的有效性，如果你在手动验证 Pod 时使用了 –use-libraries 或 –allow-warnings 等修饰符，那么发布的时候也应该使用相同的字段修饰，否则出现相同的报错。</p>
+<p>pod trunk push iCocos.podspec –verbose</p>
+<p>一段很长的描述，然后你会看到下面的成功提示</p>
+<p><img src="http://pd1l3bbt7.bkt.clouddn.com/newImages/cocoapods/cocoapods006.png"></p>
+<p><img src="http://pd1l3bbt7.bkt.clouddn.com/newImages/cocoapods/cocoapods007.png"></p>
+<h2 id="11-如果提交到cocoapods还有可能遇到下面错误："><a href="#11-如果提交到cocoapods还有可能遇到下面错误：" class="headerlink" title="11. 如果提交到cocoapods还有可能遇到下面错误："></a>11. 如果提交到cocoapods还有可能遇到下面错误：</h2><pre><code>Updating spec repo &apos;master&apos;
+warning: inexact rename detection was skipped due to too many files.
+warning: you may want yo set your diff.renameLimit variable to at least 3080 an retry the command
+...
+[!] There was an error pushing a new version to trunk: execution expired
+</code></pre><p>这里有解决方案：<a href="http://www.sw33tcode.com/?p=31" target="_blank" rel="noopener">http://www.sw33tcode.com/?p=31</a></p>
+<pre><code>git config merge.renameLimit 999999
+git config --unset merge.renameLimit
+</code></pre><h2 id="12-然后开始去搜索我的库了"><a href="#12-然后开始去搜索我的库了" class="headerlink" title="12. 然后开始去搜索我的库了"></a>12. 然后开始去搜索我的库了</h2><p>但是发现既然没有，各种排查，最后发现由于延时的问题，不过如果还是不出现的，网上找到了相应的方案：</p>
+<blockquote>
+<p>删除<code>~/Library/Caches/CocoaPods</code>目录下的<code>search_index.json</code>文件</p>
+</blockquote>
+<blockquote>
+<p><code>pod setup</code>成功后会生成<code>~/Library/Caches/CocoaPods/search_index.json</code>文件。</p>
+</blockquote>
+<blockquote>
+<p>终端输入<code>rm ~/Library/Caches/CocoaPods/search_index.json</code></p>
+</blockquote>
+<blockquote>
+<p>删除成功后再执行pod search</p>
+</blockquote>
+<p>稍等片刻，然后<code>pod search</code>就会出现你所要搜的类库了。</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wechatpay.jpg" alt="曹理鹏@iCocos 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>曹理鹏@iCocos</li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://icocos.github.io/2017/10/25/iOS——CocoaPods私有化组件/" title="iOS——CocoaPods私有化组件">https://icocos.github.io/2017/10/25/iOS——CocoaPods私有化组件/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明出处！</li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/iOS/" rel="tag"># iOS</a>
+          
+            <a href="/tags/CocoaPods私有化组件/" rel="tag"># CocoaPods私有化组件</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/09/19/iOS——Objective-C与Swift优缺点对比/" rel="next" title="iOS——Objective-C与Swift优缺点对比">
+                <i class="fa fa-chevron-left"></i> iOS——Objective-C与Swift优缺点对比
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/10/25/iOS——最新高级面试题整理（阿里篇）/" rel="prev" title="iOS——最新高级面试题整理（阿里篇）">
+                iOS——最新高级面试题整理（阿里篇） <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="SOHUCS"></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="http://pd1l3bbt7.bkt.clouddn.com/icocos_user_icon.JPG"
+                alt="曹理鹏@iCocos" />
+            
+              <p class="site-author-name" itemprop="name">曹理鹏@iCocos</p>
+              <p class="site-description motion-element" itemprop="description">纯码迷、爱学习、爱交友、喜欢接触新鲜事物、迎接新的挑战，更爱游离于错综复杂的编码与逻辑中！</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives">
+                
+                    <span class="site-state-item-count">76</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">16</span>
+                    <span class="site-state-item-name">分类</span>
+                  
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">81</span>
+                    <span class="site-state-item-name">标签</span>
+                  
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/al1020119" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:al1020119@163.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://stackoverflow.com/users/10186720" target="_blank" title="StackOverflow"><i class="fa fa-fw fa-stack-overflow"></i>StackOverflow</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.icocos.cn/" title="梦工厂" target="_blank">梦工厂</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://al1020119.github.io/" title="iOS梦工厂" target="_blank">iOS梦工厂</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-在github创建仓库完成，然后将仓库检出到本地"><span class="nav-number">1.</span> <span class="nav-text">1. 在github创建仓库完成，然后将仓库检出到本地</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-将写好开源框架-库的Demo或者Example放到Git仓库下，"><span class="nav-number">2.</span> <span class="nav-text">2. 将写好开源框架/库的Demo或者Example放到Git仓库下，</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-项目发布到github后，我们在工程根目录中初始化一个Podspec文件："><span class="nav-number">3.</span> <span class="nav-text">3. 项目发布到github后，我们在工程根目录中初始化一个Podspec文件：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-编辑修改iCocos-podspec对应信息"><span class="nav-number">4.</span> <span class="nav-text">4. 编辑修改iCocos.podspec对应信息</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-设置tag号，提交修改（注：只要spec文件被修改，就必须重新执行如下命令）"><span class="nav-number">5.</span> <span class="nav-text">5. 设置tag号，提交修改（注：只要spec文件被修改，就必须重新执行如下命令）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-提交之前先验证-podspec文件是否合法"><span class="nav-number">6.</span> <span class="nav-text">6. 提交之前先验证.podspec文件是否合法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-description-is-empty"><span class="nav-number">6.1.</span> <span class="nav-text">1. description is empty</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-然后再次验证就会成功"><span class="nav-number">7.</span> <span class="nav-text">7. 然后再次验证就会成功</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#8-trunk推送podspec文件"><span class="nav-number">8.</span> <span class="nav-text">8. trunk推送podspec文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#9-我们直接使用终端注册"><span class="nav-number">9.</span> <span class="nav-text">9. 我们直接使用终端注册</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#10-发布代码到cocoapods"><span class="nav-number">10.</span> <span class="nav-text">10. 发布代码到cocoapods</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#11-如果提交到cocoapods还有可能遇到下面错误："><span class="nav-number">11.</span> <span class="nav-text">11. 如果提交到cocoapods还有可能遇到下面错误：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#12-然后开始去搜索我的库了"><span class="nav-number">12.</span> <span class="nav-text">12. 然后开始去搜索我的库了</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">曹理鹏@iCocos</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">站点总字数：</span>
+    
+    <span title="站点总字数">348k</span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    
+    <span title="站点阅读时长">5:16</span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv" title="总访客量">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="site-pv" title="总访问量">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/reading_progress/reading_progress.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.3.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.3.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.3.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.3.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+  
+    <script type="text/javascript">
+    (function(){
+      var appid = 'cytKHBEtW';
+      var conf = '43989b8e63b25c4e9f1fde821c996a39';
+      var width = window.innerWidth || document.documentElement.clientWidth;
+      if (width < 960) {
+      window.document.write('<script id="changyan_mobile_js" charset="utf-8" type="text/javascript" src="https://changyan.sohu.com/upload/mobile/wap-js/changyan_mobile.js?client_id=' + appid + '&conf=' + conf + '"><\/script>'); } else { var loadJs=function(d,a){var c=document.getElementsByTagName("head")[0]||document.head||document.documentElement;var b=document.createElement("script");b.setAttribute("type","text/javascript");b.setAttribute("charset","UTF-8");b.setAttribute("src",d);if(typeof a==="function"){if(window.attachEvent){b.onreadystatechange=function(){var e=b.readyState;if(e==="loaded"||e==="complete"){b.onreadystatechange=null;a()}}}else{b.onload=a}}c.appendChild(b)};loadJs("https://changyan.sohu.com/upload/changyan.js",function(){
+        window.changyan.api.config({appid:appid,conf:conf})});
+      }
+    })();
+    </script>
+    <script type="text/javascript" src="https://assets.changyan.sohu.com/upload/plugins/plugins.count.js"></script>
+  
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=6.3.0"></script>
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("Tc7k1mbaieCUSgmM8LPk1IBO-gzGzoHsz", "sAb7L2vwENJTteRrvFKQacUU");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            
+              var $element = $(document.getElementById(url));
+              $element.find('.leancloud-visitors-count').text(counter.get('time'));
+            
+            counter.save(null, {
+              success: function(counter) {
+                
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            
+              var $element = $(document.getElementById(url));
+              $element.find('.leancloud-visitors-count').text('Counter not initialized! See more at console err msg.');
+              console.error('ATTENTION! LeanCloud counter has security bug, see here how to solve it: https://github.com/theme-next/hexo-leancloud-counter-security. \n But you also can use LeanCloud without security, by set \'security\' option to \'false\'.');
+            
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #333;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #eee;
+      background-image: linear-gradient(#fcfcfc, #eee);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('复制').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+          if(result)$(this).text('复制成功')
+          else $(this).text('复制失败')
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('复制')
+        }, 300)
+      }).append(e)
+    })
+  </script>
+
+
+  
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("Tc7k1mbaieCUSgmM8LPk1IBO-gzGzoHsz", "sAb7L2vwENJTteRrvFKQacUU");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+  
+</body>
+</html>

@@ -1,0 +1,2081 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.3.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.3.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.3.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="由于公司项目的需要，以及同事和测试人员的反馈，我们的打包服务器挂了，貌似之前经常挂（因为我桌旁的就是装有打包服务器的垃圾桶，在领用Mac之前，我都是用那个开发的）。其实之前我也一直想找个机会搞一下Xcode Server，记得还专门写过一篇总结，但是由于工作的原因，也由于帐号的原因就没去搞了，这一次刚好有这个机会，于是我专门放下手上所有的活，打算把这个东西弄好来………">
+<meta name="keywords" content="iOS,Xcode Server完整教程">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Xcode Server完整教程">
+<meta property="og:url" content="https://icocos.github.io/2017/11/11/Xcode-Server完整教程/index.html">
+<meta property="og:site_name" content="iCocos">
+<meta property="og:description" content="由于公司项目的需要，以及同事和测试人员的反馈，我们的打包服务器挂了，貌似之前经常挂（因为我桌旁的就是装有打包服务器的垃圾桶，在领用Mac之前，我都是用那个开发的）。其实之前我也一直想找个机会搞一下Xcode Server，记得还专门写过一篇总结，但是由于工作的原因，也由于帐号的原因就没去搞了，这一次刚好有这个机会，于是我专门放下手上所有的活，打算把这个东西弄好来………">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/newImages/XcodeServer/000.png">
+<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/newImages/XcodeServer/001.png">
+<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/newImages/XcodeServer/002.png">
+<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/newImages/XcodeServer/003.png">
+<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/newImages/XcodeServer/004.png">
+<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/newImages/XcodeServer/005.png">
+<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/newImages/XcodeServer/006.png">
+<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/newImages/XcodeServer/007.png">
+<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/newImages/XcodeServer/008.png">
+<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/newImages/XcodeServer/009.png">
+<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/newImages/XcodeServer/10.png">
+<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/newImages/XcodeServer/11.png">
+<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/newImages/XcodeServer/12.png">
+<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/newImages/XcodeServer/13.png">
+<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/newImages/XcodeServer/14.png">
+<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/newImages/XcodeServer/16.png">
+<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/newImages/XcodeServer/61.png">
+<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/newImages/XcodeServer/62.png">
+<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/newImages/XcodeServer/63.png">
+<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/newImages/XcodeServer/64.png">
+<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/newImages/XcodeServer/65.png">
+<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/newImages/XcodeServer/67.png">
+<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/newImages/XcodeServer/30.png">
+<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/newImages/XcodeServer/31.png">
+<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/newImages/XcodeServer/32.png">
+<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/newImages/XcodeServer/33.png">
+<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/newImages/XcodeServer/40.png">
+<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/newImages/XcodeServer/41.png">
+<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/newImages/XcodeServer/43.png">
+<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/newImages/XcodeServer/42.png">
+<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/newImages/XcodeServer/45.png">
+<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/newImages/XcodeServer/46.png">
+<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/newImages/XcodeServer/47.png">
+<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/newImages/XcodeServer/48.png">
+<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/newImages/XcodeServer/91.png">
+<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/newImages/XcodeServer/92.png">
+<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/newImages/XcodeServer/93.png">
+<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/newImages/XcodeServer/94.png">
+<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/newImages/XcodeServer/87.png">
+<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/newImages/XcodeServer/88.png">
+<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/newImages/XcodeServer/89.png">
+<meta property="og:updated_time" content="2018-08-06T18:33:42.246Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Xcode Server完整教程">
+<meta name="twitter:description" content="由于公司项目的需要，以及同事和测试人员的反馈，我们的打包服务器挂了，貌似之前经常挂（因为我桌旁的就是装有打包服务器的垃圾桶，在领用Mac之前，我都是用那个开发的）。其实之前我也一直想找个机会搞一下Xcode Server，记得还专门写过一篇总结，但是由于工作的原因，也由于帐号的原因就没去搞了，这一次刚好有这个机会，于是我专门放下手上所有的活，打算把这个东西弄好来………">
+<meta name="twitter:image" content="http://pd1l3bbt7.bkt.clouddn.com/newImages/XcodeServer/000.png">
+
+
+
+  <link rel="alternate" href="/atom.xml" title="iCocos" type="application/atom+xml" />
+
+
+
+
+  <link rel="canonical" href="https://icocos.github.io/2017/11/11/Xcode-Server完整教程/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>Xcode Server完整教程 | iCocos</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">iCocos</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">www.icocos.cn</p>
+      
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-首页">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-归档">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-分类">
+    <a href="/categories/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-标签">
+    <a href="/tags/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-关于">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="st-search-show-outputs">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup search-popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+    <div class="reading-progress-bar"></div>
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://icocos.github.io/2017/11/11/Xcode-Server完整教程/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="曹理鹏@iCocos">
+      <meta itemprop="description" content="纯码迷、爱学习、爱交友、喜欢接触新鲜事物、迎接新的挑战，更爱游离于错综复杂的编码与逻辑中！">
+      <meta itemprop="image" content="http://pd1l3bbt7.bkt.clouddn.com/icocos_user_icon.JPG">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="iCocos">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Xcode Server完整教程
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2017-11-11 23:28:25" itemprop="dateCreated datePublished" datetime="2017-11-11T23:28:25+08:00">2017-11-11</time>
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/iOS/" itemprop="url" rel="index"><span itemprop="name">iOS</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+              <span class="post-meta-divider">|</span>
+              <span class="post-meta-item-icon">
+                <i class="fa fa-comment-o"></i>
+              </span>
+              
+                <a href="/2017/11/11/Xcode-Server完整教程/#SOHUCS" itemprop="discussionUrl">
+                  <span class="post-meta-item-text">评论数：</span> <span id="changyan_count_unit" class="post-comments-count hc-comment-count" data-xid="2017/11/11/Xcode-Server完整教程/" itemprop="commentsCount"></span>
+                </a>
+              
+            
+          
+
+          
+          
+             <span id="/2017/11/11/Xcode-Server完整教程/" class="leancloud_visitors" data-flag-title="Xcode Server完整教程">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数：</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon"
+            >
+            <i class="fa fa-eye"></i>
+             阅读次数： 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+            <div class="post-symbolscount">
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">本文字数：</span>
+                
+                <span title="本文字数">5.1k</span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">5 分钟</span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>由于公司项目的需要，以及同事和测试人员的反馈，我们的打包服务器挂了，貌似之前经常挂（因为我桌旁的就是装有打包服务器的垃圾桶，在领用Mac之前，我都是用那个开发的）。其实之前我也一直想找个机会搞一下Xcode Server，记得还专门写过一篇总结，但是由于工作的原因，也由于帐号的原因就没去搞了，这一次刚好有这个机会，于是我专门放下手上所有的活，打算把这个东西弄好来………</p>
+<a id="more"></a>
+<blockquote>
+<p>如果你对CI和CD已经足够了解，仅仅想知道怎么搞好Xcode Server，那么你可以直接从<code>准备</code>开始…</p>
+</blockquote>
+<h3 id="背景："><a href="#背景：" class="headerlink" title="背景："></a>背景：</h3><p>之前项目使用的是Jenkins，但是由于Jenkins的各种问题，配置，后面被换到了Xcode Server（当然除了他们我还可以选择Fantlane）。自从老大走了以后Xcode Server经常挂，导致测试人员不发打包测试，从而影响整体进度。而且这一次好像是彻底挂了，根本都进不去了…..</p>
+<h3 id="常识："><a href="#常识：" class="headerlink" title="常识："></a>常识：</h3><h4 id="这里简单介绍一下Xcode-Server和常用的持续交付与继承工具（CI-amp-CD）。"><a href="#这里简单介绍一下Xcode-Server和常用的持续交付与继承工具（CI-amp-CD）。" class="headerlink" title="这里简单介绍一下Xcode Server和常用的持续交付与继承工具（CI&amp;CD）。"></a>这里简单介绍一下Xcode Server和常用的持续交付与继承工具（CI&amp;CD）。</h4><ul>
+<li>xcodebuild - 由Apple开发，主要用于Xcode的构建和测试，有时可能难以想起，但可配置程度很高。</li>
+<li>fastlane - 实际上并不是一个工具，而是一组可用于构建、测试、上传至iTunes Connect、供应配置文件管理、屏幕截图创建、dsym上传/下载至主要崩溃报告平台的一系列工具。</li>
+<li>xctool和其他 - “其他”是指诸如nomad tools等工具，这些工具或者被弃用，或者逐渐缺少支持，或者即将被废弃。尽管Facebook在使用某种工具，但并不意味着这个工具依然可以得到妥善的维护。</li>
+</ul>
+<h4 id="服务器方面主要的选择包括："><a href="#服务器方面主要的选择包括：" class="headerlink" title="服务器方面主要的选择包括："></a>服务器方面主要的选择包括：</h4><ul>
+<li>TravisCI/CircleCI - 托管式服务器，可免费用于开源项目，可随处访问，极为强大。相比Jenkins可配置的选项较少，仅支持与Github集成。用于私有代码库的价格高昂。</li>
+<li>Xcode Server - 能与Xcode高度集成，实际上也是唯一可用于Xcode的服务器，由Apple开发，最有可能只需要少量配置即可投入使用。</li>
+<li>Jenkins - CI服务器领域曾经的王者，有大量插件可用，可与各种其他产品集成，需要一定的配置和维护，但是非常强大。</li>
+</ul>
+<h3 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h3><p>一般项目到了一定程度，或者公司和成员到了一定规模都会考虑自动化，当然也包括那些喜欢导致或者懒惰想一键打包发布的程序员。因此结合公司，项目或者个人的情况我们可以将整个过程进行拆分。</p>
+<ul>
+<li>构建并签署我们的所有不同特性的应用；</li>
+<li>将我们的应用商店首选项上传至iTunes Connect；</li>
+<li>将IPA、dSYM，以及变更日志上传至HockeyApp；</li>
+<li>针对发布和开发分支持续不断地运行单元测试和UI测试；</li>
+<li>构建每次合并请求（MR）并汇报测试结果；</li>
+<li>进行持续不断地构建和签署，以确保没有引入新的问题。</li>
+</ul>
+<blockquote>
+<p>由于时间的原因，也由于目前需求的原因，我们目前只需要进行打包发布相关操作，至于，分析，测试…</p>
+</blockquote>
+<p>看完上面之后，相信你知道我接下来要说的是什么，</p>
+<h2 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h2><h3 id="OS-X工具下载"><a href="#OS-X工具下载" class="headerlink" title="OS X工具下载"></a>OS X工具下载</h3><ul>
+<li>下载 OS X Server（付费开发者免费使用）</li>
+<li>下载 Xcode</li>
+</ul>
+<p>这里就不多废话了，直接到苹果商店搜索就可以</p>
+<h3 id="帐号与代码仓库地址"><a href="#帐号与代码仓库地址" class="headerlink" title="帐号与代码仓库地址"></a>帐号与代码仓库地址</h3><ul>
+<li>开发者帐号（相关证书与描述文件）</li>
+<li>git源代码仓库地址</li>
+</ul>
+<p>装备完了上面所需要的东西之后我们就可以开始配置和使用OS X Server了</p>
+<h2 id="配置Xcode"><a href="#配置Xcode" class="headerlink" title="配置Xcode"></a>配置Xcode</h2><p>打开OS X Server，根据提示点击一步一步操作即可</p>
+<ul>
+<li>1 选择服务器主机：一般选自身，也可以指定IP</li>
+<li>2 选择Xcode服务，开启服务（右上角）</li>
+</ul>
+<h4 id="老版配置页面"><a href="#老版配置页面" class="headerlink" title="老版配置页面"></a>老版配置页面</h4><p><img src="http://pd1l3bbt7.bkt.clouddn.com/newImages/XcodeServer/000.png"></p>
+<p>这里需要注意，之前的配置方案是直接有</p>
+<ul>
+<li>权限和版本号：自己考虑，我这里默认设置不改了；</li>
+<li>开发团队：使用自己的apple ID添加；</li>
+<li>开发设备：需要用设备连接服务器后才能搜索到，初次连接，可能还需要在Status选项里面点击【Add to Teams】（比如设备不是你上面apple ID 的就需要）</li>
+<li>查看Bot：会打开网页（Bot管理页面，默认127.0.01）,可以直接静态分析测试打包等，当然需要后面配置成功才能使用。</li>
+</ul>
+<h4 id="新版配置页面"><a href="#新版配置页面" class="headerlink" title="新版配置页面"></a>新版配置页面</h4><p><img src="http://pd1l3bbt7.bkt.clouddn.com/newImages/XcodeServer/001.png"></p>
+<p>最新版本不知道为什么没有了对应的信息，根据提示信息应该的Xcode兼容性问题（因为：点击选择Xcode，选择指定Xcode之后提示是说版本不兼容）</p>
+<p><img src="http://pd1l3bbt7.bkt.clouddn.com/newImages/XcodeServer/002.png"></p>
+<p>此时界面只有一个选择Xcode的按钮，点击进去就会直接进入到Server &amp; Bots</p>
+<p>你会看到下面的界面</p>
+<p><img src="http://pd1l3bbt7.bkt.clouddn.com/newImages/XcodeServer/003.png"></p>
+<blockquote>
+<p>这里也可以直接在Xcode Preferences中打开，</p>
+</blockquote>
+<p>解锁后点击OFF&amp;ON进行开启服务，然后会提示Select Integration User（选择集成用户）</p>
+<p><img src="http://pd1l3bbt7.bkt.clouddn.com/newImages/XcodeServer/004.png"></p>
+<p>这里我们一般都会新建一个用户，而不是直接使用服务器账户，然后填写对应的信息（帐号密码），这里要记住后面会有用</p>
+<p><img src="http://pd1l3bbt7.bkt.clouddn.com/newImages/XcodeServer/005.png"></p>
+<p>点击创建之后就会执行一系列操作，对Xcode进行配置</p>
+<p><img src="http://pd1l3bbt7.bkt.clouddn.com/newImages/XcodeServer/006.png"></p>
+<h5 id="具体执行操作有"><a href="#具体执行操作有" class="headerlink" title="具体执行操作有"></a>具体执行操作有</h5><ul>
+<li>Saveing version information</li>
+<li>Enableing developer model</li>
+<li>Configuring SSL certificates</li>
+<li>Starting Redis</li>
+<li>initializing database</li>
+<li>Starting API Server</li>
+<li>Starting Apache</li>
+<li>Starting control daemon</li>
+<li>Starting Builder</li>
+<li>Upgrading Xcode Server Data</li>
+<li>Saveing version information</li>
+</ul>
+<p>完成后你会看到，一个提示新用户登录的提示，为了更好的进行测试和验证，我们都会先登录用户</p>
+<p><img src="http://pd1l3bbt7.bkt.clouddn.com/newImages/XcodeServer/007.png"></p>
+<p>直接登录就可以，并且一步一步确认进入到子账户，子账户会提示：</p>
+<p><img src="http://pd1l3bbt7.bkt.clouddn.com/newImages/XcodeServer/008.png"></p>
+<p>这里先不用管，切回到服务器账户就可以，这个时候，你就可以看到刚刚创建的账户已经出现了，并且处于登录状态，我们可以点击直接切换到对应账户，或者选择和重新创建多个账户，控制超时时间。</p>
+<p><img src="http://pd1l3bbt7.bkt.clouddn.com/newImages/XcodeServer/009.png"></p>
+<h2 id="登录账户"><a href="#登录账户" class="headerlink" title="登录账户"></a>登录账户</h2><p>在Xcode Preferences中选择Account，点击右下角添加账户，分别登录Apple ID，GitHub，Xcode Server</p>
+<p><img src="http://pd1l3bbt7.bkt.clouddn.com/newImages/XcodeServer/10.png"></p>
+<h4 id="Apple-ID：对应开发者帐号，要和本地证书与描述文件对应"><a href="#Apple-ID：对应开发者帐号，要和本地证书与描述文件对应" class="headerlink" title="Apple ID：对应开发者帐号，要和本地证书与描述文件对应"></a>Apple ID：对应开发者帐号，要和本地证书与描述文件对应</h4><p><img src="http://pd1l3bbt7.bkt.clouddn.com/newImages/XcodeServer/11.png"></p>
+<h4 id="GitHub"><a href="#GitHub" class="headerlink" title="GitHub"></a>GitHub</h4><p><img src="http://pd1l3bbt7.bkt.clouddn.com/newImages/XcodeServer/12.png"></p>
+<blockquote>
+<p>注意:Source Control 需要打开才能使用！具体下面的各种自动自己考虑勾选；</p>
+</blockquote>
+<h4 id="Xcode-Server（如果使用Xcode-9-1最新版本，这一步已经不需要了，也就是说Xcode-9-1已经自带了Bots功能）"><a href="#Xcode-Server（如果使用Xcode-9-1最新版本，这一步已经不需要了，也就是说Xcode-9-1已经自带了Bots功能）" class="headerlink" title="Xcode Server（如果使用Xcode 9.1最新版本，这一步已经不需要了，也就是说Xcode 9.1已经自带了Bots功能）"></a>Xcode Server（如果使用Xcode 9.1最新版本，这一步已经不需要了，也就是说Xcode 9.1已经自带了Bots功能）</h4><p><img src="http://pd1l3bbt7.bkt.clouddn.com/newImages/XcodeServer/13.png"><br><img src="http://pd1l3bbt7.bkt.clouddn.com/newImages/XcodeServer/14.png"></p>
+<blockquote>
+<p>注意：Accounts 添加 Servers，一般默认自己主机，也可以选择指定IP地址，按服务器配置时对应选择；需要填写用户名，密码，自己搞定；</p>
+</blockquote>
+<p>完成帐号登录以后，可以适当下载更新一下证书文件</p>
+<h2 id="配置Xcode-Server（如果使用Xcode-9-1最新版本，这一步已经不需要了，也就是说Xcode-9-1已经自带了Bots功能）"><a href="#配置Xcode-Server（如果使用Xcode-9-1最新版本，这一步已经不需要了，也就是说Xcode-9-1已经自带了Bots功能）" class="headerlink" title="配置Xcode Server（如果使用Xcode 9.1最新版本，这一步已经不需要了，也就是说Xcode 9.1已经自带了Bots功能）"></a>配置Xcode Server（如果使用Xcode 9.1最新版本，这一步已经不需要了，也就是说Xcode 9.1已经自带了Bots功能）</h2><p>再次打开Xcode Server，进入Xcode服务页面，点击打开Xcode，会直接打开Xcode Preferences中的Server &amp; Bots并开启对应账户，这里和前面操作一样，如果没有就根据提示直接确定或者输入对应的账号信息就可以（如果没有登录帐号的话）</p>
+<p><img src="http://pd1l3bbt7.bkt.clouddn.com/newImages/XcodeServer/16.png"></p>
+<h2 id="创建Bots"><a href="#创建Bots" class="headerlink" title="创建Bots"></a>创建Bots</h2><blockquote>
+<p>注意：自己的项目必须是个git文件夹，比如github上clone下来的项目，或者是本地服务器git来的，总之需要git文件夹；（官方文档使用Xcode的Source Control 方式搞定，具体可以看官方指南。我直接用了第三方软件SourceTree管理的）</p>
+</blockquote>
+<blockquote>
+<p>这里由于我们是直接使用GitLab的，所以我直接从GitLab克隆了一分项目源码到本地文件夹。</p>
+</blockquote>
+<p>打开Xcode，保证项目编译正常的情况下创建Bots（这里可以直接点击Products-&gt;Create Bots）</p>
+<p><img src="http://pd1l3bbt7.bkt.clouddn.com/newImages/XcodeServer/61.png"></p>
+<p>1 Bot命名与服务器选择，基本默认不改；<br>2 选择项目内容，后面的master，可选其他分支，比如develop；<br>3 Bot 操作配置<br>Scheme：默认项目本身<br>Actions：1分析；2单元测试（测试项目没开单元测试所有没的选）；3打包；<br>Cleaning：可以选择，因为是自己的电脑做服务器的，所以选择了一周清理一次；<br>Configuation：项目配置；<br>4 环境变量？没用过，sorry；<br>5 添加脚本，比如完成后发送个邮件通知；<br>6 create！注意 需要一次验证 git 的用户名和密码！不是之前设置的用户名与密码。<br>7 成功；各种信息以及完成的打包等；通过IP地址也可以实时整合并下载；</p>
+<p><img src="http://pd1l3bbt7.bkt.clouddn.com/newImages/XcodeServer/62.png"></p>
+<p><img src="http://pd1l3bbt7.bkt.clouddn.com/newImages/XcodeServer/63.png"></p>
+<p><img src="http://pd1l3bbt7.bkt.clouddn.com/newImages/XcodeServer/64.png"></p>
+<p><img src="http://pd1l3bbt7.bkt.clouddn.com/newImages/XcodeServer/65.png"></p>
+<p><img src="http://pd1l3bbt7.bkt.clouddn.com/newImages/XcodeServer/67.png"></p>
+<p>当你看到一个类型这样的界面，说明已经配置并且创建Bots完成，具体是否正确，需要进行打包验证或者根据日志进行查找具体问题</p>
+<blockquote>
+<p>注意：</p>
+</blockquote>
+<blockquote>
+<blockquote>
+<p>如果在使用Xcode Server对应的分析，测试功能，还需要额外进行一些配置，由于时间的问题，这里我们暂时只使用打包功能。</p>
+</blockquote>
+</blockquote>
+<blockquote>
+<blockquote>
+<p>打包配置需要选择InHouse</p>
+</blockquote>
+</blockquote>
+<p><img src="http://pd1l3bbt7.bkt.clouddn.com/newImages/XcodeServer/30.png"></p>
+<p><img src="http://pd1l3bbt7.bkt.clouddn.com/newImages/XcodeServer/31.png"></p>
+<h2 id="打包验证"><a href="#打包验证" class="headerlink" title="打包验证"></a>打包验证</h2><p>输入网址或者点击Xcode Perferences中的Account，点击Xcode Server对应的地址链接，进入网址（这里是icocos.local对应ip是10.0.6.7），这里可以在当前服务器进行操作，也可以在配置Xcode的时候创建的那个帐号进行操作，同意可以在内网的其他端系统或者浏览器进行操作</p>
+<p><img src="http://pd1l3bbt7.bkt.clouddn.com/newImages/XcodeServer/32.png"></p>
+<p>然后就会有一打包的进度……</p>
+<p><img src="http://pd1l3bbt7.bkt.clouddn.com/newImages/XcodeServer/33.png"></p>
+<h2 id="错误总结"><a href="#错误总结" class="headerlink" title="错误总结"></a>错误总结</h2><h4 id="错误问题一："><a href="#错误问题一：" class="headerlink" title="错误问题一："></a>错误问题一：</h4><p><img src="http://pd1l3bbt7.bkt.clouddn.com/newImages/XcodeServer/40.png"></p>
+<ul>
+<li>问题原因：</li>
+<li>因为没有登录对应的Git帐号或者没有打包对应项目的workspace</li>
+</ul>
+<h4 id="错误问题二："><a href="#错误问题二：" class="headerlink" title="错误问题二："></a>错误问题二：</h4><p><img src="http://pd1l3bbt7.bkt.clouddn.com/newImages/XcodeServer/41.png"></p>
+<ul>
+<li>问题原因：</li>
+<li>同样是因为没有登录对应的Git帐号</li>
+</ul>
+<h4 id="错误问题三："><a href="#错误问题三：" class="headerlink" title="错误问题三："></a>错误问题三：</h4><p><img src="http://pd1l3bbt7.bkt.clouddn.com/newImages/XcodeServer/43.png"></p>
+<ul>
+<li>问题原因：</li>
+<li>同样是因为没有登录对应的Git帐号</li>
+</ul>
+<h4 id="错误问题四："><a href="#错误问题四：" class="headerlink" title="错误问题四："></a>错误问题四：</h4><p><img src="http://pd1l3bbt7.bkt.clouddn.com/newImages/XcodeServer/42.png"></p>
+<ul>
+<li>问题原因：</li>
+<li>这里是由于创建Bots进行配置的时候，只需要打包功能就行了，那些什么分析,测试不需要,还有打包配置要选InHouse，不然打不了的</li>
+</ul>
+<h4 id="错误问题五："><a href="#错误问题五：" class="headerlink" title="错误问题五："></a>错误问题五：</h4><p><img src="http://pd1l3bbt7.bkt.clouddn.com/newImages/XcodeServer/45.png"></p>
+<ul>
+<li>问题原因：</li>
+<li>由于升级了Xcode 9.1，和对应的Xcode Server不兼容，这里需要输入xcsd密码（也不知道是sm鬼），根据2017@swift大会的朋友经验：</li>
+<li><code>备份/Library/Developer/XcodeServer，然后删除XcodeServer文件夹内容，重新前面的步骤就正常了。</code></li>
+</ul>
+<h4 id="错误问题六："><a href="#错误问题六：" class="headerlink" title="错误问题六："></a>错误问题六：</h4><p><img src="http://pd1l3bbt7.bkt.clouddn.com/newImages/XcodeServer/46.png"></p>
+<ul>
+<li>问题原因：</li>
+<li>这其实不是sm错误 ，只是一个安全警告，解决方案：点击显示详细信息-&gt;继续访问网址，就可以了</li>
+</ul>
+<h4 id="错误问题七："><a href="#错误问题七：" class="headerlink" title="错误问题七："></a>错误问题七：</h4><p><img src="http://pd1l3bbt7.bkt.clouddn.com/newImages/XcodeServer/47.png"></p>
+<ul>
+<li>问题原因：</li>
+<li>此问题困扰了很久，由于加入了GZIP库，但是….</li>
+</ul>
+<h4 id="错误问题八："><a href="#错误问题八：" class="headerlink" title="错误问题八："></a>错误问题八：</h4><p><img src="http://pd1l3bbt7.bkt.clouddn.com/newImages/XcodeServer/48.png"></p>
+<ul>
+<li>问题原因：</li>
+<li>此问题困扰了很久，由于加入了GZIP库，但是….</li>
+</ul>
+<h4 id="其他问题"><a href="#其他问题" class="headerlink" title="其他问题"></a>其他问题</h4><p><img src="http://pd1l3bbt7.bkt.clouddn.com/newImages/XcodeServer/91.png"><br><img src="http://pd1l3bbt7.bkt.clouddn.com/newImages/XcodeServer/92.png"><br><img src="http://pd1l3bbt7.bkt.clouddn.com/newImages/XcodeServer/93.png"><br><img src="http://pd1l3bbt7.bkt.clouddn.com/newImages/XcodeServer/94.png"></p>
+<p>这些问题目前没有找到好的解决方案，根据提示查找发现，证书，前面都没有问题……</p>
+<h2 id="总结一"><a href="#总结一" class="headerlink" title="总结一"></a>总结一</h2><p>最后根据最新经验总结，最新版本Xcode 9.1配置其实非常简单了</p>
+<ol>
+<li>配置Xcode Perferences中Server &amp; Bots</li>
+<li>创建并登录帐号</li>
+<li>Xcode Perferences登录git，app，server帐号</li>
+<li>Clone远程Git源代码，并打开保证正常编译</li>
+<li>Create Bots并配置</li>
+<li>重启相关服务，Server，Bots，Xcode，开始打包</li>
+</ol>
+<blockquote>
+<p>注意：</p>
+</blockquote>
+<blockquote>
+<blockquote>
+<p>关于代码提交，不管使用Xcode还是其他方式，是没有关系的，Xcode服务指向的是master或者其他分支的服务器资源；<br>关于打包，项目配置里就做好证书等配置文件的选择；<br>内测的ipa包，可以结合蒲公英等平台作分发也是很方便的；<br>考虑是不是可以搞个脚本上传。</p>
+</blockquote>
+</blockquote>
+<p><img src="http://pd1l3bbt7.bkt.clouddn.com/newImages/XcodeServer/87.png"></p>
+<p>打包过程中</p>
+<p><img src="http://pd1l3bbt7.bkt.clouddn.com/newImages/XcodeServer/88.png"></p>
+<blockquote>
+<p>通过 Xcode 中的 Integrate 查看进度我们不难发现，其实整个过程和我们手动打包的过程是一样的</p>
+</blockquote>
+<p>打包完成</p>
+<p><img src="http://pd1l3bbt7.bkt.clouddn.com/newImages/XcodeServer/89.png"></p>
+<p>但是这样可能享受不到OS X Server那样多而且好用的服务，不过如果只是需要简单的进行打包，配合测试进行验证，简单的发布引用还是可以满足的……..</p>
+<h3 id="推荐"><a href="#推荐" class="headerlink" title="推荐"></a>推荐</h3><p>想了解更过关于Xcode Server配置与使用的，可以参考与学习下面的文章，笔者也是从下面的文章中一点一点学习的，并结合了朋友指点进行实战。</p>
+<h5 id="3个官方文档："><a href="#3个官方文档：" class="headerlink" title="3个官方文档："></a>3个官方文档：</h5><ul>
+<li><p><a href="https://developer.apple.com/library/content/documentation/IDEs/Conceptual/xcode_guide-continuous_integration/PublishYourCodetoaSourceRepository.html#//apple_ref/doc/uid/TP40013292-CH8-SW1" target="_blank" rel="noopener">官方配置教程</a></p>
+</li>
+<li><p><a href="https://developer.apple.com/library/content/documentation/IDEs/Conceptual/xcode_guide-continuous_integration/index.html#//apple_ref/doc/uid/TP40013292-CH1-SW1" target="_blank" rel="noopener">苹果开发指南</a></p>
+</li>
+<li><p><a href="https://help.apple.com/serverapp/mac/4.0/#/apd9148CA5C-96E5-43AC-97CE-CB1B1002F4DE" target="_blank" rel="noopener">OS X Server 帮助</a></p>
+</li>
+</ul>
+<h5 id="简书教程："><a href="#简书教程：" class="headerlink" title="简书教程："></a>简书教程：</h5><ul>
+<li><a href="http://www.jianshu.com/p/80cf70edfe27" target="_blank" rel="noopener">OS X Server 之 Xcode服务</a></li>
+</ul>
+<h5 id="手动打包流程"><a href="#手动打包流程" class="headerlink" title="手动打包流程"></a>手动打包流程</h5><ul>
+<li><a href="http://www.jianshu.com/p/817686897ec1?open_source=weibo_search" target="_blank" rel="noopener">iOS App打包上架超详细流程</a></li>
+</ul>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wechatpay.jpg" alt="曹理鹏@iCocos 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>曹理鹏@iCocos</li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://icocos.github.io/2017/11/11/Xcode-Server完整教程/" title="Xcode Server完整教程">https://icocos.github.io/2017/11/11/Xcode-Server完整教程/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明出处！</li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/iOS/" rel="tag"># iOS</a>
+          
+            <a href="/tags/Xcode-Server完整教程/" rel="tag"># Xcode Server完整教程</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/11/08/iOS——-attribute-使用与总结/" rel="next" title="iOS——__attribute__使用与总结">
+                <i class="fa fa-chevron-left"></i> iOS——__attribute__使用与总结
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/11/16/iOS——App跳转到系统设置/" rel="prev" title="iOS——App跳转到系统设置">
+                iOS——App跳转到系统设置 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="SOHUCS"></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="http://pd1l3bbt7.bkt.clouddn.com/icocos_user_icon.JPG"
+                alt="曹理鹏@iCocos" />
+            
+              <p class="site-author-name" itemprop="name">曹理鹏@iCocos</p>
+              <p class="site-description motion-element" itemprop="description">纯码迷、爱学习、爱交友、喜欢接触新鲜事物、迎接新的挑战，更爱游离于错综复杂的编码与逻辑中！</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives">
+                
+                    <span class="site-state-item-count">76</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">16</span>
+                    <span class="site-state-item-name">分类</span>
+                  
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">81</span>
+                    <span class="site-state-item-name">标签</span>
+                  
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/al1020119" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:al1020119@163.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://stackoverflow.com/users/10186720" target="_blank" title="StackOverflow"><i class="fa fa-fw fa-stack-overflow"></i>StackOverflow</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.icocos.cn/" title="梦工厂" target="_blank">梦工厂</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://al1020119.github.io/" title="iOS梦工厂" target="_blank">iOS梦工厂</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#背景："><span class="nav-number">1.</span> <span class="nav-text">背景：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#常识："><span class="nav-number">2.</span> <span class="nav-text">常识：</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#这里简单介绍一下Xcode-Server和常用的持续交付与继承工具（CI-amp-CD）。"><span class="nav-number">2.1.</span> <span class="nav-text">这里简单介绍一下Xcode Server和常用的持续交付与继承工具（CI&amp;CD）。</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#服务器方面主要的选择包括："><span class="nav-number">2.2.</span> <span class="nav-text">服务器方面主要的选择包括：</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#需求"><span class="nav-number">3.</span> <span class="nav-text">需求</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#准备"><span class="nav-number"></span> <span class="nav-text">准备</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#OS-X工具下载"><span class="nav-number">1.</span> <span class="nav-text">OS X工具下载</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#帐号与代码仓库地址"><span class="nav-number">2.</span> <span class="nav-text">帐号与代码仓库地址</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#配置Xcode"><span class="nav-number"></span> <span class="nav-text">配置Xcode</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#老版配置页面"><span class="nav-number">0.1.</span> <span class="nav-text">老版配置页面</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#新版配置页面"><span class="nav-number">0.2.</span> <span class="nav-text">新版配置页面</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#具体执行操作有"><span class="nav-number">0.2.1.</span> <span class="nav-text">具体执行操作有</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#登录账户"><span class="nav-number"></span> <span class="nav-text">登录账户</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Apple-ID：对应开发者帐号，要和本地证书与描述文件对应"><span class="nav-number">0.1.</span> <span class="nav-text">Apple ID：对应开发者帐号，要和本地证书与描述文件对应</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#GitHub"><span class="nav-number">0.2.</span> <span class="nav-text">GitHub</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Xcode-Server（如果使用Xcode-9-1最新版本，这一步已经不需要了，也就是说Xcode-9-1已经自带了Bots功能）"><span class="nav-number">0.3.</span> <span class="nav-text">Xcode Server（如果使用Xcode 9.1最新版本，这一步已经不需要了，也就是说Xcode 9.1已经自带了Bots功能）</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#配置Xcode-Server（如果使用Xcode-9-1最新版本，这一步已经不需要了，也就是说Xcode-9-1已经自带了Bots功能）"><span class="nav-number"></span> <span class="nav-text">配置Xcode Server（如果使用Xcode 9.1最新版本，这一步已经不需要了，也就是说Xcode 9.1已经自带了Bots功能）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#创建Bots"><span class="nav-number"></span> <span class="nav-text">创建Bots</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#打包验证"><span class="nav-number"></span> <span class="nav-text">打包验证</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#错误总结"><span class="nav-number"></span> <span class="nav-text">错误总结</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#错误问题一："><span class="nav-number">0.1.</span> <span class="nav-text">错误问题一：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#错误问题二："><span class="nav-number">0.2.</span> <span class="nav-text">错误问题二：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#错误问题三："><span class="nav-number">0.3.</span> <span class="nav-text">错误问题三：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#错误问题四："><span class="nav-number">0.4.</span> <span class="nav-text">错误问题四：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#错误问题五："><span class="nav-number">0.5.</span> <span class="nav-text">错误问题五：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#错误问题六："><span class="nav-number">0.6.</span> <span class="nav-text">错误问题六：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#错误问题七："><span class="nav-number">0.7.</span> <span class="nav-text">错误问题七：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#错误问题八："><span class="nav-number">0.8.</span> <span class="nav-text">错误问题八：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#其他问题"><span class="nav-number">0.9.</span> <span class="nav-text">其他问题</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结一"><span class="nav-number"></span> <span class="nav-text">总结一</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#推荐"><span class="nav-number">1.</span> <span class="nav-text">推荐</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#3个官方文档："><span class="nav-number">1.0.1.</span> <span class="nav-text">3个官方文档：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#简书教程："><span class="nav-number">1.0.2.</span> <span class="nav-text">简书教程：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#手动打包流程"><span class="nav-number">1.0.3.</span> <span class="nav-text">手动打包流程</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">曹理鹏@iCocos</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">站点总字数：</span>
+    
+    <span title="站点总字数">348k</span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    
+    <span title="站点阅读时长">5:16</span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv" title="总访客量">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="site-pv" title="总访问量">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/reading_progress/reading_progress.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.3.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.3.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.3.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.3.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+  
+    <script type="text/javascript">
+    (function(){
+      var appid = 'cytKHBEtW';
+      var conf = '43989b8e63b25c4e9f1fde821c996a39';
+      var width = window.innerWidth || document.documentElement.clientWidth;
+      if (width < 960) {
+      window.document.write('<script id="changyan_mobile_js" charset="utf-8" type="text/javascript" src="https://changyan.sohu.com/upload/mobile/wap-js/changyan_mobile.js?client_id=' + appid + '&conf=' + conf + '"><\/script>'); } else { var loadJs=function(d,a){var c=document.getElementsByTagName("head")[0]||document.head||document.documentElement;var b=document.createElement("script");b.setAttribute("type","text/javascript");b.setAttribute("charset","UTF-8");b.setAttribute("src",d);if(typeof a==="function"){if(window.attachEvent){b.onreadystatechange=function(){var e=b.readyState;if(e==="loaded"||e==="complete"){b.onreadystatechange=null;a()}}}else{b.onload=a}}c.appendChild(b)};loadJs("https://changyan.sohu.com/upload/changyan.js",function(){
+        window.changyan.api.config({appid:appid,conf:conf})});
+      }
+    })();
+    </script>
+    <script type="text/javascript" src="https://assets.changyan.sohu.com/upload/plugins/plugins.count.js"></script>
+  
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=6.3.0"></script>
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("Tc7k1mbaieCUSgmM8LPk1IBO-gzGzoHsz", "sAb7L2vwENJTteRrvFKQacUU");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            
+              var $element = $(document.getElementById(url));
+              $element.find('.leancloud-visitors-count').text(counter.get('time'));
+            
+            counter.save(null, {
+              success: function(counter) {
+                
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            
+              var $element = $(document.getElementById(url));
+              $element.find('.leancloud-visitors-count').text('Counter not initialized! See more at console err msg.');
+              console.error('ATTENTION! LeanCloud counter has security bug, see here how to solve it: https://github.com/theme-next/hexo-leancloud-counter-security. \n But you also can use LeanCloud without security, by set \'security\' option to \'false\'.');
+            
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #333;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #eee;
+      background-image: linear-gradient(#fcfcfc, #eee);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('复制').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+          if(result)$(this).text('复制成功')
+          else $(this).text('复制失败')
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('复制')
+        }, 300)
+      }).append(e)
+    })
+  </script>
+
+
+  
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("Tc7k1mbaieCUSgmM8LPk1IBO-gzGzoHsz", "sAb7L2vwENJTteRrvFKQacUU");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+  
+</body>
+</html>

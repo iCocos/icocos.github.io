@@ -1,0 +1,1962 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.3.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.3.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.3.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="我们知道在OC里面有一个非常牛逼的特性，那就是动态性，也就是说很多东西都被推到了运行时，包括我们所理解的消息机制和转发机制。但是据我了解OC貌似是没有动态类型的，因为他是一门静态类型的语言，他对多就是支持一些和OC动态的交互，但是Swift在通过某些手段还是可以实现对消息的动态转发的……">
+<meta name="keywords" content="Swift,动态&amp;静态分析与实战">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Swift——动态&amp;静态分析与实战">
+<meta property="og:url" content="https://icocos.github.io/2017/07/04/Swift——动态-静态分析与实战/index.html">
+<meta property="og:site_name" content="iCocos">
+<meta property="og:description" content="我们知道在OC里面有一个非常牛逼的特性，那就是动态性，也就是说很多东西都被推到了运行时，包括我们所理解的消息机制和转发机制。但是据我了解OC貌似是没有动态类型的，因为他是一门静态类型的语言，他对多就是支持一些和OC动态的交互，但是Swift在通过某些手段还是可以实现对消息的动态转发的……">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-08-06T17:26:22.960Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Swift——动态&amp;静态分析与实战">
+<meta name="twitter:description" content="我们知道在OC里面有一个非常牛逼的特性，那就是动态性，也就是说很多东西都被推到了运行时，包括我们所理解的消息机制和转发机制。但是据我了解OC貌似是没有动态类型的，因为他是一门静态类型的语言，他对多就是支持一些和OC动态的交互，但是Swift在通过某些手段还是可以实现对消息的动态转发的……">
+
+
+
+  <link rel="alternate" href="/atom.xml" title="iCocos" type="application/atom+xml" />
+
+
+
+
+  <link rel="canonical" href="https://icocos.github.io/2017/07/04/Swift——动态-静态分析与实战/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>Swift——动态&静态分析与实战 | iCocos</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">iCocos</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">www.icocos.cn</p>
+      
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-首页">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-归档">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-分类">
+    <a href="/categories/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-标签">
+    <a href="/tags/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-关于">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="st-search-show-outputs">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup search-popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+    <div class="reading-progress-bar"></div>
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://icocos.github.io/2017/07/04/Swift——动态-静态分析与实战/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="曹理鹏@iCocos">
+      <meta itemprop="description" content="纯码迷、爱学习、爱交友、喜欢接触新鲜事物、迎接新的挑战，更爱游离于错综复杂的编码与逻辑中！">
+      <meta itemprop="image" content="http://pd1l3bbt7.bkt.clouddn.com/icocos_user_icon.JPG">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="iCocos">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Swift——动态&静态分析与实战
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2017-07-04 13:21:49" itemprop="dateCreated datePublished" datetime="2017-07-04T13:21:49+08:00">2017-07-04</time>
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Swift/" itemprop="url" rel="index"><span itemprop="name">Swift</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+              <span class="post-meta-divider">|</span>
+              <span class="post-meta-item-icon">
+                <i class="fa fa-comment-o"></i>
+              </span>
+              
+                <a href="/2017/07/04/Swift——动态-静态分析与实战/#SOHUCS" itemprop="discussionUrl">
+                  <span class="post-meta-item-text">评论数：</span> <span id="changyan_count_unit" class="post-comments-count hc-comment-count" data-xid="2017/07/04/Swift——动态-静态分析与实战/" itemprop="commentsCount"></span>
+                </a>
+              
+            
+          
+
+          
+          
+             <span id="/2017/07/04/Swift——动态-静态分析与实战/" class="leancloud_visitors" data-flag-title="Swift——动态&静态分析与实战">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数：</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon"
+            >
+            <i class="fa fa-eye"></i>
+             阅读次数： 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+            <div class="post-symbolscount">
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">本文字数：</span>
+                
+                <span title="本文字数">6k</span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">5 分钟</span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>我们知道在OC里面有一个非常牛逼的特性，那就是动态性，也就是说很多东西都被推到了运行时，包括我们所理解的消息机制和转发机制。但是据我了解OC貌似是没有动态类型的，因为他是一门静态类型的语言，他对多就是支持一些和OC动态的交互，但是Swift在通过某些手段还是可以实现对消息的动态转发的……</p>
+<a id="more"></a>
+<blockquote>
+<p>Swift是一门静态类型的语言，不支持类似OC中的消息机制和转发机制以及其他一些动态的特性，但是你可以通过某些手段实现这一点。</p>
+</blockquote>
+<blockquote>
+<p>新的Swift编译器更智能，能够识别对象和方法的调用关系以及层级关系，减少对象调用方法的查找时间；同时在内存管理上也有所提高。大部分的方法调用，尤其是重复的方法调用，并没有必要次次都从头开始进行查找，消息分发、转发。Swift一定程度上减少了这种重复的劳动。</p>
+</blockquote>
+<p>Swift是OO（面向对象）的语言，所以少不了方法和属性的重载等特性，程序只能在运行时来确定具体的方法或属性来间接调用或间接访问，这就叫做动态派发。从性能上考虑，对于动态派发的方法，会有常量时间的运行时开销。</p>
+<p>函数的派发方式：</p>
+<p>程序判断使用哪种途径去调用一个函数的机制.</p>
+<ul>
+<li>直接派发(Direct Dispatch)</li>
+<li>函数表派发(Table Dispatch)</li>
+<li>消息机制派发(Message Dispatch)</li>
+</ul>
+<h3 id="大多数语言都会支持一到两种"><a href="#大多数语言都会支持一到两种" class="headerlink" title="大多数语言都会支持一到两种,"></a>大多数语言都会支持一到两种,</h3><ul>
+<li>Java 默认使用函数表派发, 但你可以通过 final 修饰符修改成直接派发.</li>
+<li>C++ 默认使用直接派发, 但可以通过加上 virtual 修饰符来改成函数表派发.</li>
+<li>Objective-C 则总是使用消息机制派发, 但允许开发者使用 C 直接派发来获取性能的提高.</li>
+</ul>
+<h2 id="直接派发-Direct-Dispatch"><a href="#直接派发-Direct-Dispatch" class="headerlink" title="直接派发 (Direct Dispatch)"></a>直接派发 (Direct Dispatch)</h2><p>直接派发是最快的, 不止是因为需要调用的指令集会更少, 并且编译器还能够有很大的优化空间, 例如函数内联等, 但这不在这篇博客的讨论范围. 直接派发也有人称为静态调用.因为缺乏动态性所以没办法支持继承.</p>
+<h2 id="函数表派发-Table-Dispatch"><a href="#函数表派发-Table-Dispatch" class="headerlink" title="函数表派发 (Table Dispatch )"></a>函数表派发 (Table Dispatch )</h2><p>函数表派发是编译型语言实现动态行为最常见的实现方式. 函数表使用了一个数组来存储类声明的每一个函数的指针. 大部分语言把这个称为 “virtual table”(虚函数表), Swift 里称为 “witness table”. 每一个类都会维护一个函数表, 里面记录着类所有的函数, 如果父类函数被 override 的话, 表里面只会保存被 override 之后的函数. 一个子类新添加的函数, 都会被插入到这个数组的最后. 运行时会根据这一个表去决定实际要被调用的函数.</p>
+<blockquote>
+<p>这种派发方式比起直接派发还是慢一点. 从字节码角度来看, 多了两次读和一次跳转,另一个慢的原因在于编译器可能会由于函数内执行的任务导致无法优化</p>
+</blockquote>
+<blockquote>
+<p>这种基于数组的实现, 缺陷在于函数表无法拓展. 子类会在虚数函数表的最后插入新的函数, 没有位置可以让 extension 安全地插入函数.</p>
+</blockquote>
+<h2 id="消息机制派发-Message-Dispatch"><a href="#消息机制派发-Message-Dispatch" class="headerlink" title="消息机制派发 (Message Dispatch )"></a>消息机制派发 (Message Dispatch )</h2><p>消息机制是调用函数最动态的方式. 也是 Cocoa 的基石, 这样的机制催生了 KVO, UIAppearence 和 CoreData 等功能. 这种运作方式的关键在于开发者可以在运行时改变函数的行为. 不止可以通过 swizzling 来改变, 甚至可以用 isa-swizzling 修改对象的继承关系, 可以在面向对象的基础上实现自定义派发.</p>
+<h1 id="Swift中的派发方式"><a href="#Swift中的派发方式" class="headerlink" title="Swift中的派发方式"></a>Swift中的派发方式</h1><h5 id="开发中遇到比较多的坑"><a href="#开发中遇到比较多的坑" class="headerlink" title="开发中遇到比较多的坑"></a>开发中遇到比较多的坑</h5><blockquote>
+<p>Class中的mainMethod 会使用函数表派发,</p>
+</blockquote>
+<blockquote>
+<p>extension中的extensionMethod 则会使用直接派发.</p>
+</blockquote>
+<p>总结起来有这么几点:</p>
+<ol>
+<li>值类型总是会使用直接派发, 简单易懂</li>
+<li>而协议和类的 extension 都会使用直接派发</li>
+<li>NSObject 的 extension 会使用消息机制进行派发</li>
+<li>NSObject 声明作用域里的函数都会使用函数表进行派发.</li>
+<li>协议里声明的, 并且带有默认实现的函数会使用函数表进行派发</li>
+</ol>
+<p>当然上面说到的也不知道必然的，比较OC这么多年的历史，而且动态特性在某些方面还是有着实际的好处，所以苹果也考虑到了这一点，使用某些手段我们可以指定派发方式</p>
+<h2 id="指定派发方式-Specifying-Dispatch-Behavior"><a href="#指定派发方式-Specifying-Dispatch-Behavior" class="headerlink" title="指定派发方式 (Specifying Dispatch Behavior)"></a>指定派发方式 (Specifying Dispatch Behavior)</h2><h3 id="final"><a href="#final" class="headerlink" title="final"></a>final</h3><blockquote>
+<p>final 允许类里面的函数使用直接派发. 这个修饰符会让函数失去动态性.</p>
+</blockquote>
+<p>任何函数都可以使用这个修饰符, 就算是 extension 里本来就是直接派发的函数. 这也会让 Objective-C 的运行时获取不到这个函数, 不会生成相应的 selector.</p>
+<h3 id="dynamic"><a href="#dynamic" class="headerlink" title="dynamic"></a>dynamic</h3><blockquote>
+<p>dynamic 可以让类里面的函数使用消息机制派发.</p>
+</blockquote>
+<p>使用 dynamic, 必须导入 Foundation 框架, 里面包括了 NSObject 和 Objective-C 的运行时. dynamic 可以让声明在 extension 里面的函数能够被 override. dynamic 可以用在所有 NSObject 的子类和 Swift 的原声类.</p>
+<h3 id="objc-amp-nonobjc"><a href="#objc-amp-nonobjc" class="headerlink" title="@objc &amp; @nonobjc"></a>@objc &amp; @nonobjc</h3><blockquote>
+<p>@objc 和 @nonobjc 显式地声明了一个函数是否能被 Objective-C 的运行时捕获到.</p>
+</blockquote>
+<p>使用 @objc 的典型例子就是给 selector 一个命名空间 @objc(abc_methodName), 让这个函数可以被 Objective-C 的运行时调用. @nonobjc 会改变派发的方式, 可以用来禁止消息机制派发这个函数, 不让这个函数注册到 Objective-C 的运行时里.</p>
+<h3 id="final-objc"><a href="#final-objc" class="headerlink" title="final @objc"></a>final @objc</h3><blockquote>
+<p>可以在标记为 final 的同时, 也使用 @objc 来让函数可以使用消息机制派发.</p>
+</blockquote>
+<p>这么做的结果就是, 调用函数的时候会使用直接派发, 但也会在 Objective-C 的运行时里注册响应的 selector. 函数可以响应 perform(selector:) 以及别的 Objective-C 特性, 但在直接调用时又可以有直接派发的性能.</p>
+<h3 id="inline"><a href="#inline" class="headerlink" title="@inline"></a>@inline</h3><blockquote>
+<p>Swift 也支持 @inline, 告诉编译器可以使用直接派发.</p>
+</blockquote>
+<p>有趣的是, dynamic @inline(__always) func dynamicOrDirect() {} 也可以通过编译! 但这也只是告诉了编译器而已, 实际上这个函数还是会使用消息机制派发. 这样的写法看起来像是一个未定义的行为, 应该避免这么做.</p>
+<h5 id="在使用Swift重写之前项目中AppDelegate的时候遇到了一个这样的问题（本文也是由这个问题的产生牵引我学习Swift动态相关内容的）"><a href="#在使用Swift重写之前项目中AppDelegate的时候遇到了一个这样的问题（本文也是由这个问题的产生牵引我学习Swift动态相关内容的）" class="headerlink" title="在使用Swift重写之前项目中AppDelegate的时候遇到了一个这样的问题（本文也是由这个问题的产生牵引我学习Swift动态相关内容的）"></a>在使用Swift重写之前项目中AppDelegate的时候遇到了一个这样的问题（本文也是由这个问题的产生牵引我学习Swift动态相关内容的）</h5><blockquote>
+<p>Argument of ‘#selector’ refers to a method that is not exposed to Objective-C (Objective-C 无法获取 #selector 指定的函数). 你如果记得 Swift 会把这个函数优化为直接派发的话, 就能理解这件事情了. 这里修复的方式很简单: 加上@objc 或者 dynamic 就可以保证 Objective-C 的运行时可以获取到函数了. 这种类型的错误也会发生在UIAppearance 上, 依赖于 proxy 和 NSInvocation 的代码.</p>
+</blockquote>
+<h2 id="性能上的提升"><a href="#性能上的提升" class="headerlink" title="性能上的提升"></a>性能上的提升</h2><h5 id="那么在实际项目中我们应该如何使用Swift结合动态和静态方式提高项目的性能呢？"><a href="#那么在实际项目中我们应该如何使用Swift结合动态和静态方式提高项目的性能呢？" class="headerlink" title="那么在实际项目中我们应该如何使用Swift结合动态和静态方式提高项目的性能呢？"></a>那么在实际项目中我们应该如何使用Swift结合动态和静态方式提高项目的性能呢？</h5><p>在Swift中，动态调用是通过在一个方法表中找到方法然后执行间接的调用（类似于C++的虚函数表），对于这种先查找再调用的过程，其效率是要低于方法的直接调用，而且间接调用会阻止许多编译器优化，这将加重间接调用的开销。接下来将列举一些技巧来禁用动态派发的行为，以达到提升性能的目的。</p>
+<h3 id="当属性、方法、或类不需要被重载时，可在其声明的地方加上final关键字"><a href="#当属性、方法、或类不需要被重载时，可在其声明的地方加上final关键字" class="headerlink" title="当属性、方法、或类不需要被重载时，可在其声明的地方加上final关键字"></a>当属性、方法、或类不需要被重载时，可在其声明的地方加上final关键字</h3><p>在属性，方法或类声明时加上final关键字，表示其不能被重载，这将允许编译器安全的移除动态派发。如下代码所示，point和velocity将直接从对象的存储属性中加载，updatePoint()方法将被直接调用；另外，update()依然会通过动态派发的方式来调用，这样，ParticleModel的子类就可以重载update()来自定义实现。</p>
+<pre><code>class ParticleModel {
+    final var point = ( x: 0.0, y: 0.0 )
+    final var velocity = 100.0
+
+    final func updatePoint(newPoint: (Double, Double), newVelocity: Double) {
+        point = newPoint
+        velocity = newVelocity
+    }
+
+    func update(newP: (Double, Double), newV: Double) {
+        updatePoint(newP, newVelocity: newV)
+    }
+}
+</code></pre><p>除了上面所示，在属性和方法声明前加final关键字，还可以直接在类上加final，表示该类将不能作为父类被子类化，隐含的表明该类的所有的方法和属性都是final的。</p>
+<pre><code>final class ParticleModel {
+    var point = ( x: 0.0, y: 0.0 )
+    var velocity = 100.0
+    // ...
+}
+</code></pre><h3 id="在属性、方法、或类声明前加private关键字，将限制其只能在同一个文件中被引用"><a href="#在属性、方法、或类声明前加private关键字，将限制其只能在同一个文件中被引用" class="headerlink" title="在属性、方法、或类声明前加private关键字，将限制其只能在同一个文件中被引用"></a>在属性、方法、或类声明前加private关键字，将限制其只能在同一个文件中被引用</h3><p>在声明前加private关键字，将限制其只能在当前文件中被引用，这将允许编译器在当前文件中找到所有潜在的重载声明，编译器会对这些private关键字的方法或属性进行优化，移除间接的方法调用以及属性访问。</p>
+<p>假设在当前文件中没有类重载ParticleModel，那么编译器将移除所有带有private声明的动态派发调用。</p>
+<pre><code>class ParticleModel {
+    private var point = ( x: 0.0, y: 0.0 )
+    private var velocity = 100.0
+
+    private func updatePoint(newPoint: (Double, Double), newVelocity: Double) {
+        point = newPoint
+        velocity = newVelocity
+    }
+
+    func update(newP: (Double, Double), newV: Double) {
+        updatePoint(newP, newVelocity: newV)
+    }
+}
+</code></pre><p>如上代码所示，point和velocity将直接访问，updatePoint()方法也将直接被调用，而update()方法由于没有加private关键字，依然是只能间接调用。<br>同样，private可以加在类的声明前，等同于类的所有方法和属性都将加上private关键字。</p>
+<pre><code>private class ParticleModel {
+    var point = ( x: 0.0, y: 0.0 )
+    var velocity = 100.0
+    // ...
+}
+</code></pre><h3 id="在使用internal的声明中通过使用Whole-Module-Optimization来隐式的推断出final"><a href="#在使用internal的声明中通过使用Whole-Module-Optimization来隐式的推断出final" class="headerlink" title="在使用internal的声明中通过使用Whole Module Optimization来隐式的推断出final"></a>在使用internal的声明中通过使用Whole Module Optimization来隐式的推断出final</h3><p>默认的情况下，Xcode将单独编译源文件，这会限制编译器优化的程度，Xcode 7后，增加了Whole Module Optimization选项，它能允许编译器在同一个模块（Module）中分析所有的源文件来进行优化，可以在Xcode的Building Settings中开启该选项，如下图所示。</p>
+<p>在开启Whole Module Optimization选项，且声明为internal(默认级别)的情况下，模块的所有文件将同时被编译，这将允许编译器对整个模块一起分析，并对没有被重载且声明为internal级别的类、方法或属性添加final关键字。<br>如下代码所示，我们修改一下ParticleModel类，添加public关键字：</p>
+<pre><code>public class ParticleModel {
+    var point = ( x: 0.0, y: 0.0 )
+    var velocity = 100.0
+
+    func updatePoint(newPoint: (Double, Double), newVelocity: Double) {
+        point = newPoint
+        velocity = newVelocity
+    }
+
+    public func update(newP: (Double, Double), newV: Double) {
+        updatePoint(newP, newVelocity: newV)
+    }
+}
+
+var p = ParticleModel()
+for i in stride(from: 0.0, through: times, by: 1.0) {
+    p.update((i * sin(i), i), newV:i*1000)
+}
+</code></pre><p>如上代码，当开启Whole Module Optimization选项的情况下，编译器能在属性point,velotity，以及updatePoint()方法上推断出final，既相当于在point、velocity、updatePoint()声明前加上final关键字，而update()方法由于是public级别，所以无法推断出final关键字，其仍将是间接调用。</p>
+<h2 id="总结："><a href="#总结：" class="headerlink" title="总结："></a>总结：</h2><ul>
+<li>使用静态派发的话结构体是个不错的选择, 而使用消息机制派发的话则可以考虑 NSObject</li>
+<li>当你继承 NSObject 的时候, 这是一个你想要完全使用动态消息机制的表现.</li>
+<li>当使用private或final关键字，或者开启Whole Module Optimization，声明internal级别的没有被重载的方法，将直接调用，在编译时确定。</li>
+<li>运行时决定的动态派发的情形包括：<ul>
+<li>继承自NSObject或者方法有@objc前缀。</li>
+<li>使用Swift的方法表的方式，除去上述情况下，将采用这种方式。</li>
+</ul>
+</li>
+</ul>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wechatpay.jpg" alt="曹理鹏@iCocos 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>曹理鹏@iCocos</li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://icocos.github.io/2017/07/04/Swift——动态-静态分析与实战/" title="Swift——动态&静态分析与实战">https://icocos.github.io/2017/07/04/Swift——动态-静态分析与实战/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明出处！</li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Swift/" rel="tag"># Swift</a>
+          
+            <a href="/tags/动态-静态分析与实战/" rel="tag"># 动态&静态分析与实战</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/07/01/Swift——访问控制关键字说明/" rel="next" title="Swift——访问控制关键字说明">
+                <i class="fa fa-chevron-left"></i> Swift——访问控制关键字说明
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/07/08/Swift——不为人知的淫技/" rel="prev" title="Swift——不为人知的淫技">
+                Swift——不为人知的淫技 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="SOHUCS"></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="http://pd1l3bbt7.bkt.clouddn.com/icocos_user_icon.JPG"
+                alt="曹理鹏@iCocos" />
+            
+              <p class="site-author-name" itemprop="name">曹理鹏@iCocos</p>
+              <p class="site-description motion-element" itemprop="description">纯码迷、爱学习、爱交友、喜欢接触新鲜事物、迎接新的挑战，更爱游离于错综复杂的编码与逻辑中！</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives">
+                
+                    <span class="site-state-item-count">76</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">16</span>
+                    <span class="site-state-item-name">分类</span>
+                  
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">81</span>
+                    <span class="site-state-item-name">标签</span>
+                  
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/al1020119" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:al1020119@163.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://stackoverflow.com/users/10186720" target="_blank" title="StackOverflow"><i class="fa fa-fw fa-stack-overflow"></i>StackOverflow</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.icocos.cn/" title="梦工厂" target="_blank">梦工厂</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://al1020119.github.io/" title="iOS梦工厂" target="_blank">iOS梦工厂</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#大多数语言都会支持一到两种"><span class="nav-number">1.</span> <span class="nav-text">大多数语言都会支持一到两种,</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#直接派发-Direct-Dispatch"><span class="nav-number"></span> <span class="nav-text">直接派发 (Direct Dispatch)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#函数表派发-Table-Dispatch"><span class="nav-number"></span> <span class="nav-text">函数表派发 (Table Dispatch )</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#消息机制派发-Message-Dispatch"><span class="nav-number"></span> <span class="nav-text">消息机制派发 (Message Dispatch )</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Swift中的派发方式"><span class="nav-number"></span> <span class="nav-text">Swift中的派发方式</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#开发中遇到比较多的坑"><span class="nav-number">0.0.1.</span> <span class="nav-text">开发中遇到比较多的坑</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#指定派发方式-Specifying-Dispatch-Behavior"><span class="nav-number"></span> <span class="nav-text">指定派发方式 (Specifying Dispatch Behavior)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#final"><span class="nav-number">1.</span> <span class="nav-text">final</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#dynamic"><span class="nav-number">2.</span> <span class="nav-text">dynamic</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#objc-amp-nonobjc"><span class="nav-number">3.</span> <span class="nav-text">@objc &amp; @nonobjc</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#final-objc"><span class="nav-number">4.</span> <span class="nav-text">final @objc</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#inline"><span class="nav-number">5.</span> <span class="nav-text">@inline</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#在使用Swift重写之前项目中AppDelegate的时候遇到了一个这样的问题（本文也是由这个问题的产生牵引我学习Swift动态相关内容的）"><span class="nav-number">5.0.1.</span> <span class="nav-text">在使用Swift重写之前项目中AppDelegate的时候遇到了一个这样的问题（本文也是由这个问题的产生牵引我学习Swift动态相关内容的）</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#性能上的提升"><span class="nav-number"></span> <span class="nav-text">性能上的提升</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#那么在实际项目中我们应该如何使用Swift结合动态和静态方式提高项目的性能呢？"><span class="nav-number">0.0.1.</span> <span class="nav-text">那么在实际项目中我们应该如何使用Swift结合动态和静态方式提高项目的性能呢？</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#当属性、方法、或类不需要被重载时，可在其声明的地方加上final关键字"><span class="nav-number">1.</span> <span class="nav-text">当属性、方法、或类不需要被重载时，可在其声明的地方加上final关键字</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#在属性、方法、或类声明前加private关键字，将限制其只能在同一个文件中被引用"><span class="nav-number">2.</span> <span class="nav-text">在属性、方法、或类声明前加private关键字，将限制其只能在同一个文件中被引用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#在使用internal的声明中通过使用Whole-Module-Optimization来隐式的推断出final"><span class="nav-number">3.</span> <span class="nav-text">在使用internal的声明中通过使用Whole Module Optimization来隐式的推断出final</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结："><span class="nav-number"></span> <span class="nav-text">总结：</span></a></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">曹理鹏@iCocos</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">站点总字数：</span>
+    
+    <span title="站点总字数">348k</span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    
+    <span title="站点阅读时长">5:16</span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv" title="总访客量">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="site-pv" title="总访问量">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/reading_progress/reading_progress.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.3.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.3.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.3.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.3.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+  
+    <script type="text/javascript">
+    (function(){
+      var appid = 'cytKHBEtW';
+      var conf = '43989b8e63b25c4e9f1fde821c996a39';
+      var width = window.innerWidth || document.documentElement.clientWidth;
+      if (width < 960) {
+      window.document.write('<script id="changyan_mobile_js" charset="utf-8" type="text/javascript" src="https://changyan.sohu.com/upload/mobile/wap-js/changyan_mobile.js?client_id=' + appid + '&conf=' + conf + '"><\/script>'); } else { var loadJs=function(d,a){var c=document.getElementsByTagName("head")[0]||document.head||document.documentElement;var b=document.createElement("script");b.setAttribute("type","text/javascript");b.setAttribute("charset","UTF-8");b.setAttribute("src",d);if(typeof a==="function"){if(window.attachEvent){b.onreadystatechange=function(){var e=b.readyState;if(e==="loaded"||e==="complete"){b.onreadystatechange=null;a()}}}else{b.onload=a}}c.appendChild(b)};loadJs("https://changyan.sohu.com/upload/changyan.js",function(){
+        window.changyan.api.config({appid:appid,conf:conf})});
+      }
+    })();
+    </script>
+    <script type="text/javascript" src="https://assets.changyan.sohu.com/upload/plugins/plugins.count.js"></script>
+  
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=6.3.0"></script>
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("Tc7k1mbaieCUSgmM8LPk1IBO-gzGzoHsz", "sAb7L2vwENJTteRrvFKQacUU");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            
+              var $element = $(document.getElementById(url));
+              $element.find('.leancloud-visitors-count').text(counter.get('time'));
+            
+            counter.save(null, {
+              success: function(counter) {
+                
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            
+              var $element = $(document.getElementById(url));
+              $element.find('.leancloud-visitors-count').text('Counter not initialized! See more at console err msg.');
+              console.error('ATTENTION! LeanCloud counter has security bug, see here how to solve it: https://github.com/theme-next/hexo-leancloud-counter-security. \n But you also can use LeanCloud without security, by set \'security\' option to \'false\'.');
+            
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #333;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #eee;
+      background-image: linear-gradient(#fcfcfc, #eee);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('复制').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+          if(result)$(this).text('复制成功')
+          else $(this).text('复制失败')
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('复制')
+        }, 300)
+      }).append(e)
+    })
+  </script>
+
+
+  
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("Tc7k1mbaieCUSgmM8LPk1IBO-gzGzoHsz", "sAb7L2vwENJTteRrvFKQacUU");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+  
+</body>
+</html>

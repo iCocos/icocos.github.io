@@ -1,0 +1,2202 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.3.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.3.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.3.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="最近公司项目需要开始适配iPhone X了，之前在网上看到过很多讲解iPhone X适配的文章，也刷过几篇文章看了一遍，但是看完之后实在受不了各种假帖。甚至讲的都是一些理论和差异上的东西，真正讲解实际开发中适配iPhone的并没有多少，有些看完正片文章之后都不知道怎么开始。于是自己去根据官方提供的资料和指南写一篇只针对iPhone X适配的贴子……">
+<meta name="keywords" content="iOS,iPhone X适配实战总结">
+<meta property="og:type" content="article">
+<meta property="og:title" content="iOS——iPhone X适配实战总结">
+<meta property="og:url" content="https://icocos.github.io/2017/11/18/iOS——iPhone-X适配实战总结/index.html">
+<meta property="og:site_name" content="iCocos">
+<meta property="og:description" content="最近公司项目需要开始适配iPhone X了，之前在网上看到过很多讲解iPhone X适配的文章，也刷过几篇文章看了一遍，但是看完之后实在受不了各种假帖。甚至讲的都是一些理论和差异上的东西，真正讲解实际开发中适配iPhone的并没有多少，有些看完正片文章之后都不知道怎么开始。于是自己去根据官方提供的资料和指南写一篇只针对iPhone X适配的贴子……">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/newImages/115/iphoneX006.png">
+<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/newImages/115/iphoneX008.png">
+<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/newImages/115/iphoneX002.png">
+<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/newImages/115/iphoneX003.png">
+<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/newImages/115/iphoneX001.png">
+<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/newImages/115/iphoneX004.png">
+<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/newImages/115/iphoneX005.png">
+<meta property="og:updated_time" content="2018-08-06T18:33:42.282Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="iOS——iPhone X适配实战总结">
+<meta name="twitter:description" content="最近公司项目需要开始适配iPhone X了，之前在网上看到过很多讲解iPhone X适配的文章，也刷过几篇文章看了一遍，但是看完之后实在受不了各种假帖。甚至讲的都是一些理论和差异上的东西，真正讲解实际开发中适配iPhone的并没有多少，有些看完正片文章之后都不知道怎么开始。于是自己去根据官方提供的资料和指南写一篇只针对iPhone X适配的贴子……">
+<meta name="twitter:image" content="http://pd1l3bbt7.bkt.clouddn.com/newImages/115/iphoneX006.png">
+
+
+
+  <link rel="alternate" href="/atom.xml" title="iCocos" type="application/atom+xml" />
+
+
+
+
+  <link rel="canonical" href="https://icocos.github.io/2017/11/18/iOS——iPhone-X适配实战总结/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>iOS——iPhone X适配实战总结 | iCocos</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">iCocos</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">www.icocos.cn</p>
+      
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-首页">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-归档">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-分类">
+    <a href="/categories/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-标签">
+    <a href="/tags/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-关于">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="st-search-show-outputs">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup search-popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+    <div class="reading-progress-bar"></div>
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://icocos.github.io/2017/11/18/iOS——iPhone-X适配实战总结/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="曹理鹏@iCocos">
+      <meta itemprop="description" content="纯码迷、爱学习、爱交友、喜欢接触新鲜事物、迎接新的挑战，更爱游离于错综复杂的编码与逻辑中！">
+      <meta itemprop="image" content="http://pd1l3bbt7.bkt.clouddn.com/icocos_user_icon.JPG">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="iCocos">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">iOS——iPhone X适配实战总结
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2017-11-18 22:31:04" itemprop="dateCreated datePublished" datetime="2017-11-18T22:31:04+08:00">2017-11-18</time>
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Swift/" itemprop="url" rel="index"><span itemprop="name">Swift</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+              <span class="post-meta-divider">|</span>
+              <span class="post-meta-item-icon">
+                <i class="fa fa-comment-o"></i>
+              </span>
+              
+                <a href="/2017/11/18/iOS——iPhone-X适配实战总结/#SOHUCS" itemprop="discussionUrl">
+                  <span class="post-meta-item-text">评论数：</span> <span id="changyan_count_unit" class="post-comments-count hc-comment-count" data-xid="2017/11/18/iOS——iPhone-X适配实战总结/" itemprop="commentsCount"></span>
+                </a>
+              
+            
+          
+
+          
+          
+             <span id="/2017/11/18/iOS——iPhone-X适配实战总结/" class="leancloud_visitors" data-flag-title="iOS——iPhone X适配实战总结">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数：</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon"
+            >
+            <i class="fa fa-eye"></i>
+             阅读次数： 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+            <div class="post-symbolscount">
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">本文字数：</span>
+                
+                <span title="本文字数">17k</span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">16 分钟</span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>最近公司项目需要开始适配iPhone X了，之前在网上看到过很多讲解iPhone X适配的文章，也刷过几篇文章看了一遍，但是看完之后实在受不了各种假帖。甚至讲的都是一些理论和差异上的东西，真正讲解实际开发中适配iPhone的并没有多少，有些看完正片文章之后都不知道怎么开始。于是自己去根据官方提供的资料和指南写一篇只针对iPhone X适配的贴子……</p>
+<a id="more"></a>
+<h5 id="前言："><a href="#前言：" class="headerlink" title="前言："></a>前言：</h5><ol>
+<li>本文从实际开发着手iPhone X适配，关于相关理论与常识内容不会过多解释。</li>
+<li>本文会分析iPhone X适配的几个不同方向和相关的处理方案</li>
+<li>本文会分析并总结适配和测试过程中遇到的Bug，最终给出实际的适配方案或者代码</li>
+<li>本文会尽量多的从实际项目与实际适配步骤会代码进行介绍</li>
+</ol>
+<h5 id="官方资料"><a href="#官方资料" class="headerlink" title="官方资料"></a>官方资料</h5><p><a href="https://developer.apple.com/ios/human-interface-guidelines/overview/iphone-x/" target="_blank" rel="noopener">HIG-Human Interface Guideline</a><br><a href="https://developer.apple.com/videos/play/fall2017/201/" target="_blank" rel="noopener">官方Session</a></p>
+<h5 id="首先我们要明确一点："><a href="#首先我们要明确一点：" class="headerlink" title="首先我们要明确一点："></a>首先我们要明确一点：</h5><h6 id="iPhone-X适配的宗旨：我们要做的是让那些不能被遮挡的内容和控件在安全区域范围内显示"><a href="#iPhone-X适配的宗旨：我们要做的是让那些不能被遮挡的内容和控件在安全区域范围内显示" class="headerlink" title="iPhone X适配的宗旨：我们要做的是让那些不能被遮挡的内容和控件在安全区域范围内显示,"></a>iPhone X适配的宗旨：我们要做的是让那些不能被遮挡的内容和控件在安全区域范围内显示,</h6><h3 id="一-iPhone-X的规则"><a href="#一-iPhone-X的规则" class="headerlink" title="一.iPhone X的规则"></a>一.iPhone X的规则</h3><p>| <img src="http://pd1l3bbt7.bkt.clouddn.com/newImages/115/iphoneX006.png"> |  <img src="http://pd1l3bbt7.bkt.clouddn.com/newImages/115/iphoneX008.png"> |</p>
+<ol>
+<li>iPhone X是真正的3x标准，印象中7p是2.88x</li>
+<li>iPhone X宽度和4.7的6，7，8一致（375），高度多出145pt（+20%）</li>
+<li>iPhone X的比例是9：19.5，而4.7的6，7，8比例是9：16，</li>
+<li>iPhone X（375<em>812-&gt;1125</em>2436-&gt;5.8英寸）Super Retina</li>
+<li>状态栏20-&gt;44(留海H=30，W=209,耳朵W=83)，底脚0-&gt;34</li>
+<li>实际上可有效利用的高度为：145 – 24 (Status Bar) – 34 (Home Indicator) = 87pt</li>
+<li>键盘高度由 216pt 增长为 291pt，设计文字区域时要小心</li>
+<li>Home Indicator，Tab Bar 高度由 49pt 增长为 83pt</li>
+<li>横屏时Home Indicator的高度为21pt，需要格外注意</li>
+</ol>
+<p>| <img src="http://pd1l3bbt7.bkt.clouddn.com/newImages/115/iphoneX002.png"> |  <img src="http://pd1l3bbt7.bkt.clouddn.com/newImages/115/iphoneX003.png"> | </p>
+<blockquote>
+<p>iPhone X竖屏时占满整个屏幕的控制器的view的safeAreaInsets是（44，0，34，0），横屏是（0，44，21，44），inset后的区域正好是safeAreaLayoutGuide区域</p>
+<p>如果你的 UI「顶部」有 Navigation Bar 或其它类似的UI控件，那么一般来说，在设计稿将 Navigation Bar 的背景色往上延伸 44pt，「垫在 Status Bar 后方」作为背景色即可<br>如果你的 UI「底部」有 Tab Bar、Toolbar 或其它类似的UI控件，在设计稿时将背景色往下延伸 34pt，「垫在 Home Indicator 后方」作为背景色即可。</p>
+</blockquote>
+<p><img src="http://pd1l3bbt7.bkt.clouddn.com/newImages/115/iphoneX001.png"></p>
+<h3 id="二：-iOS11相关"><a href="#二：-iOS11相关" class="headerlink" title="二： iOS11相关"></a>二： iOS11相关</h3><ol>
+<li><p>如果只是设置了titleView，没有设置barbutton，把titleview的宽度设置为屏幕宽度，则titleview距离屏幕的边距，iOS11之前，在iPhone6p上是20p，在iPhone6p之前是16p；iOS11之后，在iPhone6p上是12p，在iPhone6p之前是8p。</p>
+</li>
+<li><p>如果只是设置了barbutton，没有设置titleview，则在iOS11里，barButton距离屏幕的边距是20p和16p；在iOS11之前，barButton距离屏幕的边距也是20p和16p。</p>
+</li>
+<li><p>如果同时设置了titleView和barButton，则在iOS11之前，titleview和barbutton之间的间距是6p，在iOS11上titleview和barbutton之间无间距</p>
+</li>
+<li><p>estimatedRowHeight是一个预估高度，iOS11之前是为0，在iOS11下，这个值默认为44。</p>
+</li>
+<li><p>iOS11以前,我们布局时, 视图的 top 和 bottom 一般参照的是 Top Layout Guide 和 Bottom Layout Guide</p>
+</li>
+<li><p>iOS11为UIViewController和UIView增加了两个新的属性safeAreaInsets和safeAreaLayoutGuide, 通过这两个属性我们可以获得安全区域的范围</p>
+<pre><code>safeAreaInsets 适用于手动计算.
+safeAreaLayoutGuide 适用于自动布局.
+</code></pre></li>
+</ol>
+<h3 id="三-iPhone环境判断"><a href="#三-iPhone环境判断" class="headerlink" title="三. iPhone环境判断"></a>三. iPhone环境判断</h3><ul>
+<li>通过分辨率判断：<pre><code>#define kDevice_Is_iPhoneX ([UIScreen instancesRespondToSelector:@selector(currentMode)] ? CGSizeEqualToSize(CGSizeMake(1125, 2436), [[UIScreen mainScreen] currentMode].size) : NO)
+</code></pre></li>
+<li>通过设备名称判断：<pre><code>@&quot;iPhone10,1&quot; : @&quot;iPhone 8&quot;,
+@&quot;iPhone10,4&quot; : @&quot;iPhone 8&quot;,
+@&quot;iPhone10,2&quot; : @&quot;iPhone 8 Plus&quot;,
+@&quot;iPhone10,5&quot; : @&quot;iPhone 8 Plus&quot;,
+@&quot;iPhone10,3&quot; : @&quot;iPhone X&quot;,
+@&quot;iPhone10,6&quot; : @&quot;iPhone X&quot;,
+</code></pre></li>
+<li>判断状态栏的高度（如果状态栏没有隐藏，且竖屏的情况）</li>
+<li>判断屏幕的高度或者宽度（横屏的时候）</li>
+<li>根据是否可执行或者获取对应API的值（safeAreaInseret）</li>
+<li>根据系统框架</li>
+</ul>
+<h5 id="常用宏定义"><a href="#常用宏定义" class="headerlink" title="常用宏定义"></a>常用宏定义</h5><pre><code>#define IS_IPHONE_X_HEIGHT         ([[UIScreen mainScreen] bounds].size.height &gt;= 812.0f ? 812.0f : 667.0f)
+#define ScaleWidth(width)           width/ 375.0*KSCREEN_WIDTH
+#define ScaleHeigth(height)           height/IS_IPHONE_X_HEIGHT*KSCREEN_HEIGHT
+#define WKSW(width)           width/375.0*KSCREEN_WIDTH
+#define WKSH(height)           height/IS_IPHONE_X_HEIGHT*KSCREEN_HEIGHT
+#define SafeAreaTopHeight (kWJScreenHeight == 812.0 ? 88 : 64)
+#define VIEWSAFEAREAINSETS(view) ({UIEdgeInsets i; if(@available(iOS 11.0, *)) {i = view.safeAreaInsets;} else {i = UIEdgeInsetsZero;} i;})
+VIEWSAFEAREAINSETS(view).left
+VIEWSAFEAREAINSETS(self.view).right
+</code></pre><h3 id="四-启动页的适配"><a href="#四-启动页的适配" class="headerlink" title="四.启动页的适配"></a>四.启动页的适配</h3><p>启动页的启动方式</p>
+<ul>
+<li>LaunchScreen(这里直接设置图片就可以)</li>
+<li>LaunchImage</li>
+</ul>
+<blockquote>
+<p>使用对应的设计图片：1125 * 2436</p>
+</blockquote>
+<p>如果使用的是Assets中的LaunchImage, 在增加了iPhone X尺寸的图片配置.<br>准备一张尺寸:1125 * 2436的启动图片, 移动到LaunchImage的Finder目录中, 并在LaunchImage中的Contents.json文件中增加 (注意Json格式):</p>
+<pre><code>{
+    &quot;extent&quot; : &quot;full-screen&quot;,
+    &quot;idiom&quot; : &quot;iphone&quot;,
+    &quot;subtype&quot; : &quot;2436h&quot;,
+    &quot;filename&quot; : &quot;图片名.png&quot;,
+    &quot;minimum-system-version&quot; : &quot;11.0&quot;,
+    &quot;orientation&quot; : &quot;portrait&quot;,
+    &quot;scale&quot; : &quot;3x&quot;
+}
+</code></pre><h3 id="五-刷新框架的适配iOS11"><a href="#五-刷新框架的适配iOS11" class="headerlink" title="五.刷新框架的适配iOS11"></a>五.刷新框架的适配iOS11</h3><p>这里拿最有名的刷新框架,如果使用的类似的刷新框架并且隐藏导航那么你或许会遇到：刷新控件和留海重合且被挡住</p>
+<h6 id="具体原因："><a href="#具体原因：" class="headerlink" title="具体原因："></a>具体原因：</h6><pre><code>iOS 11上面废除了automaticallyAdjustsScrollViewInsets，使用contentInsetAdjustmentBehavior代替
+</code></pre><p>适配具体代码：</p>
+<pre><code>if (@available(iOS 11.0, *)) {
+    self.home_collectionView.contentInsetAdjustmentBehavior = UIApplicationBackgroundFetchIntervalNever;
+} else {
+    self.automaticallyAdjustsScrollViewInsets = false;
+    // Fallback on earlier versions
+}
+</code></pre><h5 id="宏定义："><a href="#宏定义：" class="headerlink" title="宏定义："></a>宏定义：</h5><pre><code>/// 第一个参数是当下的控制器适配iOS11 一下的，第二个参数表示scrollview或子类
+#define AdjustsScrollViewInsetNever(controller,view) if(@available(iOS 11.0, *)) {
+    view.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+} else if([controller isKindOfClass:[UIViewController class]]) {
+    controller.automaticallyAdjustsScrollViewInsets = false;
+}
+</code></pre><h3 id="六：导航栏"><a href="#六：导航栏" class="headerlink" title="六：导航栏"></a>六：导航栏</h3><p>在iOS11导航栏多了一个LargeTitleView，专门显示大字标题用的，整个导航栏的高度达到了96p，这不包括状态栏的高度，也就是说，整个app顶部高度达到了116p，其中statusbar=20，title=44，largetitle=52，不过默认是64p；</p>
+<ul>
+<li>当然，iPhoneX的高度会更高点，如果不显示大字标题，顶部的高度也达到了88，statusbar=44，title=44，如果显示大字标题，则高度变成了140，statusbar=44，title=44，largetitle=52，也就是说，iPhoneX的刘海高度为24p，</li>
+</ul>
+<h3 id="七：导航栏按钮间距变化-UIBarButtonItem-iPhoneX-amp-iOS-11"><a href="#七：导航栏按钮间距变化-UIBarButtonItem-iPhoneX-amp-iOS-11" class="headerlink" title="七：导航栏按钮间距变化(UIBarButtonItem) (iPhoneX &amp; iOS 11)"></a>七：导航栏按钮间距变化(UIBarButtonItem) (iPhoneX &amp; iOS 11)</h3><h6 id="iOS11以后，导航栏的层级发生了变化，也无法时使导航栏左右按钮边距为0了"><a href="#iOS11以后，导航栏的层级发生了变化，也无法时使导航栏左右按钮边距为0了" class="headerlink" title="iOS11以后，导航栏的层级发生了变化，也无法时使导航栏左右按钮边距为0了"></a>iOS11以后，导航栏的层级发生了变化，也无法时使导航栏左右按钮边距为0了</h6><blockquote>
+<p>iOS11之前导航栏的title是添加在UINavigationItemView上面，而navigationBarButton则直接添加在UINavigationBar上面，如果设置了titleView，则titleView也是直接添加在UINavigationBar上面。iOS11之后，大概因为largeTitle的原因，视图层级发生了变化，如果没有给titleView赋值，则titleView会直接添加在_UINavigationBarContentView上面，如果赋值了titleView，则会把titleView添加在_UITAMICAdaptorView上，而navigationBarButton被加在了_UIButtonBarStackView上，然后他们都被加在了_UINavigationBarContentView上</p>
+</blockquote>
+<p>所以如果你的项目是自定义的navigationBar，那么在iOS11上运行就可能出现布局错乱的bug，解决办法是重写UINavigationBar的layoutSubviews方法，调整布局，上代码：</p>
+<pre><code>- (void)layoutSubviews {
+    [super layoutSubviews];
+    //注意导航栏及状态栏高度适配
+    self.frame = CGRectMake(0, 0, CGRectGetWidth(self.frame), naviBarHeight);
+    for (UIView *view in self.subviews) {
+        if([NSStringFromClass([view class]) containsString:@&quot;Background&quot;]) {
+            view.frame = self.bounds;
+        }
+        else if ([NSStringFromClass([view class]) containsString:@&quot;ContentView&quot;]) {
+            CGRect frame = view.frame;
+            frame.origin.y = statusBarHeight;
+            frame.size.height = self.bounds.size.height - frame.origin.y;
+            view.frame = frame;
+        }
+    }
+}
+</code></pre><p>看了简书App适配iOS11发现titleView支持autolayout，这要求titleView必须是能够自撑开的或实现了- intrinsicContentSize方法</p>
+<pre><code>- (CGSize)intrinsicContentSize {
+    return UILayoutFittingExpandedSize;
+}
+</code></pre><ol>
+<li>导航栏新增了一种大标题样式，默认设置是不开启，所以不需要修改。</li>
+<li>titleView支持autolayout，这要求titleView必须是能够自撑开的或实现了- intrinsicContentSize，</li>
+</ol>
+<p><a href="http://www.jianshu.com/p/352f101d6df1" target="_blank" rel="noopener">App需要实现导航栏左右按钮边距为0</a></p>
+<h3 id="八：继承自UIScrollView的视图偏移问题"><a href="#八：继承自UIScrollView的视图偏移问题" class="headerlink" title="八：继承自UIScrollView的视图偏移问题"></a>八：继承自UIScrollView的视图偏移问题</h3><p>在iOS11设备上运行出现最多问题应该就是tableview莫名奇妙的偏移20pt或者64pt了。。原因是iOS11弃用了automaticallyAdjustsScrollViewInsets属性（前面有提到），取而代之的是UIScrollView新增了contentInsetAdjustmentBehavior属性，这一切的罪魁祸首都是新引入的safeArea，</p>
+<h6 id="原因分析"><a href="#原因分析" class="headerlink" title="原因分析"></a>原因分析</h6><blockquote>
+<p>原因是iOS 11中Controller的automaticallyAdjustsScrollViewInsets属性被废弃了，所以当tableView超出安全区域时系统自动调整了SafeAreaInsets值，进而影响adjustedContentInset值，在iOS 11中决定tableView的内容与边缘距离的是adjustedContentInset属性，而不是contentInset。adjustedContentInset的计算方式见本文第二部分内容。因为系统对adjustedContentInset值进行了调整，所以导致tableView的内容到边缘的距离发生了变化，导致tableView下移了20pt（statusbar高度）或64pt（navigationbar高度）。</p>
+</blockquote>
+<p>如果你的APP中使用的是自定义的navigationbar，隐藏掉系统的navigationbar，并且tableView的frame为(0,0,SCREEN_WIDTH, SCREEN_HEIGHT)开始，那么系统会自动调整SafeAreaInsets值为(20,0,0,0)，如果使用了系统的navigationbar，那么SafeAreaInsets值为(64,0,0,0)，如果也使用了系统的tabbar，那么SafeAreaInsets值为(64,0,49,0)</p>
+<pre><code>if (@available(iOS 11.0, *)) {
+    self.tableView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+} else {
+    self.automaticallyAdjustsScrollViewInsets = NO;
+}
+</code></pre><p>这个问题的解决方法有哪些？</p>
+<ul>
+<li>重新设置tableView的contentInset值，来抵消掉SafeAreaInset值，因为内容下移偏移量 = contentInset + SafeAreaInset；</li>
+</ul>
+<blockquote>
+<p>如果之前自己设置了contentInset值为(64,0,0,0),现在系统又设置了SafeAreaInsets值为(64,0,0,0)，那么tableView内容下移了64pt，这种情况下，可以设置contentInset值为(0,0,0,0)，也就是遵从系统的设置了。</p>
+</blockquote>
+<ul>
+<li>设置tableView的contentInsetAdjustmentBehavior属性</li>
+</ul>
+<p>如果不需要系统为你设置边缘距离，可以做以下设置：</p>
+<pre><code>//如果iOS的系统是11.0，会有这样一个宏定义“#define __IPHONE_11_0  110000”；如果系统版本低于11.0则没有这个宏定义
+#ifdef __IPHONE_11_0
+    if ([tableView respondsToSelector:@selector(setContentInsetAdjustmentBehavior:)]) {
+        tableView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+    }
+#endif
+</code></pre><p>contentInsetAdjustmentBehavior属性也是用来取代automaticallyAdjustsScrollViewInsets属性的，推荐使用这种方式。</p>
+<ul>
+<li>通过设置iOS 11新增的属性addtionalSafeAreaInset；</li>
+</ul>
+<p>iOS 11之前，大家是通过将Controller的automaticallyAdjustsScrollViewInsets属性设置为NO，来禁止系统对tableView调整contentInsets的。如果还是想从Controller级别解决问题，那么可以通过设置Controller的additionalSafeAreaInsets属性，如果SafeAreaInset值为(20,0,0,0)，那么设置additionalSafeAreaInsets属性值为(-20,0,0,0)，则SafeAreaInsets不会对adjustedContentInset值产生影响，tableView内容不会显示异常。</p>
+<blockquote>
+<p>这里需要注意的是addtionalSafeAreaInset是Controller的属性，要知道SafeAreaInset的值是由哪个Controller引起的，可能是由自己的Controller调整的，可能是navigationController调整的。是由哪个Controller调整的，则设置哪个Controller的addtionalSafeAreaInset值来抵消掉SafeAreaInset值。</p>
+</blockquote>
+<h3 id="九：UITableView，cell，header，footer高度异常-tableView顶部有留白"><a href="#九：UITableView，cell，header，footer高度异常-tableView顶部有留白" class="headerlink" title="九：UITableView，cell，header，footer高度异常,tableView顶部有留白"></a>九：UITableView，cell，header，footer高度异常,tableView顶部有留白</h3><p>在iOS 11中默认启用Self-Sizing，，Headers, footers, and cells都默认开启了Self-Sizing，所有estimated 高度默认值从iOS11之前的 0 改变为UITableViewAutomaticDimension<br>要解决此类异常的话，可通过以下代码解决</p>
+<pre><code>_tableView.estimatedRowHeight = 0;
+_tableView.estimatedSectionHeaderHeight = 0;
+_tableView.estimatedSectionFooterHeight = 0;
+</code></pre><blockquote>
+<p>这个配合estimatedRowHeight、estimatedSectionFooterHeight、estimatedSectionHeaderHeight使用，可以预估高度。之前，设置header或者footer高度为0时，需要设置height=0.1，才会起作用，如果直接设置为0，则会使用默认高度。iOS11由于自动使用预估高度，所以，忽略了设置的高度，使原来的高度增大了。只要把这几个属性设置为0就可以解决</p>
+</blockquote>
+<h6 id="在iOS11里面有时候在tableView的头部和尾部留白，因为苹果给滚动试图加进去了self-sizeing，开始计算逐步计算contentSize，默认如果不去实现viewForHeaderInSection就不会调用heightForHeaderInSection-尾部试图一样。"><a href="#在iOS11里面有时候在tableView的头部和尾部留白，因为苹果给滚动试图加进去了self-sizeing，开始计算逐步计算contentSize，默认如果不去实现viewForHeaderInSection就不会调用heightForHeaderInSection-尾部试图一样。" class="headerlink" title="在iOS11里面有时候在tableView的头部和尾部留白，因为苹果给滚动试图加进去了self-sizeing，开始计算逐步计算contentSize，默认如果不去实现viewForHeaderInSection就不会调用heightForHeaderInSection,尾部试图一样。"></a>在iOS11里面有时候在tableView的头部和尾部留白，因为苹果给滚动试图加进去了self-sizeing，开始计算逐步计算contentSize，默认如果不去实现viewForHeaderInSection就不会调用heightForHeaderInSection,尾部试图一样。</h6><pre><code>func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -&gt; UIView? { }
+func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -&gt; CGFloat {   return 0.001 }
+</code></pre><p>如果你不想实现viewForHeaderInSection也不想留白，那么只需要使用上面的三段代码把self-sizeing自动估高关闭即可</p>
+<p>如果你使用了Masonry，某些界面需要适配需要适配safeArea，可以试试下面这段代码</p>
+<pre><code>if (@available(iOS 11.0, *)) {
+    make.edges.equalTo()(self.view.safeAreaInsets)
+} else {
+    make.edges.equalTo()(self.view)
+}
+</code></pre><h3 id="十：适配iOS-11-列表的册数删除"><a href="#十：适配iOS-11-列表的册数删除" class="headerlink" title="十：适配iOS 11 列表的册数删除"></a>十：适配iOS 11 列表的册数删除</h3><p>在iOS8之后，苹果官方增加了UITableVIew的右滑操作接口，即新增了一个代理方法(tableView: editActionsForRowAtIndexPath:)和一个类(UITableViewRowAction)，代理方法返回的是一个数组，我们可以在这个代理方法中定义所需要的操作按钮(删除、置顶等)，这些按钮的类就是UITableViewRowAction。</p>
+<p>这个类只能定义按钮的显示文字、背景色、和按钮事件。并且返回数组的第一个元素在UITableViewCell的最右侧显示，最后一个元素在最左侧显示。从iOS 11开始有了一些改变，首先是可以给这些按钮添加图片了，然后是如果实现了以下两个iOS 11新增的代理方法，将会取代(tableView: editActionsForRowAtIndexPath:)代理方法：</p>
+<blockquote>
+<p>注意：看的有的文章如果在iOS11上面调用老的删除，会崩溃，</p>
+</blockquote>
+<pre><code>- (nullable UISwipeActionsConfiguration *)tableView:(UITableView *)tableView leadingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath *)indexPath
+func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -&gt; UISwipeActionsConfiguration?
+
+
+func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -&gt; UISwipeActionsConfiguration? {
+    let action = UIContextualAction(style: .destructive, title: &quot;Delete&quot;) { 
+    (action, view, handler) in
+        handler(true)
+    }
+
+    let configuration = UISwipeActionsConfiguration(actions: [action])
+    return configuration
+}
+
+
+func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -&gt; UISwipeActionsConfiguration? {
+    let action = UIContextualAction(style: .normal, title: &quot;Mark&quot;) { (action, view, handler) in
+    handler(true)
+    }
+    action.backgroundColor = UIColor.init(red: 254/255.0, green: 175/255.0, blue: 254/255.0, alpha: 1);
+
+    let configuration = UISwipeActionsConfiguration(actions: [action])
+    return configuration
+}
+</code></pre><h3 id="十一：到底用viewSafeAreaInsetsDidChange还是viewWillLayoutSubviews"><a href="#十一：到底用viewSafeAreaInsetsDidChange还是viewWillLayoutSubviews" class="headerlink" title="十一：到底用viewSafeAreaInsetsDidChange还是viewWillLayoutSubviews"></a>十一：到底用viewSafeAreaInsetsDidChange还是viewWillLayoutSubviews</h3><p>先来看看下面一段代码，相信做过iPhone X适配的同学应该都不陌生，</p>
+<pre><code>var safeArea: CGFloat = 0
+if #available(iOS 11.0, *) {
+    safeArea += self.view.safeAreaInsets.bottom || UIApplication.shared.keyWindow.rootViewController.view.safeAreaInsets.bottom
+
+}
+coding ... constant || originY || frame || height
+</code></pre><p>有时候，我们会发现这样的一段适配的代码，如果根据苹果的特性，和我们所了解情况，我们一般都会把他放到viewSafeAreaInsetsDidChange，<br>但是，并没有什么卵用，但是根据UI刷新的特性，我试着把他放在viewWillLayoutSubviews，却又正常了，很多人对此很是不解。</p>
+<h5 id="首先我们要知道："><a href="#首先我们要知道：" class="headerlink" title="首先我们要知道："></a>首先我们要知道：</h5><ul>
+<li>viewSafeAreaInsetsDidChange调用时机很早，在viewWillAppear后</li>
+</ul>
+<p>viewSafeAreaInsetsDidChange后面会调用两次viewDidLayoutSubviews，所以我们应该把改变高度或布局的代码都写在viewDidLayoutSubviews里，这样就不会有多余的动画效果了</p>
+<blockquote>
+<p>注意: viewDidLayoutSubviews可能会由别的操作频繁触发，所以如果调整safeArea布局的代码比较耗时，可以考虑加上一个状态标记，只在didChange后执行一次布局调整</p>
+</blockquote>
+<pre><code>- (void)viewDidLayoutSubviews {
+    [super viewDidLayoutSubviews];
+    UIEdgeInsets safeAreaInsets = sgm_safeAreaInset(self.view);
+    CGFloat height = 44.0; // 导航栏原本的高度，通常是44.0
+    height += safeAreaInsets.top &gt; 0 ? safeAreaInsets.top : 20.0; // 20.0是statusbar的高度，这里假设statusbar不消失
+    if (_navigationbar &amp;&amp; _navigationbar.height != height) {
+        _navigationbar.height = height;
+    }
+}
+</code></pre><h3 id="十二：纯代码的宽高比适配"><a href="#十二：纯代码的宽高比适配" class="headerlink" title="十二：纯代码的宽高比适配"></a>十二：纯代码的宽高比适配</h3><pre><code>/// 高度系数 812.0 是iPhoneX的高度尺寸，667.0表示是iPhone 8 的高度，如果你觉的它会变化，那我也很无奈
+#define kWJHeightCoefficient (kWJScreenHeight == 812.0 ? 667.0/667.0 : kWJScreenHeight/667.0)
+</code></pre><p>| <img src="http://pd1l3bbt7.bkt.clouddn.com/newImages/115/iphoneX004.png"> |  <img src="http://pd1l3bbt7.bkt.clouddn.com/newImages/115/iphoneX005.png"> |</p>
+<h3 id="十三：纯代码适配iPhone-X脚底"><a href="#十三：纯代码适配iPhone-X脚底" class="headerlink" title="十三：纯代码适配iPhone X脚底"></a>十三：纯代码适配iPhone X脚底</h3><p>首先需要知道一点的是，底部脚底高度是34（tabBar之下所拓张的区域）适配规则：</p>
+<ul>
+<li>列表页面不去适配，底部有按钮的界面要适配</li>
+</ul>
+<p>viewSafeAreaInsetsDidChange方法里面打印NSLog(@”%@”,NSStringFromUIEdgeInsets(self.view.safeAreaInsets));</p>
+<blockquote>
+<p>注意：</p>
+<blockquote>
+<p>1.介绍viewSafeAreaInsetsDidChange方法系统调用或者你设置控制器的additionalSafeAreaInsets安全区域边界<br>2.顺序viewSafeAreaInsetsDidChange调用顺序实在viewWillAppear之后，在viewWillLayoutSubvies之前调用</p>
+</blockquote>
+</blockquote>
+<pre><code>/// 底部宏，吃一见长一智吧，别写数字了
+#define SafeAreaBottomHeight (kWJScreenHeight == 812.0 ? 34 : 0)
+</code></pre><h3 id="十四：xib和SB适配"><a href="#十四：xib和SB适配" class="headerlink" title="十四：xib和SB适配"></a>十四：xib和SB适配</h3><p>安全区域：整个屏幕–导航栏–状态栏–tabbar（自己设定的安全区域除外</p>
+<blockquote>
+<p>xib的适配齐刘海和圆角，如果你们项目要求适配iOS 9一下的，就该一个一个好好拖，如果你们不要求适配iOS 9一下的，只需要给view打开安全区域。</p>
+</blockquote>
+<h3 id="十五：App-Store评论跳转问题"><a href="#十五：App-Store评论跳转问题" class="headerlink" title="十五：App Store评论跳转问题"></a>十五：App Store评论跳转问题</h3><p>在iOS11 之后，会跳的Today里面说无法连接到App Store</p>
+<p>先来看看我们之前的写法</p>
+<pre><code>NSString *appstoreUrlString = [NSString stringWithFormat: @&quot;itms-apps://itunes.apple.com/WebObjects/MZStore.woa/wa/viewContentsUserReviews?type=Purple+Software&amp;id=%@&quot;,AppStoreAppId ];
+NSURL * url = [NSURL URLWithString:appstoreUrlString];
+if ([[UIApplication sharedApplication] canOpenURL:url]){
+    [[UIApplication sharedApplication]openURL:url];
+}else{
+    WKLog(@&quot;can not open&quot;);
+}
+</code></pre><p>到iOS 11后，那样已经没有效果了，要改成:</p>
+<pre><code>NSString *appstoreUrlString = [NSString stringWithFormat:@&quot;itms-apps://itunes.apple.com/cn/app/idXXXXXX?mt=8&amp;action=write-review&quot;, AppStoreAppId ];
+NSURL * url = [NSURL URLWithString:appstoreUrlString];
+if ([[UIApplication sharedApplication] canOpenURL:url]){
+    [[UIApplication sharedApplication]openURL:url];
+}else{
+    WKLog(@&quot;can not open&quot;);
+}
+</code></pre><h3 id="十六：导航栏设置透明问题"><a href="#十六：导航栏设置透明问题" class="headerlink" title="十六：导航栏设置透明问题"></a>十六：导航栏设置透明问题</h3><p>本来导航栏设置为不透明，如今却变成了透明(磨砂)模式，要知道导航栏透明与不透明的区别除了视觉差异外还有对屏幕左上角坐标点（0,0）的基准是不一样的。</p>
+<blockquote>
+<p>当导航栏设置为透明模式时—&gt;基准点为手机屏幕最左上角，也就是说如果你在（0,0）点放一个有色label时，你就会发现导航栏是挡住了你的方块的，因为是半透明，你能隐约间看到有色块<br>如果你需要设置导航栏透明度，切记把</p>
+</blockquote>
+<pre><code>self.navigationController.navigationBar.translucent = NO;
+</code></pre><p>写到ViewWillAppear里！</p>
+<h3 id="十七：twitter"><a href="#十七：twitter" class="headerlink" title="十七：twitter"></a>十七：twitter</h3><p>今天刚发现的一个坑，那就是iOS11设置里并没有集成twitter等第三方应用了</p>
+<p>一些系统的关于这些APP的API也申明被废弃了，并推荐使用官网SDK</p>
+<pre><code>iOS 11 no longer supports using Twitter through the built-in social framework.
+</code></pre><p>]Instead,you can use Twitter Kit 3 to Tweet, log in users, and use the Twitter API.</p>
+<p>所以APP里集成twitter分享同学要注意了，一定要检查下twitter分享功能。其它APP分享如Facebook，微博分享功能等应该是完好的。</p>
+<h3 id="十八：AppIcon"><a href="#十八：AppIcon" class="headerlink" title="十八：AppIcon"></a>十八：AppIcon</h3><p>在iOS11上发现了一个奇怪的现象，APP在启动时图标会出现黑边，</p>
+<blockquote>
+<p>原因是iOS11修改了App启动动画，如果你的App图标有圆角那么就会变成这个鸟样了…所有图标都换成直角就好了</p>
+</blockquote>
+<h3 id="十九：相册访问权限"><a href="#十九：相册访问权限" class="headerlink" title="十九：相册访问权限"></a>十九：相册访问权限</h3><p>iOS11上系统默认打开了用户相册的访问权限，但是当你保存图片时APP就会crash，</p>
+<blockquote>
+<p>原因是需要在info.plist再申明一个NSPhotoLibraryAddUsageDescription的key，同时为了兼容iOS11以前的机型，保留以前NSPhotoLibraryUsageDescription的key</p>
+</blockquote>
+<h3 id="总结："><a href="#总结：" class="headerlink" title="总结："></a>总结：</h3><h5 id="1-属性总结："><a href="#1-属性总结：" class="headerlink" title="1. 属性总结："></a>1. 属性总结：</h5><ul>
+<li>self.additionalSafeAreaInsets</li>
+<li>self.view.safeAreaInsets</li>
+</ul>
+<blockquote>
+<p>self.additionalSafeAreaInsets  改变safeAreaInsets的值</p>
+</blockquote>
+<ul>
+<li>self.viewSafeAreaInsetsDidChange()</li>
+<li>self.view.safeAreaInsetsDidChange()<pre><code>- (void)viewSafeAreaInsetsDidChange在UIViewController中第一次调用的时间是在- (void)viewWillAppear:(BOOL)animated调用之后, 在- (void)viewWillLayoutSubviews调用之前.
+</code></pre></li>
+</ul>
+<blockquote>
+<p>当你的viewController改变了它的safeAreaInsets值时，有两种方式获取到回调</p>
+<blockquote>
+<p>self.viewSafeAreaInsetsDidChange()<br>self.view.safeAreaInsetsDidChange()</p>
+</blockquote>
+</blockquote>
+<ul>
+<li>self.view.safeAreaLayoutGuide</li>
+</ul>
+<blockquote>
+<p>self.view.safeAreaLayoutGuide UIView的一个只读属性，作为参照物，让view可以相对某个view的safeAreaLayoutGuide做布局，从而保证view能正常、安全地显示（相对的那个view不一定要是父view）</p>
+<blockquote>
+<p>把safeAreaLayoutGuide看成是一个“view”，这个“view”系统自动帮我们调整它的bounds，让它不会被各种奇奇怪怪的东西挡住，包括iPhone X的刘海区域和底部的一道杠区域，可以认为在这个“view”上一定能完整显示所有内容,safeAreaInsets来调整自己的bounds的</p>
+</blockquote>
+</blockquote>
+<ul>
+<li>self.view.insetsLayoutMarginsFromSafeArea</li>
+</ul>
+<blockquote>
+<p>如果你不想让safeAreaInsets影响你的视图布局，则可以将insetsLayoutMarginsFromSafeArea设置为NO，所有的视图布局将会忽略safeAreaInsets这个属性了。</p>
+<blockquote>
+<p>要注意的是，insetsLayoutMarginsFromSafeArea仅用于AutoLayout，即使该属性为NO，视图的safeAreaInsets还是一样有值，而且安全区域变更方法safeAreaInsetsDidChange一样被调用。</p>
+</blockquote>
+</blockquote>
+<ul>
+<li>contentInsetAdjustmentBehavior</li>
+</ul>
+<blockquote>
+<p>在iOS11 中, UIViewController的automaticallyAdjustsScrollViewInsets属性已经不再使用,我们需要使用UIScrollView的 contentInsetAdjustmentBehavior 属性来替代它.</p>
+</blockquote>
+<blockquote>
+<p>UIScrollViewContentInsetAdjustmentBehavior 是一个枚举类型,值有以下几种:</p>
+<blockquote>
+<p>automatic 和scrollableAxes一样,scrollView会自动计算和适应顶部和底部的内边距并且在scrollView 不可滚动时,也会设置内边距.<br>scrollableAxes 自动计算内边距.<br>never不计算内边距<br>always 根据safeAreaInsets 计算内边距</p>
+</blockquote>
+</blockquote>
+<h5 id="2-Safe-Area-与-Layout-Margins"><a href="#2-Safe-Area-与-Layout-Margins" class="headerlink" title="2. Safe Area 与 Layout Margins"></a>2. Safe Area 与 Layout Margins</h5><p>一般在做 UI 设计，背景色或较不重要的內容可完整地延伸至屏幕边缘；主要的内容呈现区域 (例如 Table View) 会往内缩 (indent) 一层，称为「Safe Area」；而通常文字或是按钮等更加关键的物件，考虑到美观及操作性，會再内缩一层，称之为「Layout Margins</p>
+<pre><code>竖屏时的 Safe Area 可延伸至屏幕左右两侧，上部留 44pt 給 Status Bar；Layout Margins 通常左右再内缩 16pt。
+横屏时的 Safe Area 左右两侧皆内缩 44pt；Layout Margins 通常左右再内缩 16pt。
+</code></pre><h5 id="Home-Indicator"><a href="#Home-Indicator" class="headerlink" title="Home Indicator"></a>Home Indicator</h5><p>Home Indicator 为 iPhone X 屏幕下方的一个操控區域，外观是一条粗线 (手把)，由屏幕底部往上滑动可返回主界面 (Home Screen)，或进入多任务管理界面 (App Switcher)。</p>
+<blockquote>
+<p>注意：该“粗线”不可自定义外观，系统会自动判断背景颜色，深色背景时显示浅色 Bar，浅色背景时则显示深色 Bar。</p>
+</blockquote>
+<h5 id="3-Edge-Protection"><a href="#3-Edge-Protection" class="headerlink" title="3. Edge Protection"></a>3. Edge Protection</h5><p>如果你的 UI 带有由屏幕底部往上滑动 (Swipe) 的手势，可能会与系统的手势冲突，这时可告诉开发者该 UI界面需要启用「Edge Protection」。<br>启用时，Home Indicator 将会变得较为透明，并下降位置 (但还在)，让全屏体验更为完整。当使用者第一次由下往上滑动时，此手势将保留给你的 App 使用，而不会触发 Home Indicator；当使用者在这时进行第二次滑动，才会触发。</p>
+<blockquote>
+<p>注意：此选项将造成使用者不便，因此当真的有需要时再考虑启用</p>
+</blockquote>
+<h5 id="4-Auto-Hide"><a href="#4-Auto-Hide" class="headerlink" title="4. Auto-Hide"></a>4. Auto-Hide</h5><p>UI 中若是有影片播放等需要降低干扰的情况，需要完全隐藏 Home Indicator，可启用「Auto-Hide」选项，启用时，若是使用者数秒内沒有操纵行为，Home Indicator 将自动隐藏，直到使用者触碰界面才会再度出现。</p>
+<blockquote>
+<p>注意：此选项将造成使用者困惑，因此當真的有需要时再考虑启用。</p>
+</blockquote>
+<h3 id="推荐："><a href="#推荐：" class="headerlink" title="推荐："></a>推荐：</h3><ul>
+<li><a href="http://www.10tiao.com/html/330/201707/2653579210/1.html" target="_blank" rel="noopener">你可能需要为你的 APP 适配 iOS 11</a></li>
+<li><a href="http://blog.csdn.net/hou_manager/article/details/78119841?locationNum=1&amp;fps=1" target="_blank" rel="noopener">iOS 11 适配集锦</a></li>
+<li><a href="http://www.jianshu.com/p/04a9d1008276" target="_blank" rel="noopener">iOS 11新特性与适配</a></li>
+<li>iOS 11更新的内容(开发)<ul>
+<li><a href="http://www.jianshu.com/p/370d82ba3939" target="_blank" rel="noopener">APP适配iOS11</a></li>
+<li><a href="https://developer.apple.com/videos/play/wwdc2017/204/" target="_blank" rel="noopener">WWDC:Updating Your App for iOS 11 </a></li>
+<li><a href="https://devstreaming-cdn.apple.com/videos/wwdc/2017/204kty9amomlmk222/204/204_updating_your_app_for_ios_11.pdf" target="_blank" rel="noopener">PDF版：Updating Your App For iOS 11 </a></li>
+</ul>
+</li>
+<li>iPhoneX人机交互指南(开发&amp;设计师)<ul>
+<li><a href="https://developer.apple.com/ios/human-interface-guidelines/overview/iphone-x/" target="_blank" rel="noopener">官方iPhoneX人机交互指南 </a></li>
+<li><a href="https://mp.weixin.qq.com/s?__biz=MzA3ODg4MDk0Ng==&amp;mid=2651113572&amp;idx=1&amp;sn=32fe690fd14836a3a4e064d156ffab7d&amp;chksm=844c61b9b33be8afc8418e3edd25c7736f2998691ce2a4c29c3c18fa87b08b5fd384b87a0085&amp;mpshare=1&amp;scene=23&amp;srcid=0913HbB372J6KVHVmKfqcVST#rd" target="_blank" rel="noopener">中文版iPhoneX人际交互指南 </a></li>
+<li><a href="https://medium.com/uxabc/iphone-x-ui-design-specs-696fd4f262b6" target="_blank" rel="noopener">强烈推荐UI 設計師需要知道的 iPhone X 細節  </a></li>
+</ul>
+</li>
+</ul>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wechatpay.jpg" alt="曹理鹏@iCocos 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>曹理鹏@iCocos</li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://icocos.github.io/2017/11/18/iOS——iPhone-X适配实战总结/" title="iOS——iPhone X适配实战总结">https://icocos.github.io/2017/11/18/iOS——iPhone-X适配实战总结/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明出处！</li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/iOS/" rel="tag"># iOS</a>
+          
+            <a href="/tags/iPhone-X适配实战总结/" rel="tag"># iPhone X适配实战总结</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/11/16/iOS——App跳转到系统设置/" rel="next" title="iOS——App跳转到系统设置">
+                <i class="fa fa-chevron-left"></i> iOS——App跳转到系统设置
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/11/18/iOS——免密登录，我以为有多难？/" rel="prev" title="iOS——免密登录，我以为有多难？">
+                iOS——免密登录，我以为有多难？ <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="SOHUCS"></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="http://pd1l3bbt7.bkt.clouddn.com/icocos_user_icon.JPG"
+                alt="曹理鹏@iCocos" />
+            
+              <p class="site-author-name" itemprop="name">曹理鹏@iCocos</p>
+              <p class="site-description motion-element" itemprop="description">纯码迷、爱学习、爱交友、喜欢接触新鲜事物、迎接新的挑战，更爱游离于错综复杂的编码与逻辑中！</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives">
+                
+                    <span class="site-state-item-count">76</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">16</span>
+                    <span class="site-state-item-name">分类</span>
+                  
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">81</span>
+                    <span class="site-state-item-name">标签</span>
+                  
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/al1020119" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:al1020119@163.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://stackoverflow.com/users/10186720" target="_blank" title="StackOverflow"><i class="fa fa-fw fa-stack-overflow"></i>StackOverflow</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.icocos.cn/" title="梦工厂" target="_blank">梦工厂</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://al1020119.github.io/" title="iOS梦工厂" target="_blank">iOS梦工厂</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-5"><a class="nav-link" href="#前言："><span class="nav-number">1.</span> <span class="nav-text">前言：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#官方资料"><span class="nav-number">2.</span> <span class="nav-text">官方资料</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#首先我们要明确一点："><span class="nav-number">3.</span> <span class="nav-text">首先我们要明确一点：</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#iPhone-X适配的宗旨：我们要做的是让那些不能被遮挡的内容和控件在安全区域范围内显示"><span class="nav-number">3.1.</span> <span class="nav-text">iPhone X适配的宗旨：我们要做的是让那些不能被遮挡的内容和控件在安全区域范围内显示,</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#一-iPhone-X的规则"><span class="nav-number"></span> <span class="nav-text">一.iPhone X的规则</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#二：-iOS11相关"><span class="nav-number"></span> <span class="nav-text">二： iOS11相关</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#三-iPhone环境判断"><span class="nav-number"></span> <span class="nav-text">三. iPhone环境判断</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#常用宏定义"><span class="nav-number">1.</span> <span class="nav-text">常用宏定义</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#四-启动页的适配"><span class="nav-number"></span> <span class="nav-text">四.启动页的适配</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#五-刷新框架的适配iOS11"><span class="nav-number"></span> <span class="nav-text">五.刷新框架的适配iOS11</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#具体原因："><span class="nav-number">0.1.</span> <span class="nav-text">具体原因：</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#宏定义："><span class="nav-number">1.</span> <span class="nav-text">宏定义：</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#六：导航栏"><span class="nav-number"></span> <span class="nav-text">六：导航栏</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#七：导航栏按钮间距变化-UIBarButtonItem-iPhoneX-amp-iOS-11"><span class="nav-number"></span> <span class="nav-text">七：导航栏按钮间距变化(UIBarButtonItem) (iPhoneX &amp; iOS 11)</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#iOS11以后，导航栏的层级发生了变化，也无法时使导航栏左右按钮边距为0了"><span class="nav-number">0.1.</span> <span class="nav-text">iOS11以后，导航栏的层级发生了变化，也无法时使导航栏左右按钮边距为0了</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#八：继承自UIScrollView的视图偏移问题"><span class="nav-number"></span> <span class="nav-text">八：继承自UIScrollView的视图偏移问题</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#原因分析"><span class="nav-number">0.1.</span> <span class="nav-text">原因分析</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#九：UITableView，cell，header，footer高度异常-tableView顶部有留白"><span class="nav-number"></span> <span class="nav-text">九：UITableView，cell，header，footer高度异常,tableView顶部有留白</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#在iOS11里面有时候在tableView的头部和尾部留白，因为苹果给滚动试图加进去了self-sizeing，开始计算逐步计算contentSize，默认如果不去实现viewForHeaderInSection就不会调用heightForHeaderInSection-尾部试图一样。"><span class="nav-number">0.1.</span> <span class="nav-text">在iOS11里面有时候在tableView的头部和尾部留白，因为苹果给滚动试图加进去了self-sizeing，开始计算逐步计算contentSize，默认如果不去实现viewForHeaderInSection就不会调用heightForHeaderInSection,尾部试图一样。</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#十：适配iOS-11-列表的册数删除"><span class="nav-number"></span> <span class="nav-text">十：适配iOS 11 列表的册数删除</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#十一：到底用viewSafeAreaInsetsDidChange还是viewWillLayoutSubviews"><span class="nav-number"></span> <span class="nav-text">十一：到底用viewSafeAreaInsetsDidChange还是viewWillLayoutSubviews</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#首先我们要知道："><span class="nav-number">1.</span> <span class="nav-text">首先我们要知道：</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#十二：纯代码的宽高比适配"><span class="nav-number"></span> <span class="nav-text">十二：纯代码的宽高比适配</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#十三：纯代码适配iPhone-X脚底"><span class="nav-number"></span> <span class="nav-text">十三：纯代码适配iPhone X脚底</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#十四：xib和SB适配"><span class="nav-number"></span> <span class="nav-text">十四：xib和SB适配</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#十五：App-Store评论跳转问题"><span class="nav-number"></span> <span class="nav-text">十五：App Store评论跳转问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#十六：导航栏设置透明问题"><span class="nav-number"></span> <span class="nav-text">十六：导航栏设置透明问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#十七：twitter"><span class="nav-number"></span> <span class="nav-text">十七：twitter</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#十八：AppIcon"><span class="nav-number"></span> <span class="nav-text">十八：AppIcon</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#十九：相册访问权限"><span class="nav-number"></span> <span class="nav-text">十九：相册访问权限</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结："><span class="nav-number"></span> <span class="nav-text">总结：</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1-属性总结："><span class="nav-number">1.</span> <span class="nav-text">1. 属性总结：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-Safe-Area-与-Layout-Margins"><span class="nav-number">2.</span> <span class="nav-text">2. Safe Area 与 Layout Margins</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Home-Indicator"><span class="nav-number">3.</span> <span class="nav-text">Home Indicator</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-Edge-Protection"><span class="nav-number">4.</span> <span class="nav-text">3. Edge Protection</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#4-Auto-Hide"><span class="nav-number">5.</span> <span class="nav-text">4. Auto-Hide</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#推荐："><span class="nav-number"></span> <span class="nav-text">推荐：</span></a></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">曹理鹏@iCocos</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">站点总字数：</span>
+    
+    <span title="站点总字数">348k</span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    
+    <span title="站点阅读时长">5:16</span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv" title="总访客量">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="site-pv" title="总访问量">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/reading_progress/reading_progress.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.3.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.3.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.3.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.3.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+  
+    <script type="text/javascript">
+    (function(){
+      var appid = 'cytKHBEtW';
+      var conf = '43989b8e63b25c4e9f1fde821c996a39';
+      var width = window.innerWidth || document.documentElement.clientWidth;
+      if (width < 960) {
+      window.document.write('<script id="changyan_mobile_js" charset="utf-8" type="text/javascript" src="https://changyan.sohu.com/upload/mobile/wap-js/changyan_mobile.js?client_id=' + appid + '&conf=' + conf + '"><\/script>'); } else { var loadJs=function(d,a){var c=document.getElementsByTagName("head")[0]||document.head||document.documentElement;var b=document.createElement("script");b.setAttribute("type","text/javascript");b.setAttribute("charset","UTF-8");b.setAttribute("src",d);if(typeof a==="function"){if(window.attachEvent){b.onreadystatechange=function(){var e=b.readyState;if(e==="loaded"||e==="complete"){b.onreadystatechange=null;a()}}}else{b.onload=a}}c.appendChild(b)};loadJs("https://changyan.sohu.com/upload/changyan.js",function(){
+        window.changyan.api.config({appid:appid,conf:conf})});
+      }
+    })();
+    </script>
+    <script type="text/javascript" src="https://assets.changyan.sohu.com/upload/plugins/plugins.count.js"></script>
+  
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=6.3.0"></script>
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("Tc7k1mbaieCUSgmM8LPk1IBO-gzGzoHsz", "sAb7L2vwENJTteRrvFKQacUU");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            
+              var $element = $(document.getElementById(url));
+              $element.find('.leancloud-visitors-count').text(counter.get('time'));
+            
+            counter.save(null, {
+              success: function(counter) {
+                
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            
+              var $element = $(document.getElementById(url));
+              $element.find('.leancloud-visitors-count').text('Counter not initialized! See more at console err msg.');
+              console.error('ATTENTION! LeanCloud counter has security bug, see here how to solve it: https://github.com/theme-next/hexo-leancloud-counter-security. \n But you also can use LeanCloud without security, by set \'security\' option to \'false\'.');
+            
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #333;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #eee;
+      background-image: linear-gradient(#fcfcfc, #eee);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('复制').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+          if(result)$(this).text('复制成功')
+          else $(this).text('复制失败')
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('复制')
+        }, 300)
+      }).append(e)
+    })
+  </script>
+
+
+  
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("Tc7k1mbaieCUSgmM8LPk1IBO-gzGzoHsz", "sAb7L2vwENJTteRrvFKQacUU");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+  
+</body>
+</html>

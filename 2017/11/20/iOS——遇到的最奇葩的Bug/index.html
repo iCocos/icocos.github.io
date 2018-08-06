@@ -1,0 +1,1947 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.3.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.3.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.3.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="我司有两个App，一个115，一个是115组织，每个人分别负责不同的模块，最近除了适配iPhone X，还处理一些遗留的问题（Bug），并跟进一些开发的需求。但是最近，前几天测试很强硬的跟我反馈的了一个Bug，说这个问题一定要想办法处理掉…………。">
+<meta name="keywords" content="Swift,开发文档">
+<meta property="og:type" content="article">
+<meta property="og:title" content="iOS——遇到的最奇葩的Bug">
+<meta property="og:url" content="https://icocos.github.io/2017/11/20/iOS——遇到的最奇葩的Bug/index.html">
+<meta property="og:site_name" content="iCocos">
+<meta property="og:description" content="我司有两个App，一个115，一个是115组织，每个人分别负责不同的模块，最近除了适配iPhone X，还处理一些遗留的问题（Bug），并跟进一些开发的需求。但是最近，前几天测试很强硬的跟我反馈的了一个Bug，说这个问题一定要想办法处理掉…………。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/newImages/115/taBarBug0001.png">
+<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/newImages/115/taBarBug0001.png">
+<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/newImages/115/taBarBug0002.png">
+<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/newImages/115/taBarBug0005.png">
+<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/17Images/11/wxChat0001.png">
+<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/newImages/115/taBarBug0007.png">
+<meta property="og:updated_time" content="2018-08-06T18:33:42.524Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="iOS——遇到的最奇葩的Bug">
+<meta name="twitter:description" content="我司有两个App，一个115，一个是115组织，每个人分别负责不同的模块，最近除了适配iPhone X，还处理一些遗留的问题（Bug），并跟进一些开发的需求。但是最近，前几天测试很强硬的跟我反馈的了一个Bug，说这个问题一定要想办法处理掉…………。">
+<meta name="twitter:image" content="http://pd1l3bbt7.bkt.clouddn.com/newImages/115/taBarBug0001.png">
+
+
+
+  <link rel="alternate" href="/atom.xml" title="iCocos" type="application/atom+xml" />
+
+
+
+
+  <link rel="canonical" href="https://icocos.github.io/2017/11/20/iOS——遇到的最奇葩的Bug/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>iOS——遇到的最奇葩的Bug | iCocos</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">iCocos</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">www.icocos.cn</p>
+      
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-首页">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-归档">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-分类">
+    <a href="/categories/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-标签">
+    <a href="/tags/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-关于">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="st-search-show-outputs">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup search-popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+    <div class="reading-progress-bar"></div>
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://icocos.github.io/2017/11/20/iOS——遇到的最奇葩的Bug/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="曹理鹏@iCocos">
+      <meta itemprop="description" content="纯码迷、爱学习、爱交友、喜欢接触新鲜事物、迎接新的挑战，更爱游离于错综复杂的编码与逻辑中！">
+      <meta itemprop="image" content="http://pd1l3bbt7.bkt.clouddn.com/icocos_user_icon.JPG">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="iCocos">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">iOS——遇到的最奇葩的Bug
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2017-11-20 20:30:23" itemprop="dateCreated datePublished" datetime="2017-11-20T20:30:23+08:00">2017-11-20</time>
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Swift/" itemprop="url" rel="index"><span itemprop="name">Swift</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+              <span class="post-meta-divider">|</span>
+              <span class="post-meta-item-icon">
+                <i class="fa fa-comment-o"></i>
+              </span>
+              
+                <a href="/2017/11/20/iOS——遇到的最奇葩的Bug/#SOHUCS" itemprop="discussionUrl">
+                  <span class="post-meta-item-text">评论数：</span> <span id="changyan_count_unit" class="post-comments-count hc-comment-count" data-xid="2017/11/20/iOS——遇到的最奇葩的Bug/" itemprop="commentsCount"></span>
+                </a>
+              
+            
+          
+
+          
+          
+             <span id="/2017/11/20/iOS——遇到的最奇葩的Bug/" class="leancloud_visitors" data-flag-title="iOS——遇到的最奇葩的Bug">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数：</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon"
+            >
+            <i class="fa fa-eye"></i>
+             阅读次数： 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+            <div class="post-symbolscount">
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">本文字数：</span>
+                
+                <span title="本文字数">4.7k</span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">4 分钟</span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>我司有两个App，一个115，一个是115组织，每个人分别负责不同的模块，最近除了适配iPhone X，还处理一些遗留的问题（Bug），并跟进一些开发的需求。但是最近，前几天测试很强硬的跟我反馈的了一个Bug，说这个问题一定要想办法处理掉…………。</p>
+<a id="more"></a>
+<h4 id="先来看看看具体的问题"><a href="#先来看看看具体的问题" class="headerlink" title="先来看看看具体的问题"></a>先来看看看具体的问题</h4><p><img src="http://pd1l3bbt7.bkt.clouddn.com/newImages/115/taBarBug0001.png"></p>
+<blockquote>
+<p>这是具体出现这个奇葩Bug的现象（已打开图层），</p>
+</blockquote>
+<p>由于App实际效果现场暂时无法出现，所以抱歉，只能给出当时截图的图层调试效果</p>
+<h4 id="事情是这样的"><a href="#事情是这样的" class="headerlink" title="事情是这样的:"></a>事情是这样的:</h4><p>我司有两个App，一个115，一个是115组织，每个人分别负责不同的模块，最近除了适配iPhone X，还处理一些遗留的问题（Bug），并跟进一些开发的需求。但是最近，前几天测试很强硬的跟我反馈的了一个Bug，说这个问题一定要想办法处理掉……</p>
+<h4 id="测试反馈的具体问题："><a href="#测试反馈的具体问题：" class="headerlink" title="测试反馈的具体问题："></a>测试反馈的具体问题：</h4><ul>
+<li>底部TabBar条中多出一个Item。</li>
+<li>115组织有（非常小概率）这样的现象，但是115没有出现过。</li>
+<li>无法复现，但是出现之后就无法消失 ，只能结束进程。</li>
+</ul>
+<p>根据上面测试人员反馈的问题，之前有专门负责模块的人有尝试处理过此问题，后面老大和大家也一起查找和分析过此问题，但是并没有实际验证并解决此问题……</p>
+<h2 id="解决过程…"><a href="#解决过程…" class="headerlink" title="解决过程…"></a>解决过程…</h2><blockquote>
+<p>由于最近在开始适配iPhone X，公司仅有的一部测试机没有在我们总部现场，还在北京的分部，所以在我们进行适配后，测试人员无法验证问题，于是只能借用这边的Mac设置使用模拟器进行测试验证……</p>
+</blockquote>
+<p>就在某一天中午，iPhone X现在测试人员在群里说了一句：</p>
+<blockquote>
+<p>这个Bug又出现了，并符上了截图。</p>
+</blockquote>
+<p>而且此Bug在过去的一段时间里，测试人员也有反馈过，只是概率非常低，当我们再次进行验证调试的时候，且始终无法再现了，最终都以失败告终……</p>
+<p>这次终于有现场了，什么也不说，我停下了手上的所有工作，做到现场设备前开始调试，希望能解决这个一直以来存在的问题……</p>
+<blockquote>
+<p>由于之前在上一家公司遇到过一次这样的问题，但是当时的解决方案是：</p>
+<blockquote>
+<p>没有使用之前的TabBar，并且部分代码都重写整理了，才处理次问题，但实际上并没有从根本解决这个Bug，后面由于项目太赶，也就没有管那么多了。<br>但是这次可能不一样，就目前公司项目之庞大，肯定是没办法重写了，只能想办法找出具体问题，毕竟别人家的项目正常（或者我们另一个项目正常），这就是Bug，是Bug就要像办法解。</p>
+</blockquote>
+</blockquote>
+<p>下面是我整个解决问题的过程</p>
+<h3 id="一：乱点一顿"><a href="#一：乱点一顿" class="headerlink" title="一：乱点一顿"></a>一：乱点一顿</h3><p>开始调试模式以后，我回到实际效果界面，随便点了几下界面（当时测试说了一句：一来就破坏现场，我……）,发现以下问题：</p>
+<ol>
+<li>本来只有四个Item的（有文字和图片），但是现在貌似有五组文字，其中一组文字偏移了不少</li>
+<li>重复的那组文字，在第一个Item对应标题的坐下角</li>
+<li>重复的问题和对应的区域无法点击，或者点击相应的就是第一个Item的效果</li>
+<li>重复的为文字是刚好是App上一个版本的第一个Item文字对应的标题文案，</li>
+<li>出现之后，无论怎么操作都无法消失（即使退到了后台），只能杀掉进程</li>
+</ol>
+<h3 id="二：图层分析"><a href="#二：图层分析" class="headerlink" title="二：图层分析"></a>二：图层分析</h3><p>然后我们开启了图层调试模式，并仔细分析了一下，下面是具体效果</p>
+<p><img src="http://pd1l3bbt7.bkt.clouddn.com/newImages/115/taBarBug0001.png"></p>
+<p><img src="http://pd1l3bbt7.bkt.clouddn.com/newImages/115/taBarBug0002.png"></p>
+<p>由此我们得出了一下结论</p>
+<ol>
+<li>TabBar有五个Item，</li>
+<li>异常的那个在图层的位置属于第三个</li>
+<li>异常的那个在宽高貌似和其他四个相反（躺着的）</li>
+<li>异常的那个原始X和Y值都是0</li>
+<li>异常的那个只有问题没有图片</li>
+</ol>
+<p>得到这些信息之后，我保留了一份效果并记录下来的这个信息</p>
+<h3 id="三：代码找到"><a href="#三：代码找到" class="headerlink" title="三：代码找到"></a>三：代码找到</h3><p>我找到的TabBarController，发现没有自定义的Tabar，使用的系统的tabBar，经过查找也没有发现有对应TabBarController和TabBar的分类，最终到唯一设置TabBarController对应控制器和相关标题文案，图的代码</p>
+<pre><code>//事务
+self.oneVC = [[OneViewController alloc] init];
+self.oneVC.title = NSLocalizedString(@&quot;事务&quot;, nil);
+self.oneVC.tabBarItem = [[UITabBarItem alloc] initWithTitle:NSLocalizedString(@&quot;事务+&quot;, nil) image:... selectedImage:...];
+
+//提醒
+self.twoVC = [[LifeMainViewController alloc] init];
+self.twoVC.tabBarItem = [[UITabBarItem alloc] initWithTitle:NSLocalizedString(@&quot;提醒&quot;,nil) image:... selectedImage:...];
+
+//我聊
+self.three = [[ChatMainViewController alloc] init];
+self.three.title = NSLocalizedString(@&quot;消息&quot;, nil);
+self.three.tabBarItem = [[UITabBarItem alloc] initWithTitle:NSLocalizedString(@&quot;我聊&quot;,nil) image:... selectedImage:...];
+
+//组织
+self.fourVC = [[UIStoryboard storyboardWithName:@&quot;Groups&quot; bundle:nil] instantiateViewControllerWithIdentifier:@&quot;COMainOfficeViewController&quot;];
+self.fourVC.tabBarItem = [[UITabBarItem alloc] initWithTitle:NSLocalizedString(@&quot;组织&quot;,nil) image:... selectedImage:...];
+
+self.viewControllers = @[[[UINavigationController alloc] initWithRootViewController:self.oneVC], //115
+[[UINavigationController alloc] initWithRootViewController:self.twoVC], //提醒
+[[UINavigationController alloc] initWithRootViewController:self.threeVC], //我聊
+[[UINavigationController alloc] initWithRootViewController:self.fourVC]];  //组织
+</code></pre><p>以上是所有TabBarController设置TabBar,Item，对应控制，标题，图片的代码（由于关系代码隐私，部分代码做了特殊处理）。</p>
+<p>这段我仔细看了不下三遍，看来看去还是看不出任何问题,但是又感觉和我们之前使用的方式有撒不同的地方，差了一下另一个项目的对应代码，好像没有什么区别，只是那边自定义了一个TabBar.</p>
+<h3 id="四：根据错位文案全局查找"><a href="#四：根据错位文案全局查找" class="headerlink" title="四：根据错位文案全局查找"></a>四：根据错位文案全局查找</h3><p>由于上面错位Item的标题文案并不是我们设置的那四个Item的文案，只是同样是个Item，只有标题，没有图片而且是躺着的Item。</p>
+<blockquote>
+<p>于是我全局搜索：“115组织”，发现马上有一百多个地方，当时我就懵逼了，也懒得吐槽。。。。。。。</p>
+</blockquote>
+<p>直接查看这一百多个含有“115组织”文案的地方，并且根据类名从可能性高到底看，看完之后我们眼睛都在打转，也没有发现什么可用信息，只是熟悉了一遍代码……</p>
+<h3 id="五：网上寻找答案"><a href="#五：网上寻找答案" class="headerlink" title="五：网上寻找答案"></a>五：网上寻找答案</h3><p>于是我开始在进苹果官方论坛并查找相关的苹果文档资料，然后github，stackoverflow，百度，微博，贴吧，论坛，知乎等地方都搜了一遍相关资料，开始并没有找到什么根本问题，并且在几个比较值得发布的技术群里提出的请教…..</p>
+<p>最后在stackoverflow中发现了一个问题：</p>
+<p><a href="http://cache.baiducontent.com/c?m=9d78d513d98512ff08bed4690c66863b4512c03e6289875568d5e35f93134c403722b8ec623511748298202141f21702bdb02173474237b6ebdf883dcabae26e74ce7963671cf71a4f920eafba07639271c94de8df44a3edb066cdf397c798140dc509433cc2b19c5b7309d72eb64760bafbdd1f550b4ee7a8276588082a76826007e106bfbb6f32469cf6de584fc42ed1640ccdf270a73e64f34eb31f6d751ef310e45f462646a71463a4137855cfb71ba777271e74f65fb3cf87edad16dbcbea47c3a69df86dc23cb092b6bf6642060fae32beddfbe16d341642cecaa84d8265e3edeccc0ab2528947&amp;p=8979ca16d9c11eff57ee947c4e5682&amp;newp=866adf15d9c041ad46be9b7c4f4b93231610db2151d4d7176b82c825d7331b001c3bbfb423241a03d9c27c6407af4e56edf03079320821a3dda5c91d9fb4c5747996&amp;user=baidu&amp;fm=sc&amp;query=TabBarController%2EviewControllers%2Etitle+ios++stackoverflow&amp;qid=d53bdb240001f79f&amp;p1=1" target="_blank" rel="noopener">how to change uiviewcontroller title independent of tabbar item title</a></p>
+<p><img src="http://pd1l3bbt7.bkt.clouddn.com/newImages/115/taBarBug0005.png"></p>
+<p>仔细看了一下下面的回答，虽然不是问题和答案不是和我们的这个问题相关，但是我们从这里找到了灵感。</p>
+<h5 id="从上面的实际效果和结论我们知道"><a href="#从上面的实际效果和结论我们知道" class="headerlink" title="从上面的实际效果和结论我们知道"></a>从上面的实际效果和结论我们知道</h5><ul>
+<li>多了一个Item</li>
+<li>只有标题没有问题</li>
+<li>位置在初始位置（0，0）</li>
+</ul>
+<p>再回到上面的代码，我们发现只有第一个（事务）和第三个（我聊）使用的VC.title</p>
+<pre><code>//事务
+self.oneVC = [[OneViewController alloc] init];
+self.oneVC.title = NSLocalizedString(@&quot;事务&quot;, nil);
+self.oneVC.tabBarItem = [[UITabBarItem alloc] initWithTitle:NSLocalizedString(@&quot;事务+&quot;, nil) image:... selectedImage:...];
+
+//我聊
+self.three = [[ChatMainViewController alloc] init];
+self.three.title = NSLocalizedString(@&quot;消息&quot;, nil);
+self.three.tabBarItem = [[UITabBarItem alloc] initWithTitle:NSLocalizedString(@&quot;我聊&quot;,nil) image:... selectedImage:...];
+</code></pre><p>在要说区别就是组织使用的是StoryBard加载的控制器。</p>
+<blockquote>
+<p>于是我开始猜想，难道真的在这里，但是为撒只有第一个有Bug，第三个没有Bug呢？</p>
+</blockquote>
+<h3 id="六：群聊问答"><a href="#六：群聊问答" class="headerlink" title="六：群聊问答"></a>六：群聊问答</h3><p>就在沉思和与同事讨论的时候，我之前在群里提过的问题，有人几个回答了，但是一开始都是让我直接搜索错位Bug显示对应的标题文案，仔细查看对应代码，检查tabBar控制器，Item标题等信息代码等等…..</p>
+<p>后面有一个大牛说了一句话：</p>
+<blockquote>
+<p>这是一个历史悠久的Bug，从iOS 5就开始有了，tabBarController对应子控制器标题最好不要这么设置，会有问题。</p>
+</blockquote>
+<p>附上截图</p>
+<p><img src="http://pd1l3bbt7.bkt.clouddn.com/17Images/11/wxChat0001.png" alt="曹理鹏(iCocos)-梦工厂"></p>
+<p><img src="http://pd1l3bbt7.bkt.clouddn.com/newImages/115/taBarBug0007.png"></p>
+<p>顿时我好想又想到了stackoverflow的那个问题，并想起来项目中设置TabBarController对应控制器和相关标题文案，图的代码。好像终于找到了解决方案，但是是真的吗？我也不知道，因为前面提到了，无法复现了（这Bug非常变态，你想它出了，死都不出来，但是不知不觉可能又出来了，而那个时候是不是又不是调试模式）。</p>
+<p>七：解决方案？</p>
+<blockquote>
+<p>最后我决定换掉上面设置TabBarController对应控制器和相关标题文案，图片的代码，并且和部门同事，测试人员一起想办法专门测了一下这个问题，但是最终一次都没有出现过，于是我就跟测试人员说：你先测试或者回忆一下之前出现的方案，尽量多测试一下，不管这个问题是不是真的解决了，跟其他同事也说一下，留意一下这个问题,然后就闪人了……</p>
+</blockquote>
+<p>回到座位后，我沉思了几秒，再回想了一下整个过程，并且带讽刺的微笑，问自己：</p>
+<p><code>这个问题真的解决了吗？我也不知道.......</code></p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wechatpay.jpg" alt="曹理鹏@iCocos 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>曹理鹏@iCocos</li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://icocos.github.io/2017/11/20/iOS——遇到的最奇葩的Bug/" title="iOS——遇到的最奇葩的Bug">https://icocos.github.io/2017/11/20/iOS——遇到的最奇葩的Bug/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明出处！</li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Swift/" rel="tag"># Swift</a>
+          
+            <a href="/tags/开发文档/" rel="tag"># 开发文档</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/11/18/iOS——免密登录，我以为有多难？/" rel="next" title="iOS——免密登录，我以为有多难？">
+                <i class="fa fa-chevron-left"></i> iOS——免密登录，我以为有多难？
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/11/21/React-Nativec搭建与初始化项目/" rel="prev" title="React Native搭建与初始化项目">
+                React Native搭建与初始化项目 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="SOHUCS"></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="http://pd1l3bbt7.bkt.clouddn.com/icocos_user_icon.JPG"
+                alt="曹理鹏@iCocos" />
+            
+              <p class="site-author-name" itemprop="name">曹理鹏@iCocos</p>
+              <p class="site-description motion-element" itemprop="description">纯码迷、爱学习、爱交友、喜欢接触新鲜事物、迎接新的挑战，更爱游离于错综复杂的编码与逻辑中！</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives">
+                
+                    <span class="site-state-item-count">76</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">16</span>
+                    <span class="site-state-item-name">分类</span>
+                  
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">81</span>
+                    <span class="site-state-item-name">标签</span>
+                  
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/al1020119" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:al1020119@163.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://stackoverflow.com/users/10186720" target="_blank" title="StackOverflow"><i class="fa fa-fw fa-stack-overflow"></i>StackOverflow</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.icocos.cn/" title="梦工厂" target="_blank">梦工厂</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://al1020119.github.io/" title="iOS梦工厂" target="_blank">iOS梦工厂</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#先来看看看具体的问题"><span class="nav-number">1.</span> <span class="nav-text">先来看看看具体的问题</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#事情是这样的"><span class="nav-number">2.</span> <span class="nav-text">事情是这样的:</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#测试反馈的具体问题："><span class="nav-number">3.</span> <span class="nav-text">测试反馈的具体问题：</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#解决过程…"><span class="nav-number"></span> <span class="nav-text">解决过程…</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#一：乱点一顿"><span class="nav-number"></span> <span class="nav-text">一：乱点一顿</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#二：图层分析"><span class="nav-number"></span> <span class="nav-text">二：图层分析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#三：代码找到"><span class="nav-number"></span> <span class="nav-text">三：代码找到</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#四：根据错位文案全局查找"><span class="nav-number"></span> <span class="nav-text">四：根据错位文案全局查找</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#五：网上寻找答案"><span class="nav-number"></span> <span class="nav-text">五：网上寻找答案</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#从上面的实际效果和结论我们知道"><span class="nav-number">0.1.</span> <span class="nav-text">从上面的实际效果和结论我们知道</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#六：群聊问答"><span class="nav-number"></span> <span class="nav-text">六：群聊问答</span></a></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">曹理鹏@iCocos</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">站点总字数：</span>
+    
+    <span title="站点总字数">348k</span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    
+    <span title="站点阅读时长">5:16</span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv" title="总访客量">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="site-pv" title="总访问量">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/reading_progress/reading_progress.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.3.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.3.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.3.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.3.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+  
+    <script type="text/javascript">
+    (function(){
+      var appid = 'cytKHBEtW';
+      var conf = '43989b8e63b25c4e9f1fde821c996a39';
+      var width = window.innerWidth || document.documentElement.clientWidth;
+      if (width < 960) {
+      window.document.write('<script id="changyan_mobile_js" charset="utf-8" type="text/javascript" src="https://changyan.sohu.com/upload/mobile/wap-js/changyan_mobile.js?client_id=' + appid + '&conf=' + conf + '"><\/script>'); } else { var loadJs=function(d,a){var c=document.getElementsByTagName("head")[0]||document.head||document.documentElement;var b=document.createElement("script");b.setAttribute("type","text/javascript");b.setAttribute("charset","UTF-8");b.setAttribute("src",d);if(typeof a==="function"){if(window.attachEvent){b.onreadystatechange=function(){var e=b.readyState;if(e==="loaded"||e==="complete"){b.onreadystatechange=null;a()}}}else{b.onload=a}}c.appendChild(b)};loadJs("https://changyan.sohu.com/upload/changyan.js",function(){
+        window.changyan.api.config({appid:appid,conf:conf})});
+      }
+    })();
+    </script>
+    <script type="text/javascript" src="https://assets.changyan.sohu.com/upload/plugins/plugins.count.js"></script>
+  
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=6.3.0"></script>
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("Tc7k1mbaieCUSgmM8LPk1IBO-gzGzoHsz", "sAb7L2vwENJTteRrvFKQacUU");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            
+              var $element = $(document.getElementById(url));
+              $element.find('.leancloud-visitors-count').text(counter.get('time'));
+            
+            counter.save(null, {
+              success: function(counter) {
+                
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            
+              var $element = $(document.getElementById(url));
+              $element.find('.leancloud-visitors-count').text('Counter not initialized! See more at console err msg.');
+              console.error('ATTENTION! LeanCloud counter has security bug, see here how to solve it: https://github.com/theme-next/hexo-leancloud-counter-security. \n But you also can use LeanCloud without security, by set \'security\' option to \'false\'.');
+            
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #333;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #eee;
+      background-image: linear-gradient(#fcfcfc, #eee);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('复制').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+          if(result)$(this).text('复制成功')
+          else $(this).text('复制失败')
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('复制')
+        }, 300)
+      }).append(e)
+    })
+  </script>
+
+
+  
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("Tc7k1mbaieCUSgmM8LPk1IBO-gzGzoHsz", "sAb7L2vwENJTteRrvFKQacUU");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+  
+</body>
+</html>

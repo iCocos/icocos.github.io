@@ -1,0 +1,2032 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.3.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.3.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.3.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="iOS的小伙伴有没有觉得今年特别与众不同，是因为iPhone X出来了吗？是的，但是不仅仅是因为iPhone X的面世。 还有 Xcode 9无线调试，Swift 4升级适配，iPhone X适配，前面介绍了iPhone X适配总结，这里整理一下Swift 4.0升级与适配处理…..">
+<meta name="keywords" content="iOS,Swift 4.0 适配实战总结（Xcode9）">
+<meta property="og:type" content="article">
+<meta property="og:title" content="iOS——Swift 4.0 适配实战总结（Xcode9）">
+<meta property="og:url" content="https://icocos.github.io/2017/11/27/iOS——Swift-4-0-适配实战总结（Xcode9）/index.html">
+<meta property="og:site_name" content="iCocos">
+<meta property="og:description" content="iOS的小伙伴有没有觉得今年特别与众不同，是因为iPhone X出来了吗？是的，但是不仅仅是因为iPhone X的面世。 还有 Xcode 9无线调试，Swift 4升级适配，iPhone X适配，前面介绍了iPhone X适配总结，这里整理一下Swift 4.0升级与适配处理…..">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/17Images/11/0001.png">
+<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/17Images/11/0002.png">
+<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/17Images/11/0003.png">
+<meta property="og:updated_time" content="2018-08-06T18:33:42.378Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="iOS——Swift 4.0 适配实战总结（Xcode9）">
+<meta name="twitter:description" content="iOS的小伙伴有没有觉得今年特别与众不同，是因为iPhone X出来了吗？是的，但是不仅仅是因为iPhone X的面世。 还有 Xcode 9无线调试，Swift 4升级适配，iPhone X适配，前面介绍了iPhone X适配总结，这里整理一下Swift 4.0升级与适配处理…..">
+<meta name="twitter:image" content="http://pd1l3bbt7.bkt.clouddn.com/17Images/11/0001.png">
+
+
+
+  <link rel="alternate" href="/atom.xml" title="iCocos" type="application/atom+xml" />
+
+
+
+
+  <link rel="canonical" href="https://icocos.github.io/2017/11/27/iOS——Swift-4-0-适配实战总结（Xcode9）/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>iOS——Swift 4.0 适配实战总结（Xcode9） | iCocos</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">iCocos</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">www.icocos.cn</p>
+      
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-首页">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-归档">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-分类">
+    <a href="/categories/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-标签">
+    <a href="/tags/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-关于">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="st-search-show-outputs">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup search-popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+    <div class="reading-progress-bar"></div>
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://icocos.github.io/2017/11/27/iOS——Swift-4-0-适配实战总结（Xcode9）/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="曹理鹏@iCocos">
+      <meta itemprop="description" content="纯码迷、爱学习、爱交友、喜欢接触新鲜事物、迎接新的挑战，更爱游离于错综复杂的编码与逻辑中！">
+      <meta itemprop="image" content="http://pd1l3bbt7.bkt.clouddn.com/icocos_user_icon.JPG">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="iCocos">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">iOS——Swift 4.0 适配实战总结（Xcode9）
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2017-11-27 16:15:23" itemprop="dateCreated datePublished" datetime="2017-11-27T16:15:23+08:00">2017-11-27</time>
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/iOS/" itemprop="url" rel="index"><span itemprop="name">iOS</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+              <span class="post-meta-divider">|</span>
+              <span class="post-meta-item-icon">
+                <i class="fa fa-comment-o"></i>
+              </span>
+              
+                <a href="/2017/11/27/iOS——Swift-4-0-适配实战总结（Xcode9）/#SOHUCS" itemprop="discussionUrl">
+                  <span class="post-meta-item-text">评论数：</span> <span id="changyan_count_unit" class="post-comments-count hc-comment-count" data-xid="2017/11/27/iOS——Swift-4-0-适配实战总结（Xcode9）/" itemprop="commentsCount"></span>
+                </a>
+              
+            
+          
+
+          
+          
+             <span id="/2017/11/27/iOS——Swift-4-0-适配实战总结（Xcode9）/" class="leancloud_visitors" data-flag-title="iOS——Swift 4.0 适配实战总结（Xcode9）">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数：</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon"
+            >
+            <i class="fa fa-eye"></i>
+             阅读次数： 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+            <div class="post-symbolscount">
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">本文字数：</span>
+                
+                <span title="本文字数">6.5k</span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">6 分钟</span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>iOS的小伙伴有没有觉得今年特别与众不同，是因为iPhone X出来了吗？是的，但是不仅仅是因为iPhone X的面世。 还有 Xcode 9无线调试，Swift 4升级适配，iPhone X适配，前面介绍了iPhone X适配总结，这里整理一下Swift 4.0升级与适配处理…..</p>
+<a id="more"></a>
+<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><h5 id="ios开发中，适配越来越多了："><a href="#ios开发中，适配越来越多了：" class="headerlink" title="ios开发中，适配越来越多了："></a>ios开发中，适配越来越多了：</h5><ul>
+<li>Xcode适配</li>
+<li>Swift升级适配</li>
+<li>iPhone适配</li>
+</ul>
+<p>其中Xcode没有太多东西可说，最重要的是iPhone适配，尤其是最新的iPhone X的适配。</p>
+<blockquote>
+<p>iPhone X的适配之前有整理过一篇文章根据实际进行总结<a href="https://icocos.github.io/2017/11/18/iOS%E2%80%94%E2%80%94iPhone-X%E9%80%82%E9%85%8D%E5%AE%9E%E6%88%98%E6%80%BB%E7%BB%93/">iPhone X适配实战总结</a>，</p>
+</blockquote>
+<p>这里主要介绍一下最新版Swift 4适配，并简单的说一下关于Xcode9特性与适配的问题</p>
+<blockquote>
+<p>关于Swift新特性可以参考这里：<a href="http://www.jianshu.com/p/f35514ae9c1a" target="_blank" rel="noopener">http://www.jianshu.com/p/f35514ae9c1a</a></p>
+</blockquote>
+<p>Xcode 9 中同时集成了 Swift 3.2 和 Swift 4。</p>
+<ol>
+<li>Swift 3.2 完全兼容 Swift 3.1，并会在过时的语法或函数上报告警告。</li>
+<li>Swift 3.2 具有 Swift 4 的一些写法，但是性能不如 Swift 4。</li>
+<li>Swift 3.2 和 Swift 4 可以混合编译，可以指定一部分模块用 Swift 3.2 编译，一部分用 Swift 4 编译。</li>
+<li>迁移到 Swift 4 后能获得 Swift 4 所有的新特性，并且性能比 Swift 3.2 好。</li>
+</ol>
+<blockquote>
+<blockquote>
+<p>当 Xcode 正式版发布后，现有的 Swift 代码可以直接升级到 Swift 3.2 而不用做任何改动，也可以后续再迁移到 Swift 4。<br>或者直接迁移到 Swift 4 也可以，Swift 4 相比 Swift 3 的 API 变化还是不大的，很多第三方库都可以直接用 Swift 4 编译。<br>Swift 1 到 2 和 Swift 2 到 3 的迁移的痛苦在 3 到 4 的迁移上已经大大改善了。</p>
+</blockquote>
+</blockquote>
+<h2 id="适配"><a href="#适配" class="headerlink" title="适配"></a>适配</h2><p>关于Swift 4适配中OC与Swift混编的坑比较多</p>
+<h3 id="查看当前版本"><a href="#查看当前版本" class="headerlink" title="查看当前版本"></a>查看当前版本</h3><p><img src="http://pd1l3bbt7.bkt.clouddn.com/17Images/11/0001.png" alt="曹理鹏(iCocos)-梦工厂"></p>
+<h2 id="当前环境"><a href="#当前环境" class="headerlink" title="当前环境"></a>当前环境</h2><ul>
+<li>Mac OS 10.12.6</li>
+<li>XCode 9.1</li>
+<li>当前Swift版本 3.2</li>
+</ul>
+<h2 id="一键升级"><a href="#一键升级" class="headerlink" title="一键升级"></a>一键升级</h2><p>这一特性非常6，印象中是swift2的时候出来的，具体时间也忘了。</p>
+<p><img src="http://pd1l3bbt7.bkt.clouddn.com/17Images/11/0002.png" alt="曹理鹏(iCocos)-梦工厂"></p>
+<ul>
+<li>然后勾选需要转换的 target （pod 引用不用勾选），Next </li>
+<li>然后选择转换选项，Next<br>  这两个选项是关于 swift 的 @objc 推断特性的，如果使用了 swift4.0 显式的 @objc 属性，能减少整体代码的大小。此时我们选 Minimize Inference（recommend）<br>  <img src="http://pd1l3bbt7.bkt.clouddn.com/17Images/11/0003.png" alt="曹理鹏(iCocos)-梦工厂"><ul>
+<li>Minimize Inference（recommend）<ul>
+<li>根据静态推断，仅在需要的地方添加@objc属性。使用此选项后，需要按照Completing a Swift 4 minimize inference migration来完成转换。</li>
+</ul>
+</li>
+<li>Match Swift 3 Behavior<ul>
+<li>在编译器隐式推断的任何地方向代码添加一个@objc属性。这个选项不会改变你的二进制文件的大小，因为被Swift 3隐式推断在所有的地方都添加了显式的@objc属性。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="修改错误-细节"><a href="#修改错误-细节" class="headerlink" title="修改错误+细节"></a>修改错误+细节</h3><blockquote>
+<p>完成上面之后，不会发现当前版本确实编程的Swift 4，但是好像跑步起来，到处报错。</p>
+</blockquote>
+<ul>
+<li>对，毕竟是工具，不可能那么人性化，有些地方还是需要人工进行专门的适配</li>
+</ul>
+<h4 id="问题一：编译不通过"><a href="#问题一：编译不通过" class="headerlink" title="问题一：编译不通过"></a>问题一：编译不通过</h4><p>如果项目中之前有class和extension，有些也给OC调用。在OC的代码中，我们通过#import “ModuleName-Swift.h”导入了Swift文件。如果是Swift3.2，一切都能正常工作，但是在Swift4.0上，编译通不过了。</p>
+<blockquote>
+<p>如果你看了Swift 4特性的话应该知道</p>
+<blockquote>
+<p>swift4.0 最大的特性之一就是 @objc 修饰符的变化了，它主要处理 OC 和 swift 混编时一些方法的调用以及属性获取问题，swift4.0 将在 swift3.x 中一些隐式类型推断的特性去除以后，需要我们来手动管理 @objc 修饰符。 </p>
+</blockquote>
+</blockquote>
+<h6 id="具体解决方案："><a href="#具体解决方案：" class="headerlink" title="具体解决方案："></a>具体解决方案：</h6><ul>
+<li>一：在OC中调用一个Swift4.0类的方法（包括实例方法、static方法、class方法），你需要：<ul>
+<li>在该Swift4.0类前加上修饰符@objc</li>
+<li>该Swift4.0类必须继承NSObject(否则，无法在前面加上修饰符@objc。当然，这里指的是普通类，@objc也是可以修饰UI开头的一系列UIKit框架下的UI类，只是修饰了这些类，不会产生什么影响)</li>
+<li>在需要调用的方法前加上修饰符@objc</li>
+</ul>
+</li>
+<li>二：在OC中调用一个Swift4.0扩展的属性（包括实例属性、static属性、class属性）、方法（包括实例方法、static方法、class法），你有如下两种选择方式：<ul>
+<li>在该Swift4.0扩展前加上修饰符@objc(这样的话，该扩展下的所有的属性、方法，都可被OC调用)。</li>
+<li>在需要的属性、方法前直接加上@objc修饰，也可达到目的。</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>注意一点：swift3 使用 #selector 指定的方法，只有当方法权限为 private 时需要加 @objc 修饰符，swift4.0 都要加 @objc 修饰符<br>swift4.0 不再允许重载 extension 中的方法(包括instance、static、class方法)</p>
+</blockquote>
+<h4 id="问题二：运行时找不到属性"><a href="#问题二：运行时找不到属性" class="headerlink" title="问题二：运行时找不到属性"></a>问题二：运行时找不到属性</h4><p>如果你有一个Swift类继承自UIViewController，OC中调用或者操作这个类[viewController valueForKey:@”userName”]这一KVC方法去获取这个自定义UIViewController中的iconURL这一属性的属性值。</p>
+<p>这种方式，编译时是无法检查出问题的。但是在运行时，问题就来了，找不到这个属性。因为这个属性没有暴露给OC来进行调用。</p>
+<h6 id="解决方案："><a href="#解决方案：" class="headerlink" title="解决方案："></a>解决方案：</h6><ul>
+<li>仅需要在自定义的UIViewController类中给需要暴露给OC调用的属性前加上@objc修饰符便可。如此一来，在OC代码中就能访问到这个属性。<ul>
+<li>(注意：这里可不像上面提到的extension一样，在这个已定义的UIViewController类前面加上@objc修饰符没有任何意义)。</li>
+</ul>
+</li>
+</ul>
+<h4 id="编译警告"><a href="#编译警告" class="headerlink" title="编译警告"></a>编译警告</h4><ul>
+<li>swift 中编译的警告 <ul>
+<li>“#selector” 参数指定的实例方法必须使用 @objc 修饰，因为swift4中弃用了 @objc属性推断。</li>
+</ul>
+</li>
+<li>Objective-C 编译时警告<ul>
+<li>在 OC 中调用的 swift 方法，在 swift 中需要追加 @objc 修饰，swift4 废弃了该类型推断。</li>
+</ul>
+</li>
+</ul>
+<h5 id="关于编译时也是直接增加-objc即可"><a href="#关于编译时也是直接增加-objc即可" class="headerlink" title="关于编译时也是直接增加@objc即可"></a>关于编译时也是直接增加@objc即可</h5><h4 id="运行时警告"><a href="#运行时警告" class="headerlink" title="运行时警告"></a>运行时警告</h4><p>运行时警告会打印在控制台：</p>
+<pre><code>***Swift runtime: 
+ClassName.swift:lineInFile:columnInLine: 
+entrypoint -[ClassName methodName] generated by implicit @objc inference is deprecated and will be removed in Swift 4; 
+add explicit @objc to the declaration to emit the Objective-C entrypoint in Swift 4 and suppress this message
+</code></pre><p>同样：想要修复运行时警告，需要添加 @objc 修饰符到对应的方法或者符号。</p>
+<ul>
+<li>运行时警告的常见原因:<ul>
+<li>在 OC 中使用 SEL</li>
+<li>在 swift 中使用了 perform methods</li>
+<li>在 OC 中使用了 performSelector methods</li>
+<li>使用了 @IBOutlet 或者 @IBAction</li>
+</ul>
+</li>
+</ul>
+<h4 id="NSAttributedStringKey"><a href="#NSAttributedStringKey" class="headerlink" title="NSAttributedStringKey"></a>NSAttributedStringKey</h4><pre><code>swift3.x
+public init(string str: String, attributes attrs: [AnyHashable : Any]? = nil)
+
+swift4.0
+public init(string str: String, attributes attrs: [NSAttributedStringKey : Any]? = nil)
+</code></pre><h4 id="String"><a href="#String" class="headerlink" title="String"></a>String</h4><h5 id="废弃characters"><a href="#废弃characters" class="headerlink" title="废弃characters"></a>废弃characters</h5><pre><code>swift 3
+var count = string.characters.count
+
+error
+&apos;characters&apos; is deprecated: Please use String or Substring directly
+
+swift 4
+count = string.count
+</code></pre><h5 id="废弃addingPercentEscapes"><a href="#废弃addingPercentEscapes" class="headerlink" title="废弃addingPercentEscapes"></a>废弃addingPercentEscapes</h5><pre><code>swift 3
+var url = @&quot;http://www.example.com?username=姓名&quot;
+url = url.addingPercentEscapes(using: String.Encoding.utf8)!
+
+error
+&apos;addingPercentEscapes(using:)&apos; is unavailable: Use addingPercentEncoding(withAllowedCharacters:) instead, which always uses the recommended UTF-8 encoding, and which encodes for a specific URL component or subcomponent since each URL component or subcomponent has different rules for what characters are valid.
+
+swift 4
+uri = uri.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed)!
+</code></pre><h5 id="废弃substring-to"><a href="#废弃substring-to" class="headerlink" title="废弃substring(to:)"></a>废弃substring(to:)</h5><pre><code>swift 3
+let index = tagText.index(tagText.startIndex, offsetBy: MPMultipleStyleListItemTagMaxLength)
+
+// 警告：&apos;substring(to:)&apos; is deprecated: Please use String slicing subscript with a &apos;partial range upto&apos; operator.
+let b = tagText.substring(to: index)
+
+Swift 4
+let a = tagText.prefix(upTo: index) //a 的类型是 Substring，不是 String
+</code></pre><h3 id="pod-引用"><a href="#pod-引用" class="headerlink" title="pod 引用"></a>pod 引用</h3><p>添加以下内容到 Podfile。</p>
+<pre><code>post_install do |installer|
+    installer.pods_project.targets.each do |target|
+        if [&apos;WTCarouselFlowLayout&apos;, &apos;XSLRevenue&apos;, &apos;OHHTTPStubs/Swift&apos;].include? target.name
+            target.build_configurations.each do |config|
+                config.build_settings[&apos;SWIFT_VERSION&apos;] = &apos;3.2&apos;
+            end
+        end
+    end
+end
+</code></pre><h3 id="系统方法"><a href="#系统方法" class="headerlink" title="系统方法"></a>系统方法</h3><p>UITableViewDelegate 协议方法名变更，没有错误提示：</p>
+<pre><code>// swift3.x
+func tableView(_ tableView: UITableView, heightForRowAtIndexPath indexPath: IndexPath) -&gt; CGFloat 
+
+// swift4.0
+func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -&gt; CGFloat 
+</code></pre><h3 id="Xcode-9"><a href="#Xcode-9" class="headerlink" title="Xcode 9"></a>Xcode 9</h3><p>关于Xcode 9适配其实并没有太多可说的地方，具体可参考苹果官方Session,但是我相信有一点是很多开发都非常喜欢的特性：无线调试</p>
+<h5 id="好处："><a href="#好处：" class="headerlink" title="好处："></a>好处：</h5><ul>
+<li>不用经常买线，不用担心接口或者插口坏了</li>
+<li>不用担心忘记带线，无法调试</li>
+<li>不用每次都插着才能调试（嘿，测试的MM，我给你装个最新的包，你接好了）</li>
+<li>…</li>
+</ul>
+<h5 id="要求"><a href="#要求" class="headerlink" title="要求"></a>要求</h5><ol>
+<li>必须是Xcode9-beta以上</li>
+<li>iPhone系统需iOS11以上</li>
+</ol>
+<h5 id="操作"><a href="#操作" class="headerlink" title="操作"></a>操作</h5><ol>
+<li>在Xcode9-beta菜单的Window选项中选择Devices and Simulators</li>
+<li>通过连接线让你的Mac识别到你的iPhone</li>
+<li>在Devices and Simulators面板的左侧Connected菜单中选择连接的设备</li>
+<li>在顶部的Devices和Simulators选项中选择Devices(这里其实默认就是选择了Devices)，</li>
+<li>勾选Connect via network选项。</li>
+</ol>
+<h6 id="关于Xcode无线调试可参考下面地址"><a href="#关于Xcode无线调试可参考下面地址" class="headerlink" title="关于Xcode无线调试可参考下面地址"></a>关于Xcode无线调试可参考下面地址</h6><blockquote>
+<p>WWDC17惊喜——Xcode9无线调试<br><a href="https://icocos.github.io/2017/06/13/WWDC17%E6%83%8A%E5%96%9C%E2%80%94%E2%80%94Xcode9%E6%97%A0%E7%BA%BF%E8%B0%83%E8%AF%95/">https://icocos.github.io/2017/06/13/WWDC17%E6%83%8A%E5%96%9C%E2%80%94%E2%80%94Xcode9%E6%97%A0%E7%BA%BF%E8%B0%83%E8%AF%95/</a></p>
+</blockquote>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>Swift3.2到Swift4.0的改变(只是我项目中遇到的)：</p>
+<ol>
+<li><p>Swift4.0中对于扩展的属性(包括实例属性、static属性、class属性)，都只能使用get方法，不可使用set方法</p>
+</li>
+<li><p>Swift4.0中不再允许复写扩展中的方法(包括实例方法、static方法、class方法)</p>
+</li>
+<li><p>编译期与运行时警告处理，添加 @objc 修饰符到对应的方法或者符号。</p>
+</li>
+<li><p>swift3使用#selector指定的方法，只有当方法权限为private时需要加@objc修饰符，现在全都要加@objc修饰符</p>
+</li>
+<li><p>字体方面的一些重命名</p>
+<ul>
+<li>NSFontAttributeName重命名为NSAttributedStringKey.font、</li>
+<li>NSForegroundColorAttributeName重命名为NSAttributedStringKey.foregroundColor、</li>
+<li>NSStrikethroughStyleAttributeName重命名为NSAttributedStringKey.strikethroughStyle、</li>
+<li>size(withAttributes:)方法重命名为size(withAttributes:))</li>
+</ul>
+</li>
+</ol>
+<ul>
+<li>…</li>
+</ul>
+<h3 id="官方参考资料"><a href="#官方参考资料" class="headerlink" title="官方参考资料"></a>官方参考资料</h3><ul>
+<li>《Swift Language Programming (Swift 4.0)》</li>
+<li>WWDC 2017 Session 402 《What’s New in Swift》</li>
+<li>WWDC 2017 Session 212 《What’s New in Foundation》</li>
+<li>WWDC 2017 Session 102 《Platforms State of the Union》</li>
+</ul>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wechatpay.jpg" alt="曹理鹏@iCocos 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>曹理鹏@iCocos</li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://icocos.github.io/2017/11/27/iOS——Swift-4-0-适配实战总结（Xcode9）/" title="iOS——Swift 4.0 适配实战总结（Xcode9）">https://icocos.github.io/2017/11/27/iOS——Swift-4-0-适配实战总结（Xcode9）/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明出处！</li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/iOS/" rel="tag"># iOS</a>
+          
+            <a href="/tags/Swift-4-0-适配实战总结（Xcode9）/" rel="tag"># Swift 4.0 适配实战总结（Xcode9）</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/11/21/React-Nativec搭建与初始化项目/" rel="next" title="React Native搭建与初始化项目">
+                <i class="fa fa-chevron-left"></i> React Native搭建与初始化项目
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/12/31/回顾与展望：梦想之路！/" rel="prev" title="回顾与展望：梦想之路！">
+                回顾与展望：梦想之路！ <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="SOHUCS"></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="http://pd1l3bbt7.bkt.clouddn.com/icocos_user_icon.JPG"
+                alt="曹理鹏@iCocos" />
+            
+              <p class="site-author-name" itemprop="name">曹理鹏@iCocos</p>
+              <p class="site-description motion-element" itemprop="description">纯码迷、爱学习、爱交友、喜欢接触新鲜事物、迎接新的挑战，更爱游离于错综复杂的编码与逻辑中！</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives">
+                
+                    <span class="site-state-item-count">76</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">16</span>
+                    <span class="site-state-item-name">分类</span>
+                  
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">81</span>
+                    <span class="site-state-item-name">标签</span>
+                  
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/al1020119" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:al1020119@163.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://stackoverflow.com/users/10186720" target="_blank" title="StackOverflow"><i class="fa fa-fw fa-stack-overflow"></i>StackOverflow</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.icocos.cn/" title="梦工厂" target="_blank">梦工厂</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://al1020119.github.io/" title="iOS梦工厂" target="_blank">iOS梦工厂</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#ios开发中，适配越来越多了："><span class="nav-number">1.0.1.</span> <span class="nav-text">ios开发中，适配越来越多了：</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#适配"><span class="nav-number"></span> <span class="nav-text">适配</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#查看当前版本"><span class="nav-number">1.</span> <span class="nav-text">查看当前版本</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#当前环境"><span class="nav-number"></span> <span class="nav-text">当前环境</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#一键升级"><span class="nav-number"></span> <span class="nav-text">一键升级</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#修改错误-细节"><span class="nav-number">1.</span> <span class="nav-text">修改错误+细节</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#问题一：编译不通过"><span class="nav-number">1.1.</span> <span class="nav-text">问题一：编译不通过</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#具体解决方案："><span class="nav-number">1.1.0.1.</span> <span class="nav-text">具体解决方案：</span></a></li></ol></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#问题二：运行时找不到属性"><span class="nav-number">1.2.</span> <span class="nav-text">问题二：运行时找不到属性</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#解决方案："><span class="nav-number">1.2.0.1.</span> <span class="nav-text">解决方案：</span></a></li></ol></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#编译警告"><span class="nav-number">1.3.</span> <span class="nav-text">编译警告</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#关于编译时也是直接增加-objc即可"><span class="nav-number">1.3.1.</span> <span class="nav-text">关于编译时也是直接增加@objc即可</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#运行时警告"><span class="nav-number">1.4.</span> <span class="nav-text">运行时警告</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#NSAttributedStringKey"><span class="nav-number">1.5.</span> <span class="nav-text">NSAttributedStringKey</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#String"><span class="nav-number">1.6.</span> <span class="nav-text">String</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#废弃characters"><span class="nav-number">1.6.1.</span> <span class="nav-text">废弃characters</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#废弃addingPercentEscapes"><span class="nav-number">1.6.2.</span> <span class="nav-text">废弃addingPercentEscapes</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#废弃substring-to"><span class="nav-number">1.6.3.</span> <span class="nav-text">废弃substring(to:)</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#pod-引用"><span class="nav-number">2.</span> <span class="nav-text">pod 引用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#系统方法"><span class="nav-number">3.</span> <span class="nav-text">系统方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Xcode-9"><span class="nav-number">4.</span> <span class="nav-text">Xcode 9</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#好处："><span class="nav-number">4.0.1.</span> <span class="nav-text">好处：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#要求"><span class="nav-number">4.0.2.</span> <span class="nav-text">要求</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#操作"><span class="nav-number">4.0.3.</span> <span class="nav-text">操作</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#关于Xcode无线调试可参考下面地址"><span class="nav-number">4.0.3.1.</span> <span class="nav-text">关于Xcode无线调试可参考下面地址</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number">5.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#官方参考资料"><span class="nav-number">6.</span> <span class="nav-text">官方参考资料</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">曹理鹏@iCocos</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">站点总字数：</span>
+    
+    <span title="站点总字数">348k</span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    
+    <span title="站点阅读时长">5:16</span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv" title="总访客量">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="site-pv" title="总访问量">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/reading_progress/reading_progress.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.3.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.3.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.3.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.3.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+  
+    <script type="text/javascript">
+    (function(){
+      var appid = 'cytKHBEtW';
+      var conf = '43989b8e63b25c4e9f1fde821c996a39';
+      var width = window.innerWidth || document.documentElement.clientWidth;
+      if (width < 960) {
+      window.document.write('<script id="changyan_mobile_js" charset="utf-8" type="text/javascript" src="https://changyan.sohu.com/upload/mobile/wap-js/changyan_mobile.js?client_id=' + appid + '&conf=' + conf + '"><\/script>'); } else { var loadJs=function(d,a){var c=document.getElementsByTagName("head")[0]||document.head||document.documentElement;var b=document.createElement("script");b.setAttribute("type","text/javascript");b.setAttribute("charset","UTF-8");b.setAttribute("src",d);if(typeof a==="function"){if(window.attachEvent){b.onreadystatechange=function(){var e=b.readyState;if(e==="loaded"||e==="complete"){b.onreadystatechange=null;a()}}}else{b.onload=a}}c.appendChild(b)};loadJs("https://changyan.sohu.com/upload/changyan.js",function(){
+        window.changyan.api.config({appid:appid,conf:conf})});
+      }
+    })();
+    </script>
+    <script type="text/javascript" src="https://assets.changyan.sohu.com/upload/plugins/plugins.count.js"></script>
+  
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=6.3.0"></script>
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("Tc7k1mbaieCUSgmM8LPk1IBO-gzGzoHsz", "sAb7L2vwENJTteRrvFKQacUU");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            
+              var $element = $(document.getElementById(url));
+              $element.find('.leancloud-visitors-count').text(counter.get('time'));
+            
+            counter.save(null, {
+              success: function(counter) {
+                
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            
+              var $element = $(document.getElementById(url));
+              $element.find('.leancloud-visitors-count').text('Counter not initialized! See more at console err msg.');
+              console.error('ATTENTION! LeanCloud counter has security bug, see here how to solve it: https://github.com/theme-next/hexo-leancloud-counter-security. \n But you also can use LeanCloud without security, by set \'security\' option to \'false\'.');
+            
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #333;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #eee;
+      background-image: linear-gradient(#fcfcfc, #eee);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('复制').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+          if(result)$(this).text('复制成功')
+          else $(this).text('复制失败')
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('复制')
+        }, 300)
+      }).append(e)
+    })
+  </script>
+
+
+  
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("Tc7k1mbaieCUSgmM8LPk1IBO-gzGzoHsz", "sAb7L2vwENJTteRrvFKQacUU");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+  
+</body>
+</html>
