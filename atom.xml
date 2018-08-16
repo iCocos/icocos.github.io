@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://icocos.github.io/"/>
-  <updated>2018-08-09T12:51:54.030Z</updated>
+  <updated>2018-08-16T13:29:40.135Z</updated>
   <id>https://icocos.github.io/</id>
   
   <author>
@@ -15,6 +15,33 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>iOS(OC+cocos2dx)游戏APP磁盘空间爆增(文稿与数据)</title>
+    <link href="https://icocos.github.io/2018/08/16/iOS-OC-cocos2dx-%E6%B8%B8%E6%88%8FAPP%E7%A3%81%E7%9B%98%E7%A9%BA%E9%97%B4%E7%88%86%E5%A2%9E-%E6%96%87%E7%A8%BF%E4%B8%8E%E6%95%B0%E6%8D%AE/"/>
+    <id>https://icocos.github.io/2018/08/16/iOS-OC-cocos2dx-游戏APP磁盘空间爆增-文稿与数据/</id>
+    <published>2018-08-16T15:45:06.000Z</published>
+    <updated>2018-08-16T13:29:40.135Z</updated>
+    
+    <content type="html"><![CDATA[<p>这段时间在开发公司的新产品二次元游戏(<a href="https://zhongchou.modian.com/item/26767.html?_ga=2.202445201.1279037149.1534326302-1820221530.1531384229" target="_blank" rel="noopener">零下记忆</a>)，由于接触coco2dx不久，很多东西还在摸索，也没少加班，所以都没有时间整理和发文了。</p><p>但是最近(从周一开始),发现了一个特别其他的Bug，App磁盘数据报增，幸好我手机是64G的，不然估计会爆炸！</p><p>先来张爆图！</p><p><img src="http://pd1l3bbt7.bkt.clouddn.com/cocos2dx/data/cocos2dx_data001.png" alt="曹理鹏(iCocos)-梦工厂"></p><a id="more"></a><p>这个产品是在Objective-C原生架构的基础上接入cocos2dx(C++)，所以导致部分文件或者类需要使用MRC模式。</p><h5 id="我曾尝试过"><a href="#我曾尝试过" class="headerlink" title="我曾尝试过"></a>我曾尝试过</h5><ol><li>使用模拟器针对不同时段操作，计算沙盒文件大小。</li><li>借助部门同事的越狱机导包寻找导致爆增的具体文件。</li><li>多次删除App，关闭可能存在问题原因的代码。</li><li>借助内存泄漏框架自动记录，内存变化与位置。</li><li>借助Xcode自带Instrument定点查找具体位置和代码。</li><li>通过Stack Overflow查询更多可能导致的原因。</li></ol><p>经过一次次排查，和一个个问题的处理，最终通过多次杀进程，和运行测试，终于处理完成，不过还有待优化！ </p><h6 id="下面是具体原因和流程。"><a href="#下面是具体原因和流程。" class="headerlink" title="下面是具体原因和流程。"></a>下面是具体原因和流程。</h6><h3 id="清理缓存："><a href="#清理缓存：" class="headerlink" title="清理缓存："></a>清理缓存：</h3><h5 id="清理cocos2dx缓存："><a href="#清理cocos2dx缓存：" class="headerlink" title="清理cocos2dx缓存："></a>清理cocos2dx缓存：</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">CCAnimationCache::purgeSharedAnimationCache();</span><br><span class="line">CCSpriteFrameCache::purgeSharedSpriteFrameCache();</span><br><span class="line">CCTextureCache::purgeSharedTextureCache();</span><br><span class="line">    </span><br><span class="line">CCSpriteFrameCache::sharedSpriteFrameCache()-&gt;removeUnusedSpriteFrames();</span><br><span class="line">CCTextureCache::sharedTextureCache()-&gt;removeUnusedTextures();</span><br><span class="line">CCTextureCache::sharedTextureCache()-&gt;removeAllTextures();</span><br><span class="line"></span><br><span class="line">Director::getInstance()-&gt;getTextureCache()-&gt;removeAllTextures();</span><br></pre></td></tr></table></figure><h5 id="清理远程吸盘，内存或者缓存"><a href="#清理远程吸盘，内存或者缓存" class="headerlink" title="清理远程吸盘，内存或者缓存"></a>清理远程吸盘，内存或者缓存</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">+ (void)clearAllCache &#123;</span><br><span class="line">    [[SDImageCache sharedImageCache] clearMemory];</span><br><span class="line">    [[SDImageCache sharedImageCache] clearDiskOnCompletion:nil];</span><br><span class="line">    // 拿到cachePath路径的下一级目录的子文件夹</span><br><span class="line">    // contentsOfDirectoryAtPath:error:递归</span><br><span class="line">    // subpathsAtPath:不递归</span><br><span class="line">    NSArray *subpathArray = [fileManager contentsOfDirectoryAtPath:cachePath error:nil];</span><br><span class="line">    // 如果数组为空，说明没有缓存或者用户已经清理过，此时直接<span class="built_in">return</span></span><br><span class="line">    <span class="keyword">if</span> (subpathArray.count == 0) &#123;</span><br><span class="line"><span class="comment">#ifdef DEBUG</span></span><br><span class="line">        NSLog(@<span class="string">"此缓存路径很干净,不需要再清理了"</span>);</span><br><span class="line"><span class="comment">#else</span></span><br><span class="line">        </span><br><span class="line"><span class="comment">#endif</span></span><br><span class="line">    &#125;</span><br><span class="line">    NSError *error = nil;</span><br><span class="line">    NSString *filePath = nil;</span><br><span class="line">    BOOL flag = NO;</span><br><span class="line">    <span class="keyword">for</span> (NSString *subpath <span class="keyword">in</span> subpathArray) &#123;</span><br><span class="line">        filePath = [cachePath stringByAppendingPathComponent:subpath];</span><br><span class="line">        <span class="keyword">if</span> ([fileManager fileExistsAtPath:cachePath]) &#123;</span><br><span class="line">            // 删除子文件夹</span><br><span class="line">            BOOL isRemoveSuccessed = [fileManager removeItemAtPath:filePath error:&amp;error];</span><br><span class="line">            <span class="keyword">if</span> (isRemoveSuccessed) &#123; // 删除成功</span><br><span class="line">                flag = YES;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (NO == flag) &#123;</span><br><span class="line"><span class="comment">#ifdef DEBUG</span></span><br><span class="line">        NSLog(@<span class="string">"提示:您已经清理了所有可以访问的文件,不可访问的文件无法删除"</span>);  // 调试阶段才打印</span><br><span class="line"><span class="comment">#else</span></span><br><span class="line">        </span><br><span class="line"><span class="comment">#endif</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><blockquote><p>记忆中此处大概处理了1-3G</p></blockquote><h3 id="内存管理"><a href="#内存管理" class="headerlink" title="内存管理"></a>内存管理</h3><h5 id="原来是把sprite和控件都retain了，需要手动release，才能释放图片。"><a href="#原来是把sprite和控件都retain了，需要手动release，才能释放图片。" class="headerlink" title="原来是把sprite和控件都retain了，需要手动release，才能释放图片。"></a>原来是把sprite和控件都retain了，需要手动release，才能释放图片。</h5><p>所以我得找到对应的cocos2dx项目代码，对创建和操作的对象进行release操作，这里比较蛋疼，得一个个找！</p><ul><li>处理中遇到个问题：<ul><li>removeTexture执行release后，不管有没有被gl释放掉，都从列表里删除。</li></ul></li></ul><p>如果load进来的node被addChild到场景中，应该是不需要额外的retain了吧，好像说addChild会自动retain的，不过不知道引擎设计者在load里加retain是为了什么。</p><blockquote><p>这里所导致的问题，几乎是使用过程中内存暴涨</p></blockquote><h3 id="环境与配置：（主要原因）"><a href="#环境与配置：（主要原因）" class="headerlink" title="环境与配置：（主要原因）"></a>环境与配置：（主要原因）</h3><p>通过多次测试发现沙盒文件中的temp中有一堆文件stack-logs.xxxxx.index</p><p><img src="http://pd1l3bbt7.bkt.clouddn.com/cocos2dx/data/cocos2dx_data002.png" alt="曹理鹏(iCocos)-梦工厂"></p><ul><li>同时控制台也打印了一大堆看不到也搜不到的内容</li></ul><p><img src="http://pd1l3bbt7.bkt.clouddn.com/cocos2dx/data/cocos2dx_data003.png" alt="曹理鹏(iCocos)-梦工厂"></p><p>结合以上几点才初步猜测可能是因为配置环境的问题，查阅资料后发现这与Xcode设置有关,具体配置原因我也不记得了，印象中是当时配置接入cocos2dx的时候，遇到了一些问题，点过了一次，但是现在想想好像当时的操作并没有什么卵用！</p><ul><li>Edit Scheme中Diagnostics有个logging分类，下面有个Malloc Stack选项，将勾选取消。</li></ul><p><img src="http://pd1l3bbt7.bkt.clouddn.com/cocos2dx/data/cocos2dx_data004.png" alt="曹理鹏(iCocos)-梦工厂"></p><p>处理完后立刻验证了一下,重装App,多次执行杀进程和实际测试用，在tmp下并没有产生那个文件stack-logs.xxxxx.index,磁盘占用也处于稳定状态,再打开手机设置查看存储空间，也很正常。</p><p><img src="http://pd1l3bbt7.bkt.clouddn.com/cocos2dx/data/cocos2dx_data005.png" alt="曹理鹏(iCocos)-梦工厂"></p><blockquote><p>以上文稿与数据的15.7中有13M多属于App下载的资源文件。</p></blockquote><p>That’s all for today.</p>]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;这段时间在开发公司的新产品二次元游戏(&lt;a href=&quot;https://zhongchou.modian.com/item/26767.html?_ga=2.202445201.1279037149.1534326302-1820221530.1531384229&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;零下记忆&lt;/a&gt;)，由于接触coco2dx不久，很多东西还在摸索，也没少加班，所以都没有时间整理和发文了。&lt;/p&gt;
+&lt;p&gt;但是最近(从周一开始),发现了一个特别其他的Bug，App磁盘数据报增，幸好我手机是64G的，不然估计会爆炸！&lt;/p&gt;
+&lt;p&gt;先来张爆图！&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;http://pd1l3bbt7.bkt.clouddn.com/cocos2dx/data/cocos2dx_data001.png&quot; alt=&quot;曹理鹏(iCocos)-梦工厂&quot;&gt;&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="iOS游戏" scheme="https://icocos.github.io/categories/iOS%E6%B8%B8%E6%88%8F/"/>
+    
+    
+      <category term="iOS游戏" scheme="https://icocos.github.io/tags/iOS%E6%B8%B8%E6%88%8F/"/>
+    
+      <category term="磁盘管理" scheme="https://icocos.github.io/tags/%E7%A3%81%E7%9B%98%E7%AE%A1%E7%90%86/"/>
+    
+  </entry>
   
   <entry>
     <title>游戏引擎——cocos2dx入门</title>
@@ -473,30 +500,6 @@
       <category term="iOS" scheme="https://icocos.github.io/tags/iOS/"/>
     
       <category term="Xcode默认路径（Fastlane打包的尴尬）" scheme="https://icocos.github.io/tags/Xcode%E9%BB%98%E8%AE%A4%E8%B7%AF%E5%BE%84%EF%BC%88Fastlane%E6%89%93%E5%8C%85%E7%9A%84%E5%B0%B4%E5%B0%AC%EF%BC%89/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>iOS——3-rf一把无形的双刃剑</title>
-    <link href="https://icocos.github.io/2018/04/20/iOS%E2%80%94%E2%80%943-rf%E4%B8%80%E6%8A%8A%E6%97%A0%E5%BD%A2%E7%9A%84%E5%8F%8C%E5%88%83%E5%89%91/"/>
-    <id>https://icocos.github.io/2018/04/20/iOS——3-rf一把无形的双刃剑/</id>
-    <published>2018-04-20T09:45:36.000Z</published>
-    <updated>2018-08-06T18:33:42.506Z</updated>
-    
-    <content type="html"><![CDATA[<p>今天我就遇到一个奇葩的问题，上一次编译并打包成功和这一次报错之间就一个上厕所的时间…..</p><a id="more"></a><h5 id="大部分情况下，在项目报错的时候"><a href="#大部分情况下，在项目报错的时候" class="headerlink" title="大部分情况下，在项目报错的时候"></a>大部分情况下，在项目报错的时候</h5><ul><li>很多人会选择clean再次编译</li><li>退出xcode重新编译</li><li>清楚drivedata重新编译</li><li>重启电脑重新编译</li></ul><p>今天我就遇到一个奇葩的问题，上一次编译并打包成功和这一次报错之间就一个上厕所的时间。</p><h4 id="具体错误"><a href="#具体错误" class="headerlink" title="具体错误"></a>具体错误</h4><pre><code>ld: file too small (length=0) file     &apos;/Users/icocos/Library/Developer/Xcode/DerivedData/Fiction_iOS-ccljhnehuyrphfbjlldfaqmstvub/Build/Intermediates.noindex/Pods.build/Debug-iphoneos/RxSwift.build/Objects-normal/arm64/Just.o&apos;     for architecture arm64clang: error: linker command failed with exit code 1 (use -v to see invocation)</code></pre><blockquote><p>以上错误来自RXSwift。</p></blockquote><p>查看git仓库，但是一句代码也没改，连一个空格都没有动</p><h6 id="于是我就按照上面的走了一遍，发现并没有什么卵用-于是我在想"><a href="#于是我就按照上面的走了一遍，发现并没有什么卵用-于是我在想" class="headerlink" title="于是我就按照上面的走了一遍，发现并没有什么卵用,于是我在想:"></a>于是我就按照上面的走了一遍，发现并没有什么卵用,于是我在想:</h6><p>最后在一个群里有位大佬给了一个方案：</p><pre><code>rm -rf $HOME/Library/Developer/Xcode/DerivedData/*rm -rf $HOME/Library/Caches/com.apple.dt.Xcode/*rm -rf &quot;$(getconf DARWIN_USER_CACHE_DIR)/org.llvm.clang/ModuleCache&quot;</code></pre><p>既然真的成功了。我们暂且把它叫做3rf。</p><p>关于rf这里有一个圈内的笑话：</p><p><img src="http://pd1l3bbt7.bkt.clouddn.com/2018/05/rf0001.png" alt="曹理鹏(iCocos)-梦工厂"></p>]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;今天我就遇到一个奇葩的问题，上一次编译并打包成功和这一次报错之间就一个上厕所的时间…..&lt;/p&gt;
-    
-    </summary>
-    
-      <category term="iOS" scheme="https://icocos.github.io/categories/iOS/"/>
-    
-    
-      <category term="iOS" scheme="https://icocos.github.io/tags/iOS/"/>
-    
-      <category term="3-rf一把无形的双刃剑" scheme="https://icocos.github.io/tags/3-rf%E4%B8%80%E6%8A%8A%E6%97%A0%E5%BD%A2%E7%9A%84%E5%8F%8C%E5%88%83%E5%89%91/"/>
     
   </entry>
   
