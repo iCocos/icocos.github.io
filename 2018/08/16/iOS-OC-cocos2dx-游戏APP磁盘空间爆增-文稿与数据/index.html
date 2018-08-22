@@ -125,7 +125,7 @@
 <meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/cocos2dx/data/cocos2dx_data003.png">
 <meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/cocos2dx/data/cocos2dx_data004.png">
 <meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/cocos2dx/data/cocos2dx_data005.png">
-<meta property="og:updated_time" content="2018-08-16T13:29:40.135Z">
+<meta property="og:updated_time" content="2018-08-17T01:53:47.674Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="iOS(OC+cocos2dx)游戏APP磁盘空间爆增(文稿与数据)">
 <meta name="twitter:description" content="这段时间在开发公司的新产品二次元游戏(零下记忆)，由于接触coco2dx不久，很多东西还在摸索，也没少加班，所以都没有时间整理和发文了。 但是最近(从周一开始),发现了一个特别其他的Bug，App磁盘数据报增，幸好我手机是64G的，不然估计会爆炸！ 先来张爆图！">
@@ -522,25 +522,29 @@
 </ol>
 <p>经过一次次排查，和一个个问题的处理，最终通过多次杀进程，和运行测试，终于处理完成，不过还有待优化！ </p>
 <h6 id="下面是具体原因和流程。"><a href="#下面是具体原因和流程。" class="headerlink" title="下面是具体原因和流程。"></a>下面是具体原因和流程。</h6><h3 id="清理缓存："><a href="#清理缓存：" class="headerlink" title="清理缓存："></a>清理缓存：</h3><h5 id="清理cocos2dx缓存："><a href="#清理cocos2dx缓存：" class="headerlink" title="清理cocos2dx缓存："></a>清理cocos2dx缓存：</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">CCAnimationCache::purgeSharedAnimationCache();</span><br><span class="line">CCSpriteFrameCache::purgeSharedSpriteFrameCache();</span><br><span class="line">CCTextureCache::purgeSharedTextureCache();</span><br><span class="line">    </span><br><span class="line">CCSpriteFrameCache::sharedSpriteFrameCache()-&gt;removeUnusedSpriteFrames();</span><br><span class="line">CCTextureCache::sharedTextureCache()-&gt;removeUnusedTextures();</span><br><span class="line">CCTextureCache::sharedTextureCache()-&gt;removeAllTextures();</span><br><span class="line"></span><br><span class="line">Director::getInstance()-&gt;getTextureCache()-&gt;removeAllTextures();</span><br></pre></td></tr></table></figure>
-<h5 id="清理远程吸盘，内存或者缓存"><a href="#清理远程吸盘，内存或者缓存" class="headerlink" title="清理远程吸盘，内存或者缓存"></a>清理远程吸盘，内存或者缓存</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">+ (void)clearAllCache &#123;</span><br><span class="line">    [[SDImageCache sharedImageCache] clearMemory];</span><br><span class="line">    [[SDImageCache sharedImageCache] clearDiskOnCompletion:nil];</span><br><span class="line">    // 拿到cachePath路径的下一级目录的子文件夹</span><br><span class="line">    // contentsOfDirectoryAtPath:error:递归</span><br><span class="line">    // subpathsAtPath:不递归</span><br><span class="line">    NSArray *subpathArray = [fileManager contentsOfDirectoryAtPath:cachePath error:nil];</span><br><span class="line">    // 如果数组为空，说明没有缓存或者用户已经清理过，此时直接<span class="built_in">return</span></span><br><span class="line">    <span class="keyword">if</span> (subpathArray.count == 0) &#123;</span><br><span class="line"><span class="comment">#ifdef DEBUG</span></span><br><span class="line">        NSLog(@<span class="string">"此缓存路径很干净,不需要再清理了"</span>);</span><br><span class="line"><span class="comment">#else</span></span><br><span class="line">        </span><br><span class="line"><span class="comment">#endif</span></span><br><span class="line">    &#125;</span><br><span class="line">    NSError *error = nil;</span><br><span class="line">    NSString *filePath = nil;</span><br><span class="line">    BOOL flag = NO;</span><br><span class="line">    <span class="keyword">for</span> (NSString *subpath <span class="keyword">in</span> subpathArray) &#123;</span><br><span class="line">        filePath = [cachePath stringByAppendingPathComponent:subpath];</span><br><span class="line">        <span class="keyword">if</span> ([fileManager fileExistsAtPath:cachePath]) &#123;</span><br><span class="line">            // 删除子文件夹</span><br><span class="line">            BOOL isRemoveSuccessed = [fileManager removeItemAtPath:filePath error:&amp;error];</span><br><span class="line">            <span class="keyword">if</span> (isRemoveSuccessed) &#123; // 删除成功</span><br><span class="line">                flag = YES;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (NO == flag) &#123;</span><br><span class="line"><span class="comment">#ifdef DEBUG</span></span><br><span class="line">        NSLog(@<span class="string">"提示:您已经清理了所有可以访问的文件,不可访问的文件无法删除"</span>);  // 调试阶段才打印</span><br><span class="line"><span class="comment">#else</span></span><br><span class="line">        </span><br><span class="line"><span class="comment">#endif</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="清理运行磁盘，内存或者缓存"><a href="#清理运行磁盘，内存或者缓存" class="headerlink" title="清理运行磁盘，内存或者缓存"></a>清理运行磁盘，内存或者缓存</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">+ (void)clearAllCache &#123;</span><br><span class="line">    [[SDImageCache sharedImageCache] clearMemory];</span><br><span class="line">    [[SDImageCache sharedImageCache] clearDiskOnCompletion:nil];</span><br><span class="line">    // 拿到cachePath路径的下一级目录的子文件夹</span><br><span class="line">    // contentsOfDirectoryAtPath:error:递归</span><br><span class="line">    // subpathsAtPath:不递归</span><br><span class="line">    NSArray *subpathArray = [fileManager contentsOfDirectoryAtPath:cachePath error:nil];</span><br><span class="line">    // 如果数组为空，说明没有缓存或者用户已经清理过，此时直接<span class="built_in">return</span></span><br><span class="line">    <span class="keyword">if</span> (subpathArray.count == 0) &#123;</span><br><span class="line"><span class="comment">#ifdef DEBUG</span></span><br><span class="line">        NSLog(@<span class="string">"cachePath缓存清理完成"</span>);</span><br><span class="line"><span class="comment">#else</span></span><br><span class="line">        </span><br><span class="line"><span class="comment">#endif</span></span><br><span class="line">    &#125;</span><br><span class="line">    NSError *error = nil;</span><br><span class="line">    NSString *filePath = nil;</span><br><span class="line">    BOOL flag = NO;</span><br><span class="line">    <span class="keyword">for</span> (NSString *subpath <span class="keyword">in</span> subpathArray) &#123;</span><br><span class="line">        filePath = [cachePath stringByAppendingPathComponent:subpath];</span><br><span class="line">        <span class="keyword">if</span> ([fileManager fileExistsAtPath:cachePath]) &#123;</span><br><span class="line">            // 删除子文件夹</span><br><span class="line">            BOOL isRemoveSuccessed = [fileManager removeItemAtPath:filePath error:&amp;error];</span><br><span class="line">            <span class="keyword">if</span> (isRemoveSuccessed) &#123; // 删除成功</span><br><span class="line">                flag = YES;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (NO == flag) &#123;</span><br><span class="line"><span class="comment">#ifdef DEBUG</span></span><br><span class="line">        NSLog(@<span class="string">"已经清理了所有可以访问的文件,不可访问的文件无法删除"</span>);  // 调试阶段才打印</span><br><span class="line"><span class="comment">#else</span></span><br><span class="line">        </span><br><span class="line"><span class="comment">#endif</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <blockquote>
 <p>记忆中此处大概处理了1-3G</p>
 </blockquote>
-<h3 id="内存管理"><a href="#内存管理" class="headerlink" title="内存管理"></a>内存管理</h3><h5 id="原来是把sprite和控件都retain了，需要手动release，才能释放图片。"><a href="#原来是把sprite和控件都retain了，需要手动release，才能释放图片。" class="headerlink" title="原来是把sprite和控件都retain了，需要手动release，才能释放图片。"></a>原来是把sprite和控件都retain了，需要手动release，才能释放图片。</h5><p>所以我得找到对应的cocos2dx项目代码，对创建和操作的对象进行release操作，这里比较蛋疼，得一个个找！</p>
+<h3 id="内存管理"><a href="#内存管理" class="headerlink" title="内存管理"></a>内存管理</h3><p>通过Stack Overflow和相应代码调试最后发现：</p>
+<blockquote>
+<p>原来是把sprite和控件都retain了，需要手动release，才能释放图片。</p>
+</blockquote>
+<p>所以我得找到对应的cocos2dx项目代码，对创建和操作的对象进行release操作，这里比较蛋疼，得一个个找！</p>
 <ul>
 <li>处理中遇到个问题：<ul>
 <li>removeTexture执行release后，不管有没有被gl释放掉，都从列表里删除。</li>
 </ul>
 </li>
 </ul>
-<p>如果load进来的node被addChild到场景中，应该是不需要额外的retain了吧，好像说addChild会自动retain的，不过不知道引擎设计者在load里加retain是为了什么。</p>
+<p>但是如果load进来的node被addChild到场景中，应该是不需要retain的，addChild会自动retain，这里不清楚，cocos2dx引擎设计者在load里加retain是为了什么，</p>
 <blockquote>
 <p>这里所导致的问题，几乎是使用过程中内存暴涨</p>
 </blockquote>
-<h3 id="环境与配置：（主要原因）"><a href="#环境与配置：（主要原因）" class="headerlink" title="环境与配置：（主要原因）"></a>环境与配置：（主要原因）</h3><p>通过多次测试发现沙盒文件中的temp中有一堆文件stack-logs.xxxxx.index</p>
+<h3 id="环境与配置-主要原因"><a href="#环境与配置-主要原因" class="headerlink" title="环境与配置(主要原因):"></a>环境与配置(主要原因):</h3><p>通过多次测试发现沙盒文件中的temp中有一堆文件stack-logs.xxxxx.index</p>
 <p><img src="http://pd1l3bbt7.bkt.clouddn.com/cocos2dx/data/cocos2dx_data002.png" alt="曹理鹏(iCocos)-梦工厂"></p>
 <ul>
-<li>同时控制台也打印了一大堆看不到也搜不到的内容</li>
+<li>同时控制台也打印了一大堆看不懂也搜不到的内容</li>
 </ul>
 <p><img src="http://pd1l3bbt7.bkt.clouddn.com/cocos2dx/data/cocos2dx_data003.png" alt="曹理鹏(iCocos)-梦工厂"></p>
 <p>结合以上几点才初步猜测可能是因为配置环境的问题，查阅资料后发现这与Xcode设置有关,具体配置原因我也不记得了，印象中是当时配置接入cocos2dx的时候，遇到了一些问题，点过了一次，但是现在想想好像当时的操作并没有什么卵用！</p>
@@ -642,6 +646,10 @@
 
           <div class="post-nav-prev post-nav-item">
             
+              <a href="/2018/08/18/开发必备理论常识：HTTP-HTTPS/" rel="prev" title=" 开发必备理论常识：HTTP->HTTPS">
+                 开发必备理论常识：HTTP->HTTPS <i class="fa fa-chevron-right"></i>
+              </a>
+            
           </div>
         </div>
       
@@ -719,7 +727,7 @@
                 
                   <a href="/archives">
                 
-                    <span class="site-state-item-count">78</span>
+                    <span class="site-state-item-count">80</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -951,7 +959,13 @@
                     
                       
                     
-                    <span class="site-state-item-count">85</span>
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">88</span>
                     <span class="site-state-item-name">标签</span>
                   
                 </div>
@@ -1031,7 +1045,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-5"><a class="nav-link" href="#我曾尝试过"><span class="nav-number">1.</span> <span class="nav-text">我曾尝试过</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#下面是具体原因和流程。"><span class="nav-number">1.1.</span> <span class="nav-text">下面是具体原因和流程。</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#清理缓存："><span class="nav-number"></span> <span class="nav-text">清理缓存：</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#清理cocos2dx缓存："><span class="nav-number">1.</span> <span class="nav-text">清理cocos2dx缓存：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#清理远程吸盘，内存或者缓存"><span class="nav-number">2.</span> <span class="nav-text">清理远程吸盘，内存或者缓存</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#内存管理"><span class="nav-number"></span> <span class="nav-text">内存管理</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#原来是把sprite和控件都retain了，需要手动release，才能释放图片。"><span class="nav-number">1.</span> <span class="nav-text">原来是把sprite和控件都retain了，需要手动release，才能释放图片。</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#环境与配置：（主要原因）"><span class="nav-number"></span> <span class="nav-text">环境与配置：（主要原因）</span></a></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-5"><a class="nav-link" href="#我曾尝试过"><span class="nav-number">1.</span> <span class="nav-text">我曾尝试过</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#下面是具体原因和流程。"><span class="nav-number">1.1.</span> <span class="nav-text">下面是具体原因和流程。</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#清理缓存："><span class="nav-number"></span> <span class="nav-text">清理缓存：</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#清理cocos2dx缓存："><span class="nav-number">1.</span> <span class="nav-text">清理cocos2dx缓存：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#清理运行磁盘，内存或者缓存"><span class="nav-number">2.</span> <span class="nav-text">清理运行磁盘，内存或者缓存</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#内存管理"><span class="nav-number"></span> <span class="nav-text">内存管理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#环境与配置-主要原因"><span class="nav-number"></span> <span class="nav-text">环境与配置(主要原因):</span></a></div>
             
 
           </div>
@@ -1065,7 +1079,7 @@
     
       <span class="post-meta-item-text">站点总字数：</span>
     
-    <span title="站点总字数">355k</span>
+    <span title="站点总字数">367k</span>
   
 
   
@@ -1076,7 +1090,7 @@
     
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
     
-    <span title="站点阅读时长">5:22</span>
+    <span title="站点阅读时长">5:33</span>
   
 </div>
 
