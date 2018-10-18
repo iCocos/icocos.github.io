@@ -1,0 +1,2041 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.3.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="http://pd1l3bbt7.bkt.clouddn.com/img/favicon.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="http://pd1l3bbt7.bkt.clouddn.com/img/favicon.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="http://pd1l3bbt7.bkt.clouddn.com/img/favicon.png?v=6.3.0">
+
+
+  <link rel="mask-icon" href="http://pd1l3bbt7.bkt.clouddn.com/img/favicon.png?v=6.3.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="我们平时在开发cocos2dx lua游戏的时候的，会遇到这样的情况：  在c++层定义了一些类，我们需要将这些类导出给Lua来使用，从而完成在c++层实现起来容易的需要，这个时候就需要将整个类作为模块导出。 而Cocos2d-x正是采用的这种思想，将Cocos中的类导出供用户使用，而不是再写一套Lua代码，用户使用Cocos导出的这套接口，在Lua脚本层写游戏代码。 为了更好的理解这部分的内容，">
+<meta name="keywords" content="曹理鹏, iCocos, 梦工厂, iOS, IT, 技术, 程序猿, 码农">
+<meta property="og:type" content="article">
+<meta property="og:title" content="cocos2dx lua 绑定详解与实战">
+<meta property="og:url" content="https://icocos.github.io/2018/10/18/cocos2dx-lua-绑定详解与实战/index.html">
+<meta property="og:site_name" content="iCocos">
+<meta property="og:description" content="我们平时在开发cocos2dx lua游戏的时候的，会遇到这样的情况：  在c++层定义了一些类，我们需要将这些类导出给Lua来使用，从而完成在c++层实现起来容易的需要，这个时候就需要将整个类作为模块导出。 而Cocos2d-x正是采用的这种思想，将Cocos中的类导出供用户使用，而不是再写一套Lua代码，用户使用Cocos导出的这套接口，在Lua脚本层写游戏代码。 为了更好的理解这部分的内容，">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-10-18T05:20:02.194Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="cocos2dx lua 绑定详解与实战">
+<meta name="twitter:description" content="我们平时在开发cocos2dx lua游戏的时候的，会遇到这样的情况：  在c++层定义了一些类，我们需要将这些类导出给Lua来使用，从而完成在c++层实现起来容易的需要，这个时候就需要将整个类作为模块导出。 而Cocos2d-x正是采用的这种思想，将Cocos中的类导出供用户使用，而不是再写一套Lua代码，用户使用Cocos导出的这套接口，在Lua脚本层写游戏代码。 为了更好的理解这部分的内容，">
+
+
+
+  <link rel="alternate" href="/atom.xml" title="iCocos" type="application/atom+xml" />
+
+
+
+
+  <link rel="canonical" href="https://icocos.github.io/2018/10/18/cocos2dx-lua-绑定详解与实战/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>cocos2dx lua 绑定详解与实战 | iCocos</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">iCocos</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">www.icocos.cn</p>
+      
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-首页">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-归档">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-关于">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-作品">
+    <a href="/works/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-calendar"></i> <br />作品</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-简历">
+    <a href="/resume/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-sitemap"></i> <br />简历</a>
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+    <div class="reading-progress-bar"></div>
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://icocos.github.io/2018/10/18/cocos2dx-lua-绑定详解与实战/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="曹理鹏@iCocos">
+      <meta itemprop="description" content="纯码迷、爱学习、爱交友、喜欢接触新鲜事物、迎接新的挑战，更爱游离于错综复杂的编码与逻辑中！">
+      <meta itemprop="image" content="http://pd1l3bbt7.bkt.clouddn.com/icocos_user_icon.JPG">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="iCocos">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">cocos2dx lua 绑定详解与实战
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-10-18 13:04:37" itemprop="dateCreated datePublished" datetime="2018-10-18T13:04:37+08:00">2018-10-18</time>
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+              <span class="post-meta-divider">|</span>
+              <span class="post-meta-item-icon">
+                <i class="fa fa-comment-o"></i>
+              </span>
+              
+                <a href="/2018/10/18/cocos2dx-lua-绑定详解与实战/#SOHUCS" itemprop="discussionUrl">
+                  <span class="post-meta-item-text">评论数：</span> <span id="changyan_count_unit" class="post-comments-count hc-comment-count" data-xid="2018/10/18/cocos2dx-lua-绑定详解与实战/" itemprop="commentsCount"></span>
+                </a>
+              
+            
+          
+
+          
+          
+             <span id="/2018/10/18/cocos2dx-lua-绑定详解与实战/" class="leancloud_visitors" data-flag-title="cocos2dx lua 绑定详解与实战">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数：</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon"
+            >
+            <i class="fa fa-eye"></i>
+             阅读次数： 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+            <div class="post-symbolscount">
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">本文字数：</span>
+                
+                <span title="本文字数">13k</span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">12 分钟</span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>我们平时在开发cocos2dx lua游戏的时候的，会遇到这样的情况：</p>
+<ul>
+<li>在c++层定义了一些类，我们需要将这些类导出给Lua来使用，从而完成在c++层实现起来容易的需要，这个时候就需要将整个类作为模块导出。</li>
+<li>而Cocos2d-x正是采用的这种思想，将Cocos中的类导出供用户使用，而不是再写一套Lua代码，用户使用Cocos导出的这套接口，在Lua脚本层写游戏代码。</li>
+<li>为了更好的理解这部分的内容，可以先看一下在Lua中调用c++函数这篇博客，了解c++中调用Lua的机制。该博客中我们将c++中需要导出的函数放到了一个模块中，其中我们手动的做了一些工作。</li>
+</ul>
+<a id="more"></a>
+<p>前面我们说到了，Lua的本质是C，不是C++，Lua提供给C用的API也都是基于面向过程的C函数来用的，要把C++类注册进Lua形成一个一个的table环境是不太容易一下子办到的事。</p>
+<p>为了实现我们的需求，同样也是官方的需求，在Cocos 2.x版本的时候，使用的是tolua++这个工具，但是这个工具用起来相当的麻烦，耗费体力，所以现在使用的是<a href="https://github.com/cocos2d/bindings-generator" target="_blank" rel="noopener">bindings-generator</a>工具（官方用Python写的一个工具），这个东西底层使用的也应该是tolua++。</p>
+<blockquote>
+<p>这里只针对iOS平台，Android和其他平台在tolua中README.mdown中有具体介绍，其他步骤基本上一样！</p>
+</blockquote>
+<p>在项目跟目录framework/cocos2d-x/cocos中创建mybinding文件夹，里面创建一个MyBinding.h文件(mybinding, MyBinding自定义)，输入如下测试代码</p>
+<pre><code>#include &quot;cocos2d.h&quot;
+
+namespace cocos2d {
+class MyBinding: public Ref {
+public:
+
+virtual bool init() {
+return true;
+}
+
+void sayBinding() {
+log(&quot;Hello Binding Lua&quot;);
+}
+
+MyBinding();
+~MyBinding();
+}
+}
+</code></pre><p>在framework/cocos2d-x/tools/tolua，新建一个配置文件，这里命名cocos2dx_binding.ini</p>
+<p>输入下面代码：（处理标记修改处其他所有都一样）</p>
+<pre><code>[cocos2dx_binding] # 标记修改
+# the prefix to be added to the generated functions. You might or might not use this in your own
+# templates
+prefix = cocos2dx_binding # 标记修改
+
+# create a target namespace (in javascript, this would create some code like the equiv. to `ns = ns || {}`)
+# all classes will be embedded in that namespace
+target_namespace = cc # 标记修改
+
+# --------- ?
+#android_headers = -I%(androidndkdir)s/platforms/android-19/arch-arm/usr/include -I%(androidndkdir)s/sources/cxx-stl/gnu-libstdc++/4.7/libs/armeabi-v7a/include -I%(androidndkdir)s/sources/cxx-stl/gnu-libstdc++/4.7/include -I%(androidndkdir)s/sources/cxx-stl/gnu-libstdc++/4.8/libs/armeabi-v7a/include -I%(androidndkdir)s/sources/cxx-stl/gnu-libstdc++/4.8/include
+android_headers = -I%(androidndkdir)s/platforms/android-19/arch-arm/usr/lib -I%(androidndkdir)s/sources/cxx-stl/gnu-libstdc++/4.9/libs/armeabi-v7a/include -I%(androidndkdir)s/sources/cxx-stl/gnu-libstdc++/4.9/include -I%(androidndkdir)s/sources/cxx-stl/gnu-libstdc++/4.9/libs/armeabi-v7a/include -I%(androidndkdir)s/sources/cxx-stl/gnu-libstdc++/4.9/include
+
+# --------- ?
+android_flags = -D_SIZE_T_DEFINED_
+
+#clang_headers = -I%(clangllvmdir)s/lib/clang/%(clang_version)s/include
+clang_headers = -I%(clangllvmdir)s/lib64/clang/5.0/include
+clang_flags = -nostdinc -x c++ -std=c++11 -U __SSE__
+
+# --------- ?
+# -I%(cocosdir)s/jsext -I%(cocosdir)s/jsext/system -I%(cocosdir)s/jsext/alipay  -I%(cocosdir)s/jsext/video -I%(cocosdir)s/jsext/webview -I%(cocosdir)s/jsext/umeng
+cocos_headers = -I%(cocosdir)s -I%(cocosdir)s/cocos -I%(cocosdir)s/cocos/base -I%(cocosdir)s/cocos/platform/android -I%(cocosdir)s/extensions -I%(cocosdir)s/external -I%(cocosdir)s/cocos/editor-support -I%(cocosdir)s/cocos/network -I%(cocosdir)s/cocos/ui/UIEditBox -I%(cocosdir)s/cocos/ui
+#cocos_headers = -I%(cocosdir)s -I%(cocosdir)s/cocos -I%(cocosdir)s/cocos/platform/android
+
+cocos_flags = -DANDROID
+
+cxxgenerator_headers =
+
+# extra arguments for clang
+extra_arguments = %(android_headers)s %(clang_headers)s %(cxxgenerator_headers)s %(cocos_headers)s %(android_flags)s %(clang_flags)s %(cocos_flags)s %(extra_flags)s
+
+# what headers to parse 头文件路径
+headers = %(cocosdir)s/cocos/mybinding/MyBinding.h # 标记修改
+
+# what classes to produce code for. You can use regular expressions here. When testing the regular
+# expression, it will be enclosed in &quot;^$&quot;, like this: &quot;^Menu*$&quot;.
+#包含的类，新添加文件需要修改
+classes = MyBinding.* # 标记修改
+
+#需要在js里面派生的类
+#classes_need_extend = MyBinding # 标记修改
+
+# what should we skip? in the format ClassName::[function function]
+# ClassName is a regular expression, but will be used like this: &quot;^ClassName$&quot; functions are also
+# regular expressions, they will not be surrounded by &quot;^$&quot;. If you want to skip a whole class, just
+# add a single &quot;*&quot; as functions. See bellow for several examples. A special class name is &quot;*&quot;, which
+# will apply to all class names. This is a convenience wildcard to be able to skip similar named
+# functions from all classes.
+
+skip =
+
+rename_functions =
+
+rename_classes =
+
+# for all class names, should we remove something when registering in the target VM?
+remove_prefix =
+
+# classes for which there will be no &quot;parent&quot; lookup
+classes_have_no_parents =
+
+# base classes which will be skipped when their sub-classes found them.
+base_classes_to_skip = Ref
+
+# classes that create no constructor
+# Set is special and we will use a hand-written constructor
+abstract_classes =
+
+# Determining whether to use script object(js object) to control the lifecycle of native(cpp) object or the other way around. Supported values are &apos;yes&apos; or &apos;no&apos;.
+script_control_cpp = no
+</code></pre><p>注意检查一下三个头文件对应的路径及文件问题</p>
+<p>android_headers<br>clang_headers<br>cocos_headers</p>
+<ul>
+<li>说明内容：<ul>
+<li>•[title]：要配置将被使用的工具/ tolua的/ gengindings.py脚本的称号。一般来说，标题可以是文件名。</li>
+<li>•prefix：要配置一个函数名的前缀，通常，我们还可以使用文件名作为前缀。</li>
+<li>•target_namespace：要配置在脚本层模块的名字。在这里，我们使用cc作为模块名，当你想在脚本层REF的名称，您必须将一个名为前缀，CC在名称的前面。例如，CustomClass可以参考作为cc.CustomClass。</li>
+<li>•headers：要配置所有需要解析的头文件和％（cocosdir）s是的Cocos2d-x的引擎的根路径。</li>
+<li>•classes：要配置所有绑定所需的类。在这里，它支持正则表达式。因此，我们可以设置MyCustomClass。*在这里，用于查找多个特定的用法，你可以对照到tools/tolua/cocos2dx.ini。</li>
+<li>•skip：要配置需要被忽略的功能。现在绑定发电机无法解析的void *类型，并委托类型，所以这些类型的需要进行手动绑定。而在这种情况下，你应该忽略所有这些类型，然后再手动将它们绑定。你可以对照到配置文件路径下的cocos/scripting/lua-bindings/auto 。</li>
+<li>•rename_functions：要配置的功能需要在脚本层进行重命名。由于某些原因，开发者希望更多的脚本友好的API，所以配置选项就是为了这个目的。</li>
+<li>•rename_classes：不在使用。</li>
+<li>•remove_prefix：不在使用。</li>
+<li>•classes_have_no_parents：要配置是过滤器所需要的父类。这个选项是很少修改。</li>
+<li>•abstract_classes：要配置的公共构造并不需要导出的类。</li>
+<li>•script_control_cpp：是的。要配置脚本层是否管理对象的生命周期。如果没有，那么C++层关心他们的生命周期。现在，它是不完善的，以控制原生对象的续航时间在脚本层。所以，你可以简单地把它设置为no</li>
+</ul>
+</li>
+</ul>
+<p>修改framework/cocos2d-x/tools/tolua里面的genbindings.py。有个cmd_args键值对的配置，增加下面代码，作为自定义绑定配置</p>
+<pre><code>&apos;cocos2dx_binding.ini&apos; : (&apos;cocos2dx_binding&apos;, &apos;lua_cocos2dx_binding_auto&apos;), \
+</code></pre><blockquote>
+<p>注：python注释为#，这里将cmd_args其他的元素注释掉是因为这些文件都是生成过得，没必要再生成浪费时间<br>这行代码表示在cocos2dx_custom中找到cocos2dx_custom的模块，然后生成lua_cocos2dx_custom_auto文件</p>
+</blockquote>
+<p>这里要确保NDK_ROOT，和PYTHON_BIN安装切配置好了,然后在framework/cocos2d-x/tools/tolua执行</p>
+<pre><code>./genbindings.py
+</code></pre><p>之前./genbindings.py之前，请先查看官方tolua中README文件，按照对应的流程，安装好需要的依赖，和相应的库，下面是我这边3.17最新的README</p>
+<pre><code>* The OSX 10.1&lt;!--0 has a built-in python2.7 and if your os don&apos;t have python2.7 then use [Homebrew](http://brew.sh/) to install the python and use pip install the python dependencies.
+&lt;pre&gt;
+brew install python
+&lt;/pre&gt;
+
+* Install python dependices by pip.
+&lt;pre&gt;
+sudo easy_install pip
+sudo pip install PyYAML
+sudo pip install Cheetah
+&lt;/pre&gt;
+
+* Download NDK 64bit r10c or later from [Android Ndk](https://developer.android.com/ndk/downloads/index.html)
+* Run
+&lt;pre&gt;
+export NDK_ROOT=/path/to/android-ndk-10c
+./genbindings.py
+&lt;/pre&gt;--&gt;
+</code></pre><p>大概意思就是下载r10c之后版的NDK本，然后安装python(这一步一般Mac都有，但是最好安装到2.x)。</p>
+<p>大概意思就是安装，pip， PyYAML， Cheetah</p>
+<p>…….</p>
+<p>执行./genbindings.py之后生成在</p>
+<pre><code>工程目录\frameworks\cocos2d-x\cocos\scripting\lua-bindings\auto
+</code></pre><p>下便有了两个生成的文件</p>
+<pre><code>lua_cocos2dx_custom_auto.cpp
+lua_cocos2dx_custom_auto.hpp
+</code></pre><p>进入到文件夹</p>
+<pre><code>C:\Users\user\Documents\Cocos\Link\frameworks\cocos2d-x\cocos\scripting\lua-bindings\manual
+
+打开CCLuaStack.cpp，添加
+
+#include &quot;lua_cocos2dx_custom_auto.hpp&quot;
+register_all_cocos2dx_custom(_state);
+</code></pre><h3 id="期间遇到的错误"><a href="#期间遇到的错误" class="headerlink" title="期间遇到的错误"></a>期间遇到的错误</h3><h5 id="错误一"><a href="#错误一" class="headerlink" title="错误一"></a>错误一</h5><pre><code>Traceback (most recent call last):
+File &quot;/Users/iCocos/Desktop/cocos2d/Products/cocos2dx-demo/SingleLua/frameworks/cocos2d-x/tools/bindings-generator/generator.py&quot;, line 1799, in &lt;module&gt;
+main()
+File &quot;/Users/iCocos/Desktop/cocos2d/Products/cocos2dx-demo/SingleLua/frameworks/cocos2d-x/tools/bindings-generator/generator.py&quot;, line 1772, in main
+&apos;clang_args&apos;: (config.get(s, &apos;extra_arguments&apos;, 0, dict(userconfig.items(&apos;DEFAULT&apos;))) or &quot;&quot;).split(&quot; &quot;),
+File &quot;/System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/ConfigParser.py&quot;, line 623, in get
+return self._interpolate(section, option, value, d)
+File &quot;/System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/ConfigParser.py&quot;, line 691, in _interpolate
+self._interpolate_some(option, L, rawval, section, vars, 1)
+File &quot;/System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/ConfigParser.py&quot;, line 726, in _interpolate_some
+section, map, depth + 1)
+File &quot;/System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/ConfigParser.py&quot;, line 723, in _interpolate_some
+option, section, rest, var)
+InterpolationMissingOptionError: Bad value substitution:
+section: [cocos2dx_custom]
+option : extra_arguments
+key    : clang_version
+rawval : /include
+</code></pre><p>路径错误</p>
+<pre><code>#clang_headers = -I%(clangllvmdir)s/lib/clang/%(clang_version)s/include
+clang_headers = -I%(clangllvmdir)s/lib64/clang/5.0/include  # --------- ?
+</code></pre><h5 id="错误二"><a href="#错误二" class="headerlink" title="错误二"></a>错误二</h5><pre><code>Traceback (most recent call last):
+File &quot;/Users/iCocos/Desktop/cocos2d/Products/cocos2dx-demo/SingleLua/frameworks/cocos2d-x/tools/bindings-generator/generator.py&quot;, line 1799, in &lt;module&gt;
+main()
+File &quot;/Users/iCocos/Desktop/cocos2d/Products/cocos2dx-demo/SingleLua/frameworks/cocos2d-x/tools/bindings-generator/generator.py&quot;, line 1795, in main
+generator.generate_code()
+File &quot;/Users/iCocos/Desktop/cocos2d/Products/cocos2dx-demo/SingleLua/frameworks/cocos2d-x/tools/bindings-generator/generator.py&quot;, line 1444, in generate_code
+self._parse_headers()
+File &quot;/Users/iCocos/Desktop/cocos2d/Products/cocos2dx-demo/SingleLua/frameworks/cocos2d-x/tools/bindings-generator/generator.py&quot;, line 1487, in _parse_headers
+raise Exception(&quot;Fatal error in parsing headers&quot;)
+Exception: Fatal error in parsing headers
+---------------------------------
+Generating lua bindings fails.
+---------------------------------
+</code></pre><p>C++语法错误</p>
+<h5 id="错误三"><a href="#错误三" class="headerlink" title="错误三"></a>错误三</h5><pre><code>Generating bindings for cocos2dx_custom...
+Using userconfig
+[(&apos;androidndkdir&apos;, &apos;/Users/iCocos/tools/android-ndk-r16b&apos;), (&apos;clangllvmdir&apos;, &apos;/Users/iCocos/tools/android-ndk-r16b/toolchains/llvm/prebuilt/darwin-x86_64&apos;), (&apos;gcc_toolchain_dir&apos;, &apos;/Users/iCocos/tools/android-ndk-r16b/toolchains/arm-linux-androideabi-4.9/prebuilt/darwin-x86_64&apos;), (&apos;cocosdir&apos;, &apos;/Users/iCocos/Desktop/cocos2d/Products/cocos2dx-demo/SingleLua/frameworks/cocos2d-x&apos;), (&apos;cxxgeneratordir&apos;, &apos;/Users/iCocos/Desktop/cocos2d/Products/cocos2dx-demo/SingleLua/frameworks/cocos2d-x/tools/bindings-generator&apos;), (&apos;extra_flags&apos;, &apos;&apos;)]
+
+.... Generating bindings for target lua
+
+.... .... Processing section cocos2dx_custom
+
+Traceback (most recent call last):
+File &quot;/Users/iCocos/Desktop/cocos2d/Products/cocos2dx-demo/SingleLua/frameworks/cocos2d-x/tools/bindings-generator/generator.py&quot;, line 1799, in &lt;module&gt;
+main()
+File &quot;/Users/iCocos/Desktop/cocos2d/Products/cocos2dx-demo/SingleLua/frameworks/cocos2d-x/tools/bindings-generator/generator.py&quot;, line 1795, in main
+generator.generate_code()
+File &quot;/Users/iCocos/Desktop/cocos2d/Products/cocos2dx-demo/SingleLua/frameworks/cocos2d-x/tools/bindings-generator/generator.py&quot;, line 1444, in generate_code
+self._parse_headers()
+File &quot;/Users/iCocos/Desktop/cocos2d/Products/cocos2dx-demo/SingleLua/frameworks/cocos2d-x/tools/bindings-generator/generator.py&quot;, line 1478, in _parse_headers
+tu = self.index.parse(header, self.clang_args)
+File &quot;/Users/iCocos/Desktop/cocos2d/Products/cocos2dx-demo/SingleLua/frameworks/cocos2d-x/tools/bindings-generator/clang/cindex.py&quot;, line 2602, in parse
+self)
+File &quot;/Users/iCocos/Desktop/cocos2d/Products/cocos2dx-demo/SingleLua/frameworks/cocos2d-x/tools/bindings-generator/clang/cindex.py&quot;, line 2714, in from_source
+raise TranslationUnitLoadError(&quot;Error parsing translation unit.&quot;)
+TranslationUnitLoadError: Error parsing translation unit.
+---------------------------------
+Generating lua bindings fails.
+---------------------------------
+</code></pre><p>路径错误</p>
+<pre><code>#android_headers = -I%(androidndkdir)s/platforms/android-19/arch-arm/usr/include -I%(androidndkdir)s/sources/cxx-stl/gnu-libstdc++/4.7/libs/armeabi-v7a/include -I%(androidndkdir)s/sources/cxx-stl/gnu-libstdc++/4.7/include -I%(androidndkdir)s/sources/cxx-stl/gnu-libstdc++/4.8/libs/armeabi-v7a/include -I%(androidndkdir)s/sources/cxx-stl/gnu-libstdc++/4.8/include
+android_headers = -I%(androidndkdir)s/platforms/android-19/arch-arm/usr/lib -I%(androidndkdir)s/sources/cxx-stl/gnu-libstdc++/4.9/libs/armeabi-v7a/include -I%(androidndkdir)s/sources/cxx-stl/gnu-libstdc++/4.9/include -I%(androidndkdir)s/sources/cxx-stl/gnu-libstdc++/4.9/libs/armeabi-v7a/include -I%(androidndkdir)s/sources/cxx-stl/gnu-libstdc++/4.9/include
+</code></pre><h5 id="错误四"><a href="#错误四" class="headerlink" title="错误四"></a>错误四</h5><pre><code>====
+Errors in parsing headers:
+1. &lt;severity = Fatal,
+location = &lt;SourceLocation file &apos;/Users/iCocos/Desktop/cocos2d/Products/cocos2dx-demo/SingleLua/frameworks/cocos2d-x/cocos/platform/android/CCPlatformDefine-android.h&apos;, line 33, column 10&gt;,
+details = &quot;&apos;android/log.h&apos; file not found&quot;&gt;
+====
+</code></pre><h3 id="提示成功"><a href="#提示成功" class="headerlink" title="提示成功"></a>提示成功</h3><pre><code>---------------------------------
+Generating lua bindings succeeds.
+---------------------------------
+</code></pre><p>######致谢：</p>
+<ul>
+<li><a href="https://blog.csdn.net/never_QH/article/details/45148835" target="_blank" rel="noopener">https://blog.csdn.net/never_QH/article/details/45148835</a></li>
+<li><a href="http://geekgaoyang.herokuapp.com/blog/2015/02/11/cocos2d-x-tutorial-of-binding-c-plus-plus-class-to-lua-usage/" target="_blank" rel="noopener">http://geekgaoyang.herokuapp.com/blog/2015/02/11/cocos2d-x-tutorial-of-binding-c-plus-plus-class-to-lua-usage/</a></li>
+<li><a href="https://www.cnblogs.com/ZhYQ-Note/p/5939783.html" target="_blank" rel="noopener">https://www.cnblogs.com/ZhYQ-Note/p/5939783.html</a></li>
+<li><a href="http://www.bubuko.com/infodetail-1210197.html" target="_blank" rel="noopener">http://www.bubuko.com/infodetail-1210197.html</a></li>
+<li><a href="https://www.jianshu.com/p/9bd4d5518d53" target="_blank" rel="noopener">https://www.jianshu.com/p/9bd4d5518d53</a></li>
+</ul>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="http://pd1l3bbt7.bkt.clouddn.com/img/wechatimg.jpg" alt="曹理鹏@iCocos 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="http://pd1l3bbt7.bkt.clouddn.com/img/alipayimg.jpg" alt="曹理鹏@iCocos 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>曹理鹏@iCocos</li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://icocos.github.io/2018/10/18/cocos2dx-lua-绑定详解与实战/" title="cocos2dx lua 绑定详解与实战">https://icocos.github.io/2018/10/18/cocos2dx-lua-绑定详解与实战/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明出处！</li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/10/16/cocos2dx-lua-与-C-C-交互入门/" rel="next" title="cocos2dx lua 与 C/C++ 交互入门">
+                <i class="fa fa-chevron-left"></i> cocos2dx lua 与 C/C++ 交互入门
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="SOHUCS"></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="http://pd1l3bbt7.bkt.clouddn.com/icocos_user_icon.JPG"
+                alt="曹理鹏@iCocos" />
+            
+              <p class="site-author-name" itemprop="name">曹理鹏@iCocos</p>
+              <p class="site-description motion-element" itemprop="description">纯码迷、爱学习、爱交友、喜欢接触新鲜事物、迎接新的挑战，更爱游离于错综复杂的编码与逻辑中！</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives">
+                
+                    <span class="site-state-item-count">87</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">18</span>
+                    <span class="site-state-item-name">分类</span>
+                  
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">88</span>
+                    <span class="site-state-item-name">标签</span>
+                  
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/al1020119" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:al1020119@163.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://stackoverflow.com/users/10186720" target="_blank" title="StackOverflow"><i class="fa fa-fw fa-stack-overflow"></i>StackOverflow</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.icocos.cn/" title="梦工厂" target="_blank">梦工厂</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://al1020119.github.io/" title="iOS梦工厂" target="_blank">iOS梦工厂</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#期间遇到的错误"><span class="nav-number">1.</span> <span class="nav-text">期间遇到的错误</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#错误一"><span class="nav-number">1.0.1.</span> <span class="nav-text">错误一</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#错误二"><span class="nav-number">1.0.2.</span> <span class="nav-text">错误二</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#错误三"><span class="nav-number">1.0.3.</span> <span class="nav-text">错误三</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#错误四"><span class="nav-number">1.0.4.</span> <span class="nav-text">错误四</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#提示成功"><span class="nav-number">2.</span> <span class="nav-text">提示成功</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2017 – <span itemprop="copyrightYear">2018</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">曹理鹏@iCocos</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">站点总字数：</span>
+    
+    <span title="站点总字数">435k</span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    
+    <span title="站点阅读时长">6:35</span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv" title="总访客量">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="site-pv" title="总访问量">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/reading_progress/reading_progress.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.3.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.3.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.3.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.3.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+  
+    <script type="text/javascript">
+    (function(){
+      var appid = 'cytKHBEtW';
+      var conf = '43989b8e63b25c4e9f1fde821c996a39';
+      var width = window.innerWidth || document.documentElement.clientWidth;
+      if (width < 960) {
+      window.document.write('<script id="changyan_mobile_js" charset="utf-8" type="text/javascript" src="https://changyan.sohu.com/upload/mobile/wap-js/changyan_mobile.js?client_id=' + appid + '&conf=' + conf + '"><\/script>'); } else { var loadJs=function(d,a){var c=document.getElementsByTagName("head")[0]||document.head||document.documentElement;var b=document.createElement("script");b.setAttribute("type","text/javascript");b.setAttribute("charset","UTF-8");b.setAttribute("src",d);if(typeof a==="function"){if(window.attachEvent){b.onreadystatechange=function(){var e=b.readyState;if(e==="loaded"||e==="complete"){b.onreadystatechange=null;a()}}}else{b.onload=a}}c.appendChild(b)};loadJs("https://changyan.sohu.com/upload/changyan.js",function(){
+        window.changyan.api.config({appid:appid,conf:conf})});
+      }
+    })();
+    </script>
+    <script type="text/javascript" src="https://assets.changyan.sohu.com/upload/plugins/plugins.count.js"></script>
+  
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("Tc7k1mbaieCUSgmM8LPk1IBO-gzGzoHsz", "sAb7L2vwENJTteRrvFKQacUU");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            
+              var $element = $(document.getElementById(url));
+              $element.find('.leancloud-visitors-count').text(counter.get('time'));
+            
+            counter.save(null, {
+              success: function(counter) {
+                
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            
+              var $element = $(document.getElementById(url));
+              $element.find('.leancloud-visitors-count').text('Counter not initialized! See more at console err msg.');
+              console.error('ATTENTION! LeanCloud counter has security bug, see here how to solve it: https://github.com/theme-next/hexo-leancloud-counter-security. \n But you also can use LeanCloud without security, by set \'security\' option to \'false\'.');
+            
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #333;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #eee;
+      background-image: linear-gradient(#fcfcfc, #eee);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('复制').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+          if(result)$(this).text('复制成功')
+          else $(this).text('复制失败')
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('复制')
+        }, 300)
+      }).append(e)
+    })
+  </script>
+
+
+  
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("Tc7k1mbaieCUSgmM8LPk1IBO-gzGzoHsz", "sAb7L2vwENJTteRrvFKQacUU");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+  
+</body>
+</html>

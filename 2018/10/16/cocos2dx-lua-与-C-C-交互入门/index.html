@@ -1,0 +1,2505 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.3.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="http://pd1l3bbt7.bkt.clouddn.com/img/favicon.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="http://pd1l3bbt7.bkt.clouddn.com/img/favicon.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="http://pd1l3bbt7.bkt.clouddn.com/img/favicon.png?v=6.3.0">
+
+
+  <link rel="mask-icon" href="http://pd1l3bbt7.bkt.clouddn.com/img/favicon.png?v=6.3.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="目录 中间栈 1.中间件栈 C/C++访问Lua数据和函数 Lua访问C/C++数据和函数     集成Lua 集成Lua环境到C_Cpp项目中   C/C++ 调用Lua C/C++调用Lua之标准Lua读取类 C/C++调用Lua中的变量 C/C++调用Lua中的函数 C/C++调用Lua之遍历和获取Table的值   Lua 调用 C/C++ 1.Lua调用C/C++函数 深入理解编写C函数">
+<meta name="keywords" content="曹理鹏, iCocos, 梦工厂, iOS, IT, 技术, 程序猿, 码农">
+<meta property="og:type" content="article">
+<meta property="og:title" content="cocos2dx lua 与 C&#x2F;C++ 交互入门">
+<meta property="og:url" content="https://icocos.github.io/2018/10/16/cocos2dx-lua-与-C-C-交互入门/index.html">
+<meta property="og:site_name" content="iCocos">
+<meta property="og:description" content="目录 中间栈 1.中间件栈 C/C++访问Lua数据和函数 Lua访问C/C++数据和函数     集成Lua 集成Lua环境到C_Cpp项目中   C/C++ 调用Lua C/C++调用Lua之标准Lua读取类 C/C++调用Lua中的变量 C/C++调用Lua中的函数 C/C++调用Lua之遍历和获取Table的值   Lua 调用 C/C++ 1.Lua调用C/C++函数 深入理解编写C函数">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-10-18T05:17:02.233Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="cocos2dx lua 与 C&#x2F;C++ 交互入门">
+<meta name="twitter:description" content="目录 中间栈 1.中间件栈 C/C++访问Lua数据和函数 Lua访问C/C++数据和函数     集成Lua 集成Lua环境到C_Cpp项目中   C/C++ 调用Lua C/C++调用Lua之标准Lua读取类 C/C++调用Lua中的变量 C/C++调用Lua中的函数 C/C++调用Lua之遍历和获取Table的值   Lua 调用 C/C++ 1.Lua调用C/C++函数 深入理解编写C函数">
+
+
+
+  <link rel="alternate" href="/atom.xml" title="iCocos" type="application/atom+xml" />
+
+
+
+
+  <link rel="canonical" href="https://icocos.github.io/2018/10/16/cocos2dx-lua-与-C-C-交互入门/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>cocos2dx lua 与 C/C++ 交互入门 | iCocos</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">iCocos</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">www.icocos.cn</p>
+      
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-首页">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-归档">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-关于">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-作品">
+    <a href="/works/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-calendar"></i> <br />作品</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-简历">
+    <a href="/resume/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-sitemap"></i> <br />简历</a>
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+    <div class="reading-progress-bar"></div>
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://icocos.github.io/2018/10/16/cocos2dx-lua-与-C-C-交互入门/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="曹理鹏@iCocos">
+      <meta itemprop="description" content="纯码迷、爱学习、爱交友、喜欢接触新鲜事物、迎接新的挑战，更爱游离于错综复杂的编码与逻辑中！">
+      <meta itemprop="image" content="http://pd1l3bbt7.bkt.clouddn.com/icocos_user_icon.JPG">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="iCocos">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">cocos2dx lua 与 C/C++ 交互入门
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-10-16 13:03:46" itemprop="dateCreated datePublished" datetime="2018-10-16T13:03:46+08:00">2018-10-16</time>
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+              <span class="post-meta-divider">|</span>
+              <span class="post-meta-item-icon">
+                <i class="fa fa-comment-o"></i>
+              </span>
+              
+                <a href="/2018/10/16/cocos2dx-lua-与-C-C-交互入门/#SOHUCS" itemprop="discussionUrl">
+                  <span class="post-meta-item-text">评论数：</span> <span id="changyan_count_unit" class="post-comments-count hc-comment-count" data-xid="2018/10/16/cocos2dx-lua-与-C-C-交互入门/" itemprop="commentsCount"></span>
+                </a>
+              
+            
+          
+
+          
+          
+             <span id="/2018/10/16/cocos2dx-lua-与-C-C-交互入门/" class="leancloud_visitors" data-flag-title="cocos2dx lua 与 C/C++ 交互入门">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数：</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon"
+            >
+            <i class="fa fa-eye"></i>
+             阅读次数： 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+            <div class="post-symbolscount">
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">本文字数：</span>
+                
+                <span title="本文字数">16k</span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">14 分钟</span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h5 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h5><ul>
+<li>中间栈<ul>
+<li>1.中间件栈<ul>
+<li>C/C++访问Lua数据和函数</li>
+<li>Lua访问C/C++数据和函数</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>集成Lua<ul>
+<li>集成Lua环境到C_Cpp项目中</li>
+</ul>
+</li>
+<li>C/C++ 调用Lua<ul>
+<li>C/C++调用Lua之标准Lua读取类</li>
+<li>C/C++调用Lua中的变量</li>
+<li>C/C++调用Lua中的函数</li>
+<li>C/C++调用Lua之遍历和获取Table的值</li>
+</ul>
+</li>
+<li>Lua 调用 C/C++<ul>
+<li>1.Lua调用C/C++函数<ul>
+<li>深入理解编写C函数上</li>
+<li>深入理解编写C函数下</li>
+</ul>
+</li>
+<li>2.Lua调用C/C++之标准C模块</li>
+</ul>
+</li>
+<li>待续</li>
+</ul>
+<a id="more"></a>
+<h2 id="中间栈"><a href="#中间栈" class="headerlink" title="中间栈"></a>中间栈</h2><blockquote>
+<p>lua(<a href="https://www.lua.org/)作为一种轻量级的脚本语言" target="_blank" rel="noopener">https://www.lua.org/)作为一种轻量级的脚本语言</a>, 以其简单的语法结构, 方便的c++集成能力, 高效的执行效率收到广大游戏开发者的热爱, 也是cocos2d-x官方首次引入的脚本语言.</p>
+</blockquote>
+<p>作为一种脚本语言, lua是在一个运行时环境(State)里执行的, 这个运行时环境保存了脚本运行所需的内存空间, 创建的全局变量, 加载的库文件等. 在这个运行时环境里还有一个栈空间(Stack), 其作用就是在lua和c语言进行数据传递和函数调用. lua原生实现了很多c api对栈空间进行操作, 让开发者能够方便地实现lua脚本代码与c编译代码的双向通信.</p>
+<h4 id="1-中间件栈"><a href="#1-中间件栈" class="headerlink" title="1.中间件栈"></a>1.中间件栈</h4><blockquote>
+<p>背后其实是lua和c api的互相调用, 所有c++的功能都要通过一层c函数的包装, 这点是要牢记在心的, 这也正是lua-binding的核心.</p>
+</blockquote>
+<p>cocos2d-x提供的lua-bingding工具使用libclang分析c++源码, 提取语法树, 将c++的类成员函数封装为c函数, 然后根据参数类型自动调用lua c api, 实现对栈空间的操作, 将c++的数据传递给lua. lua脚本加载编译好的c++库, 就可以自由调用c++里面的类对象和成员函数了; c++的代码则可以直接使用lua c api, 执行一段lua脚本, 并通过栈空间获取返回结果.</p>
+<p>开始撸代码 ——————————- 华丽的分割线 ——————————-</p>
+<ol>
+<li>创建一个Lua管理类，</li>
+</ol>
+<p>用利用栈的原理，使用C++简单访问Lua</p>
+<h6 id="h文件"><a href="#h文件" class="headerlink" title=".h文件"></a>.h文件</h6><pre><code>#ifndef LuaInterface01_h
+#define LuaInterface01_h
+
+#include &lt;stdio.h&gt;
+#include &quot;lua.hpp&quot;
+
+class LuaInterface01 {
+
+public:
+static LuaInterface01 *shareInterface();
+
+private:
+static LuaInterface01 *i;
+void init();
+
+};
+
+#endif /* LuaInterface01_hpp */
+</code></pre><h6 id="cpp文件"><a href="#cpp文件" class="headerlink" title=".cpp文件"></a>.cpp文件</h6><pre><code>#include &quot;LuaInterface01.h&quot;
+#include &quot;cocos2d.h&quot;
+#include &lt;string&gt;
+
+USING_NS_CC;
+using namespace std;
+
+LuaInterface01 *LuaInterface01::i = NULL;
+
+LuaInterface01 *LuaInterface01::shareInterface() {
+if (!i) {
+i = new LuaInterface01;
+i -&gt; init();
+}
+return i;
+}
+
+void LuaInterface01::init() {
+// 创建一个Lua状态指针
+lua_State *luaState = luaL_newstate();
+luaL_openlibs(luaState);
+string path = CCFileUtils::sharedFileUtils()-&gt;fullPathForFilename(&quot;Interface01.lua&quot;);
+luaL_dofile(luaState, path.c_str());
+lua_pcall(luaState, 0, 0, 0); // Hello iCocos LuaInterface01!
+}
+</code></pre><p>新建一个.lua的访问类文件，并且输入</p>
+<pre><code>print(&quot;Hello iCocos LuaInterface01!&quot;)
+</code></pre><p>控制答应结果：</p>
+<pre><code>Hello iCocos LuaInterface01!
+</code></pre><blockquote>
+<p>下面用简单的Lua与C/C++互调，验证中间件栈， 如果想了解更多或者更详细的实现Lua与C/C++，请略过本小结，滑到第三部分，或者通过目录寻找需要的内容！</p>
+</blockquote>
+<h6 id="C-C-访问Lua数据和函数"><a href="#C-C-访问Lua数据和函数" class="headerlink" title="C/C++访问Lua数据和函数"></a>C/C++访问Lua数据和函数</h6><ol>
+<li>创建一个Lua管理类，</li>
+</ol>
+<h6 id="h文件-1"><a href="#h文件-1" class="headerlink" title=".h文件"></a>.h文件</h6><pre><code>#ifndef LuaInterface02_h
+#define LuaInterface02_h
+
+#include &lt;stdio.h&gt;
+#include &quot;lua.hpp&quot;
+
+#include &quot;cocos2d.h&quot;
+USING_NS_CC;
+
+class LuaInterface02 {
+
+public:
+LuaInterface02();
+~LuaInterface02();
+static LuaInterface02 *shareInterface();
+void init();
+
+void readVariable();
+void loadFunstion();
+
+private:
+static LuaInterface02 *i;
+lua_State *m_pLuaState;
+
+};
+
+
+#endif /* LuaInterface02_h */
+</code></pre><h6 id="cpp文件-1"><a href="#cpp文件-1" class="headerlink" title=".cpp文件"></a>.cpp文件</h6><pre><code>#include &quot;LuaInterface02.h&quot;
+#include &lt;string&gt;
+
+using namespace std;
+
+LuaInterface02 *LuaInterface02::i = NULL;
+
+LuaInterface02::LuaInterface02() {
+
+}
+LuaInterface02::~LuaInterface02() {
+if (m_pLuaState) {
+lua_close(m_pLuaState);
+m_pLuaState = NULL;
+}
+}
+
+LuaInterface02 *LuaInterface02::shareInterface() {
+if (!i) {
+i = new LuaInterface02;
+i -&gt; init();
+}
+return i;
+}
+
+void LuaInterface02::init() {
+m_pLuaState = luaL_newstate();
+luaL_openlibs(m_pLuaState);
+}
+
+void LuaInterface02::readVariable() {
+string path = CCFileUtils::sharedFileUtils()-&gt;fullPathForFilename(&quot;Interface02.lua&quot;);
+luaL_dofile(m_pLuaState, path.c_str());
+int err_relt = lua_pcall(m_pLuaState, 0, 0, 0);
+
+CCAssert(err_relt, &quot;读取Lua文件错误&quot;);
+
+lua_getglobal(m_pLuaState, &quot;username&quot;);
+char *rlt = (char*)lua_tostring(m_pLuaState, -1);  //lua_tonumber,lua_toboolean
+CCLOG(&quot;rlt is : %s&quot;, rlt);
+lua_pop(m_pLuaState, 1);
+}
+
+void LuaInterface02::loadFunstion() {
+string path = CCFileUtils::sharedFileUtils()-&gt;fullPathForFilename(&quot;Interface02.lua&quot;);
+luaL_dofile(m_pLuaState, path.c_str());
+int err_relt = lua_pcall(m_pLuaState, 0, 0, -1);
+
+CCAssert(err_relt != -1, &quot;读取Lua文件错误&quot;);
+
+lua_getglobal(m_pLuaState, &quot;getResult&quot;);
+lua_pushnumber(m_pLuaState, 12);
+err_relt = lua_pcall(m_pLuaState, 1, 2, -1); // 1： 一个参数， 2：两个参数 ， -1：当出错的时候的返回值
+CCAssert(err_relt != -1, &quot;访问函数报错&quot;);
+
+char *rlt = (char*)lua_tostring(m_pLuaState, -1);  //lua_tonumber,lua_toboolean
+CCLOG(&quot;rlt is : %s&quot;, rlt);
+char *rlt2 = (char*)lua_tostring(m_pLuaState, -2);  //lua_tonumber,lua_toboolean
+CCLOG(&quot;rlt2 is : %s&quot;, rlt2);
+}
+</code></pre><p>新建一个.lua的访问类文件，并且输入</p>
+<pre><code>username = &quot;iCocos&quot;
+
+function getResult(x)
+
+print(&quot;Enter Result&quot;)
+print(&quot;x:&quot;..x)
+
+return &quot;OK&quot;,&quot;Function&quot;
+
+end
+</code></pre><p>控制答应结果：</p>
+<pre><code>rlt is : iCocos
+Enter Result
+x:12
+rlt is : Function
+rlt2 is : OK
+</code></pre><h6 id="Lua访问C-C-数据和函数"><a href="#Lua访问C-C-数据和函数" class="headerlink" title="Lua访问C/C++数据和函数"></a>Lua访问C/C++数据和函数</h6><p>LuaInterface02.h中增加函数</p>
+<pre><code>// 调用C++
+static int l_show(lua_State * L) {
+lua_pushstring(L, &quot;String from C/C++&quot;);
+return 1;
+}
+</code></pre><p>然后在init()中输入执行方法</p>
+<pre><code>// 调用C++
+lua_pushcfunction(m_pLuaState, l_show);
+lua_setglobal(m_pLuaState, &quot;show&quot;);
+</code></pre><p>然后在.lua的访问类文件，并且输入</p>
+<pre><code>print(show())
+</code></pre><p>控制答应结果：</p>
+<pre><code>String from C/C++
+</code></pre><h5 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h5><blockquote>
+<p>简单点讲就是维护了一个堆栈，需要交互的数据通过入栈，出栈操作来传递数据。而具体脚本语言的实现机制，一般来说都会有一个编译模块、一个虚拟机（执行）模块、一套类型实现及数据管理模块，通常还会有一个供外部操作的接口，如lua c api，这个接口让嵌入方得以操作脚本状态（如访问变量、调用函数、管理内存），实现交互。</p>
+</blockquote>
+<p>最后，总结一下，所有程序最终都是以机器码的形式被硬件CPU执行，从这个角度去看，不同语言的代码并没有本质区别，最终都是被编译器编译从二进制机器码，而所谓交互，就是在处理共享数据而已。</p>
+<ul>
+<li>注意</li>
+<li>Lua与C/C++或C/C++语言之前那通信过程中，实际上更多的时候是对栈顶的元素进行操作</li>
+<li>从栈顶往下看索引是-1-2-3…</li>
+<li>从栈底往上看索引是1，2，3…</li>
+<li>无论从Lua调C/C++，还是C/C++调Lua，参数值都是最先被压入到栈顶的，最后结果值才会被压入到栈顶</li>
+</ul>
+<h2 id="集成Lua"><a href="#集成Lua" class="headerlink" title="集成Lua"></a>集成Lua</h2><h4 id="集成Lua环境到C-C-项目中"><a href="#集成Lua环境到C-C-项目中" class="headerlink" title="集成Lua环境到C/C++项目中"></a>集成Lua环境到C/C++项目中</h4><blockquote>
+<p>下载并获取到Lua源代码(src文件夹就是lua源码)<a href="https://www.lua.org/" target="_blank" rel="noopener">https://www.lua.org/</a></p>
+</blockquote>
+<p>在lua中文件类型有三种</p>
+<ul>
+<li>.c c文件</li>
+<li>.h 头文件</li>
+<li>.o 可执行文件</li>
+</ul>
+<h5 id="开始接入"><a href="#开始接入" class="headerlink" title="开始接入"></a>开始接入</h5><ul>
+<li>接入Lua到C/C++的时候需要删除</li>
+<li>lua.c</li>
+<li>luac.c</li>
+<li>MakeFile</li>
+</ul>
+<p>新建一个Xcode项目，拷贝src文件夹到项目中就可以了</p>
+<h5 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h5><blockquote>
+<p>在llex.c中trydecpoint, 修改里面decpoint=“getlocaldecpoint”</p>
+<p>decpoint=’.’</p>
+<p>如果不改会导致编译报错</p>
+</blockquote>
+<h5 id="验证"><a href="#验证" class="headerlink" title="验证"></a>验证</h5><p>新建一个C++文件，在头文件中输入</p>
+<pre><code>#include &lt;stdio.h&gt;
+#include &quot;lua.hpp&quot;
+
+#include &quot;cocos2d.h&quot;
+USING_NS_CC;
+
+class TestInportLua {
+public:
+void test() {
+lua_State *state = luaL_newstate();
+luaL_openlibs(state);
+
+luaL_dofile(state, &quot;res/test.lua&quot;);
+}
+}
+#endif /* TestInportLua_h */
+</code></pre><h2 id="C-C-调用Lua"><a href="#C-C-调用Lua" class="headerlink" title="C/C++ 调用Lua"></a>C/C++ 调用Lua</h2><h4 id="C-C-调用Lua之标准Lua读取类"><a href="#C-C-调用Lua之标准Lua读取类" class="headerlink" title="C/C++调用Lua之标准Lua读取类"></a>C/C++调用Lua之标准Lua读取类</h4><ol>
+<li>创建一个Lua管理类，</li>
+</ol>
+<h6 id="h文件-2"><a href="#h文件-2" class="headerlink" title=".h文件"></a>.h文件</h6><pre><code>#ifndef LuaInterface03_hpp
+#define LuaInterface03_hpp
+
+#include &quot;cocos2d.h&quot;
+#include &quot;lua.hpp&quot;
+#include &lt;string&gt;
+
+USING_NS_CC;
+using namespace std;
+
+class LuaInterface03 {
+
+public:
+LuaInterface03();
+~LuaInterface03();
+
+static LuaInterface03 *shareInterface();
+
+void readVailable();
+void loadFunciton();
+
+private:
+static LuaInterface03 *i;
+lua_State *m_pLuaState;
+void init();
+
+};
+
+#endif /* LuaInterface03_hpp */
+</code></pre><h6 id="cpp文件-2"><a href="#cpp文件-2" class="headerlink" title=".cpp文件"></a>.cpp文件</h6><pre><code>#include &quot;LuaInterface03.h&quot;
+
+LuaInterface03 *LuaInterface03::i = NULL;
+
+LuaInterface03::LuaInterface03(){}
+LuaInterface03::~LuaInterface03(){
+lua_close(m_pLuaState);
+m_pLuaState = NULL;
+}
+
+void LuaInterface03::init() {
+// 创建一个新的状态
+m_pLuaState = luaL_newstate();
+// 打开所有系统提供的库
+luaL_openlibs(m_pLuaState);
+
+// 完整路径
+string path = CCFileUtils::sharedFileUtils()-&gt;fullPathForFilename(&quot;LuaInterface03.lua&quot;);
+
+// 读取文件
+luaL_dofile(m_pLuaState, path.c_str());
+// 启动调用文件
+lua_pcall(m_pLuaState, 0, 0, -1);
+}
+
+LuaInterface03 *LuaInterface03::shareInterface() {
+if (!i) {
+i = new LuaInterface03;
+i -&gt; init();
+}
+return i;
+}
+</code></pre><p>新建一个.lua的访问类文件，并且输入</p>
+<pre><code>print(&quot;=======&gt; I am Lua Config&quot;)
+</code></pre><p>控制答应结果：</p>
+<pre><code>=======&gt; I am Lua Config
+</code></pre><h4 id="C-C-调用Lua中的变量"><a href="#C-C-调用Lua中的变量" class="headerlink" title="C/C++调用Lua中的变量"></a>C/C++调用Lua中的变量</h4><p>增加方法和对应的实现，用来获取变量</p>
+<pre><code>void configWindowContentSize();
+
+
+void LuaInterface03::configWindowContentSize() {
+lua_getglobal(m_pLuaState, &quot;width&quot;);
+// 是否能转换成number
+if (lua_isnumber(m_pLuaState, -1)) {
+int width = (int)lua_tonumber(m_pLuaState, -1);
+CCLOG(&quot;width: %i&quot;, width);
+}
+lua_getglobal(m_pLuaState, &quot;height&quot;);
+if (lua_isnumber(m_pLuaState, -1)) {
+int height = (int)lua_tonumber(m_pLuaState, -1);
+CCLOG(&quot;height: %i&quot;, height);
+}
+}
+</code></pre><p>Lua中增加变量</p>
+<pre><code>width = 320
+height = 640
+</code></pre><p>控制答应结果：</p>
+<pre><code>width: 320
+height: 640
+</code></pre><h4 id="C-C-调用Lua中的函数"><a href="#C-C-调用Lua中的函数" class="headerlink" title="C/C++调用Lua中的函数"></a>C/C++调用Lua中的函数</h4><p>增加方法和对应的实现，用来获取变量</p>
+<pre><code>void callLuaFunctionContent();
+
+void LuaInterface03::callLuaFunctionContent() {
+lua_getglobal(m_pLuaState, &quot;test1&quot;);
+int err_relt = lua_pcall(m_pLuaState, 0, 0, -1);
+CCAssert(err_relt != -1, &quot;访问函数报错&quot;);
+
+lua_getglobal(m_pLuaState, &quot;test2&quot;);
+lua_pushstring(m_pLuaState, &quot;test2 调用&quot;);
+err_relt = lua_pcall(m_pLuaState, 1, 0, -1); // 1： 一个参数， 2：两个参数 ， -1：当出错的时候的返回值
+CCAssert(err_relt != -1, &quot;访问函数报错&quot;);
+
+lua_getglobal(m_pLuaState, &quot;test3&quot;);
+err_relt = lua_pcall(m_pLuaState, 0, 0, -1);
+CCAssert(err_relt != -1, &quot;访问函数报错&quot;);
+char* rlt = (char*)lua_tostring(m_pLuaState, -1);
+CCLOG(&quot;rlt is %s&quot;,rlt);
+
+lua_getglobal(m_pLuaState, &quot;test4&quot;);
+lua_pushnumber(m_pLuaState, 10);
+err_relt = lua_pcall(m_pLuaState, 1, 2, -1); // 1： 一个参数， 2：两个参数 ， -1：当出错的时候的返回值
+CCAssert(err_relt != -1, &quot;访问函数报错&quot;);
+
+int rlt2 = (int)lua_tonumber(m_pLuaState, -1);
+CCLOG(&quot;rlt is %i&quot;,rlt2);
+
+lua_getglobal(m_pLuaState, &quot;test5&quot;);
+lua_pushnumber(m_pLuaState, 100);
+err_relt = lua_pcall(m_pLuaState, 1, 2, -1); // 1： 一个参数， 2：两个参数 ， -1：当出错的时候的返回值
+CCAssert(err_relt != -1, &quot;访问函数报错&quot;);
+
+int rlt3 = (int)lua_tonumber(m_pLuaState, -1);
+int rlt4 = (int)lua_tonumber(m_pLuaState, -1);
+CCLOG(&quot;rlt is %i&quot;,rlt3);
+CCLOG(&quot;rlt is %i&quot;,rlt4);
+}
+</code></pre><p>Lua中增加变量</p>
+<pre><code>function test1()
+print(&quot;call lua function&quot;)
+end
+
+function test2(var)
+print(&quot;call lua function&quot;, var)
+end
+
+function test3()
+return &quot;I am Lua test3&quot;
+end
+
+function test4(var)
+var = var + 10
+return var
+end
+
+function test5(var)
+t = 10
+var = var + 10
+return t, var
+end
+</code></pre><p>控制答应结果：</p>
+<pre><code>call lua function
+call lua function test1 调用
+</code></pre><h4 id="C-C-调用Lua之遍历和获取Table的值"><a href="#C-C-调用Lua之遍历和获取Table的值" class="headerlink" title="C/C++调用Lua之遍历和获取Table的值"></a>C/C++调用Lua之遍历和获取Table的值</h4><p>增加方法</p>
+<pre><code>char* getField(lua_State *L, const char* key);
+
+char* getField(lua_State *L, const char* key) {
+char *rlt = NULL;
+lua_pushstring(L, key);
+lua_gettable(L, -2);
+if (lua_isstring(L, -1)) {
+rlt = (char*)lua_tostring(L, -1);
+lua_pop(L, 1);
+return rlt;
+}
+return &quot;error&quot;;
+}
+</code></pre><p>初始化方法(void LuaInterface03::init())中增加如下代码</p>
+<pre><code>lua_getglobal(m_pLuaState, &quot;application&quot;);
+if (lua_isnumber(m_pLuaState, -1)) {
+char *width = getField(m_pLuaState, &quot;width&quot;);
+char *height = getField(m_pLuaState, &quot;height&quot;);
+CCLOG(&quot;width:%s&quot;, width);
+CCLOG(&quot;height:%s&quot;, height);
+int nWidth = atoi(width);
+int nHeight = atoi(height);
+}
+</code></pre><p>Lua中增加Table</p>
+<pre><code>application = {
+width = 320,
+height = 640,
+}
+</code></pre><h2 id="Lua-调用-C-C"><a href="#Lua-调用-C-C" class="headerlink" title="Lua 调用 C/C++"></a>Lua 调用 C/C++</h2><h4 id="1-Lua调用C-C-函数"><a href="#1-Lua调用C-C-函数" class="headerlink" title="1.Lua调用C/C++函数"></a>1.Lua调用C/C++函数</h4><ol>
+<li>创建一个Lua管理类，</li>
+</ol>
+<h6 id="h文件-3"><a href="#h文件-3" class="headerlink" title=".h文件"></a>.h文件</h6><pre><code>#ifndef LuaInterface04_hpp
+#define LuaInterface04_hpp
+
+#include &lt;stdio.h&gt;
+
+#include &quot;cocos2d.h&quot;
+#include &quot;lua.hpp&quot;
+#include &lt;string&gt;
+
+USING_NS_CC;
+using namespace std;
+
+class LuaInterface04 {
+
+public:
+LuaInterface04();
+~LuaInterface04();
+
+static LuaInterface04 *shareInterface();
+
+static int l_getMyName(lua_State * L)
+
+private:
+static LuaInterface04 *i;
+lua_State *m_pLuaState;
+void init();
+
+};
+
+#endif /* LuaInterface04_hpp */
+</code></pre><h6 id="cpp文件-3"><a href="#cpp文件-3" class="headerlink" title=".cpp文件"></a>.cpp文件</h6><pre><code>#include &quot;LuaInterface04.h&quot;
+
+LuaInterface04 *LuaInterface04::i = NULL;
+
+LuaInterface04::LuaInterface04(){}
+
+LuaInterface04::LuaInterface04(){
+if (m_pLuaState) {
+lua_close(m_pLuaState);
+m_pLuaState = NULL;
+}
+}
+
+// 调用C++
+static int l_getMyName(lua_State * L) {
+lua_pushstring(L, &quot;String from C/C++&quot;);
+return 1;
+}
+
+
+void LuaInterface04::init() {
+// 创建一个新的状态
+m_pLuaState = luaL_newstate();
+// 打开所有系统提供的库
+luaL_openlibs(m_pLuaState);
+
+// 调用C++
+lua_pushcfunction(m_pLuaState, l_getMyName);
+lua_setglobal(m_pLuaState, &quot;getMyName&quot;);
+
+string path = CCFileUtils::sharedFileUtils()-&gt;fullPathForFilename(&quot;Interface04.lua&quot;);
+luaL_dofile(m_pLuaState, path.c_str());
+lua_pcall(m_pLuaState, 0, 0, -1);
+}
+
+LuaInterface04 *LuaInterface04::shareInterface() {
+if (!i) {
+i = new LuaInterface04;
+i -&gt; init();
+}
+return i;
+}
+</code></pre><p>新建一个.lua的访问类文件，并且输入</p>
+<pre><code>print(&quot;Begin&quot;)
+print(getMyName())
+print(&quot;End&quot;)
+</code></pre><p>控制答应结果：</p>
+<pre><code>Begin
+String from C/C++
+End
+</code></pre><h6 id="深入理解编写C函数上"><a href="#深入理解编写C函数上" class="headerlink" title="深入理解编写C函数上"></a>深入理解编写C函数上</h6><p>增加register_my_function方法</p>
+<h6 id="h"><a href="#h" class="headerlink" title=".h"></a>.h</h6><pre><code>static int l_showName(lua_State *L);
+
+static int l_showYoueName(lua_State *L);
+
+static void register_my_function(lua_State *L);
+</code></pre><h6 id="cpp"><a href="#cpp" class="headerlink" title=".cpp"></a>.cpp</h6><pre><code>static int l_showName(lua_State *L) {
+const char * value1 = luaL_checkstring(L, -1);
+const char * value2 = luaL_checkstring(L, -2);
+const char * value3 = luaL_checkstring(L, -3);
+
+CCLOG(&quot;value1 is :%s&quot;, value1);
+CCLOG(&quot;value2 is :%s&quot;, value2);
+CCLOG(&quot;value3 is :%s&quot;, value3);
+//lua_pushstring(L, value1);
+return 1;
+}
+
+static int l_showYoueName(lua_State *L) {
+const char * value = luaL_checkstring(L, -1);
+lua_pushstring(L, value);
+return 1;
+}
+
+static void register_my_function(lua_State *L) {
+lua_pushcfunction(L, LuaInterface04::l_getMyName);
+lua_setglobal(L, &quot;getMyName&quot;);
+
+lua_pushcfunction(L, LuaInterface04::l_getMyName);
+lua_setglobal(L, &quot;showName&quot;);
+
+lua_pushcfunction(L, LuaInterface04::l_getMyName);
+lua_setglobal(L, &quot;show&quot;);
+}
+</code></pre><p>在init中输入如下替换原始的调用方法</p>
+<pre><code>// 调用C++
+//lua_pushcfunction(m_pLuaState, l_getMyName);
+//lua_setglobal(m_pLuaState, &quot;getMyName&quot;);
+register_my_function(m_pLuaState);
+</code></pre><p>新建一个.lua的访问类文件，并且输入</p>
+<pre><code>showName(&quot;Hello iCocos&quot;)
+show(&quot;Hello iCocos&quot;， &quot;Hello Lua&quot;)
+</code></pre><h6 id="深入理解编写C函数下"><a href="#深入理解编写C函数下" class="headerlink" title="深入理解编写C函数下"></a>深入理解编写C函数下</h6><p>增加register_my_function方法</p>
+<h6 id="h-1"><a href="#h-1" class="headerlink" title=".h"></a>.h</h6><pre><code>static int lua_showreturn1(lua_State * L);
+
+static int lua_showreturn2(lua_State * L);
+
+static int lua_showreturn3(lua_State * L);
+
+static int lua_showtable(lua_State * L);
+
+static int lua_showtable2(lua_State * L);
+</code></pre><h6 id="cpp-1"><a href="#cpp-1" class="headerlink" title=".cpp"></a>.cpp</h6><pre><code>//print(lua_showreturn1())
+static int lua_showreturn1(lua_State * L) {
+CCLOG(&quot;I am no return&quot;);
+return 0;
+}
+
+//print(lua_showreturn2())
+static int lua_showreturn2(lua_State * L) {
+CCLOG(&quot;I am one values&quot;);
+lua_pushstring(L, &quot;I am one values&quot;);
+return 1;
+}
+
+
+//print(lua_showreturn3())
+static int lua_showreturn3(lua_State * L) {
+CCLOG(&quot;I am two values&quot;);
+lua_pushstring(L, &quot;I am value one&quot;);
+lua_pushstring(L, &quot;I am value two&quot;);
+return 1;
+}
+
+//print(lua_showtable())
+static int lua_showtable(lua_State * L) {
+CCLOG(&quot;I am a table&quot;);
+lua_newtable(L);
+char str[20] = {0};
+for (int i = 1; i &lt;= 10; i++) {
+lua_pushnumber(L, i); // 压入key
+sprintf(str, &quot;numert is : %i&quot;, i);
+lua_pushstring(L, str); // 压入value
+lua_settable(L, -3); // 将前面的key和value保存到table中
+}
+return 1;
+}
+
+//print(lua_showtable2())
+static int lua_showtable2(lua_State * L) {
+CCLOG(&quot;I am a table2&quot;);
+lua_newtable(L);
+char str[20] = {0};
+int looper = 1;
+while (looper &lt;= 10) {
+sprintf(str, &quot;key%i&quot;, looper);
+lua_pushstring(L, str); // 压入value
+looper++;
+lua_settable(L, -3); // 将前面的key和value保存到table中
+}
+return 1;
+}
+</code></pre><p>在init中输入如下替换原始的调用方法</p>
+<pre><code>// 调用C++
+//lua_pushcfunction(m_pLuaState, l_getMyName);
+//lua_setglobal(m_pLuaState, &quot;getMyName&quot;);
+
+lua_pushcfunction(L, LuaInterface04::lua_showreturn1);
+lua_setglobal(L, &quot;showreturn1&quot;);
+
+lua_pushcfunction(L, LuaInterface04::lua_showreturn2);
+lua_setglobal(L, &quot;showreturn2&quot;);
+
+lua_pushcfunction(L, LuaInterface04::lua_showreturn3);
+lua_setglobal(L, &quot;showreturn3&quot;);
+
+lua_pushcfunction(L, LuaInterface04::lua_showtable);
+lua_setglobal(L, &quot;getMyTable&quot;);
+
+lua_pushcfunction(L, LuaInterface04::lua_showtable2);
+lua_setglobal(L, &quot;getMyTable2&quot;);
+</code></pre><p>新建一个.lua的访问类文件，并且输入</p>
+<pre><code>print(showreturn1())
+
+print(showreturn2())
+
+print(showreturn3())
+
+local t = getMyTable()
+for k, v in pairs(t) do
+print(k, v)
+end
+
+local t2 = getMyTable2()
+for k, v in pairs(t2) do
+print(k, v)
+end
+</code></pre><h4 id="2-Lua调用C-C-之标准C模块"><a href="#2-Lua调用C-C-之标准C模块" class="headerlink" title="2.Lua调用C/C++之标准C模块"></a>2.Lua调用C/C++之标准C模块</h4><p>在lua中init.c</p>
+<pre><code>static int showResult1(lua_State * L) {
+lua_pushstring(L, &quot;I am showResult1&quot;);
+return 1;
+}
+
+static int showResult2(lua_State * L) {
+const char *value = luaL_checkstring(L, -1);
+//string rel = strcat(&quot;iCocos&quot;, value);
+lua_pushstring(L, value);
+return 1;
+}
+
+static const luaL_Reg myLibs[] = {
+{&quot;result1&quot;, showResult1},
+{&quot;result2&quot;, showResult2},
+{NULL, NULL},
+};
+
+int luaopen_my_lib(lua_State * L) {
+//luaL_newLib(L, myLibs);
+luaL_register(L, &quot;my_lib&quot;, myLibs);
+return 1;
+}
+</code></pre><p>在static const luaL_Reg loadedlibs[] 里面增加</p>
+<pre><code>{&quot;my_lib&quot;, luaopen_my_lib},
+</code></pre><p>在lua中引入并调用方法</p>
+<pre><code>--- 已入包
+local my_lib = require &quot;my_lib&quot;
+--- 调用方法
+print(my_lib.result1())
+print(my_lib.result2(&quot;I am showResult2&quot;))
+</code></pre><h2 id="待续"><a href="#待续" class="headerlink" title="待续"></a>待续</h2><ul>
+<li>后续的学习和开发，会相继介绍和分析一下totua，luajit，手动和自动绑定，第三个引入(支付，分析，分析，统计)，插件引入(sqlite，json,zlib)</li>
+</ul>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="http://pd1l3bbt7.bkt.clouddn.com/img/wechatimg.jpg" alt="曹理鹏@iCocos 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="http://pd1l3bbt7.bkt.clouddn.com/img/alipayimg.jpg" alt="曹理鹏@iCocos 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>曹理鹏@iCocos</li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://icocos.github.io/2018/10/16/cocos2dx-lua-与-C-C-交互入门/" title="cocos2dx lua 与 C/C++ 交互入门">https://icocos.github.io/2018/10/16/cocos2dx-lua-与-C-C-交互入门/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明出处！</li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/10/13/cocos2dx-lua-——-Http请求总结与实战-封装/" rel="next" title="cocos2dx lua —— Http请求总结与实战(封装)">
+                <i class="fa fa-chevron-left"></i> cocos2dx lua —— Http请求总结与实战(封装)
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/10/18/cocos2dx-lua-绑定详解与实战/" rel="prev" title="cocos2dx lua 绑定详解与实战">
+                cocos2dx lua 绑定详解与实战 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="SOHUCS"></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="http://pd1l3bbt7.bkt.clouddn.com/icocos_user_icon.JPG"
+                alt="曹理鹏@iCocos" />
+            
+              <p class="site-author-name" itemprop="name">曹理鹏@iCocos</p>
+              <p class="site-description motion-element" itemprop="description">纯码迷、爱学习、爱交友、喜欢接触新鲜事物、迎接新的挑战，更爱游离于错综复杂的编码与逻辑中！</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives">
+                
+                    <span class="site-state-item-count">87</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">18</span>
+                    <span class="site-state-item-name">分类</span>
+                  
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">88</span>
+                    <span class="site-state-item-name">标签</span>
+                  
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/al1020119" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:al1020119@163.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://stackoverflow.com/users/10186720" target="_blank" title="StackOverflow"><i class="fa fa-fw fa-stack-overflow"></i>StackOverflow</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.icocos.cn/" title="梦工厂" target="_blank">梦工厂</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://al1020119.github.io/" title="iOS梦工厂" target="_blank">iOS梦工厂</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-5"><a class="nav-link" href="#目录"><span class="nav-number">1.</span> <span class="nav-text">目录</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#中间栈"><span class="nav-number"></span> <span class="nav-text">中间栈</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-中间件栈"><span class="nav-number"></span> <span class="nav-text">1.中间件栈</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#h文件"><span class="nav-number">0.1.</span> <span class="nav-text">.h文件</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#cpp文件"><span class="nav-number">0.2.</span> <span class="nav-text">.cpp文件</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#C-C-访问Lua数据和函数"><span class="nav-number">0.3.</span> <span class="nav-text">C/C++访问Lua数据和函数</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#h文件-1"><span class="nav-number">0.4.</span> <span class="nav-text">.h文件</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#cpp文件-1"><span class="nav-number">0.5.</span> <span class="nav-text">.cpp文件</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#Lua访问C-C-数据和函数"><span class="nav-number">0.6.</span> <span class="nav-text">Lua访问C/C++数据和函数</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#总结"><span class="nav-number">1.</span> <span class="nav-text">总结</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#集成Lua"><span class="nav-number"></span> <span class="nav-text">集成Lua</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#集成Lua环境到C-C-项目中"><span class="nav-number"></span> <span class="nav-text">集成Lua环境到C/C++项目中</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#开始接入"><span class="nav-number">1.</span> <span class="nav-text">开始接入</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#最后"><span class="nav-number">2.</span> <span class="nav-text">最后</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#验证"><span class="nav-number">3.</span> <span class="nav-text">验证</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#C-C-调用Lua"><span class="nav-number"></span> <span class="nav-text">C/C++ 调用Lua</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#C-C-调用Lua之标准Lua读取类"><span class="nav-number"></span> <span class="nav-text">C/C++调用Lua之标准Lua读取类</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#h文件-2"><span class="nav-number">0.1.</span> <span class="nav-text">.h文件</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#cpp文件-2"><span class="nav-number">0.2.</span> <span class="nav-text">.cpp文件</span></a></li></ol></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#C-C-调用Lua中的变量"><span class="nav-number"></span> <span class="nav-text">C/C++调用Lua中的变量</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#C-C-调用Lua中的函数"><span class="nav-number"></span> <span class="nav-text">C/C++调用Lua中的函数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#C-C-调用Lua之遍历和获取Table的值"><span class="nav-number"></span> <span class="nav-text">C/C++调用Lua之遍历和获取Table的值</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Lua-调用-C-C"><span class="nav-number"></span> <span class="nav-text">Lua 调用 C/C++</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-Lua调用C-C-函数"><span class="nav-number"></span> <span class="nav-text">1.Lua调用C/C++函数</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#h文件-3"><span class="nav-number">0.1.</span> <span class="nav-text">.h文件</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#cpp文件-3"><span class="nav-number">0.2.</span> <span class="nav-text">.cpp文件</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#深入理解编写C函数上"><span class="nav-number">0.3.</span> <span class="nav-text">深入理解编写C函数上</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#h"><span class="nav-number">0.4.</span> <span class="nav-text">.h</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#cpp"><span class="nav-number">0.5.</span> <span class="nav-text">.cpp</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#深入理解编写C函数下"><span class="nav-number">0.6.</span> <span class="nav-text">深入理解编写C函数下</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#h-1"><span class="nav-number">0.7.</span> <span class="nav-text">.h</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#cpp-1"><span class="nav-number">0.8.</span> <span class="nav-text">.cpp</span></a></li></ol></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-Lua调用C-C-之标准C模块"><span class="nav-number"></span> <span class="nav-text">2.Lua调用C/C++之标准C模块</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#待续"><span class="nav-number"></span> <span class="nav-text">待续</span></a></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2017 – <span itemprop="copyrightYear">2018</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">曹理鹏@iCocos</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">站点总字数：</span>
+    
+    <span title="站点总字数">435k</span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    
+    <span title="站点阅读时长">6:35</span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv" title="总访客量">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="site-pv" title="总访问量">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/reading_progress/reading_progress.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.3.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.3.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.3.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.3.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+  
+    <script type="text/javascript">
+    (function(){
+      var appid = 'cytKHBEtW';
+      var conf = '43989b8e63b25c4e9f1fde821c996a39';
+      var width = window.innerWidth || document.documentElement.clientWidth;
+      if (width < 960) {
+      window.document.write('<script id="changyan_mobile_js" charset="utf-8" type="text/javascript" src="https://changyan.sohu.com/upload/mobile/wap-js/changyan_mobile.js?client_id=' + appid + '&conf=' + conf + '"><\/script>'); } else { var loadJs=function(d,a){var c=document.getElementsByTagName("head")[0]||document.head||document.documentElement;var b=document.createElement("script");b.setAttribute("type","text/javascript");b.setAttribute("charset","UTF-8");b.setAttribute("src",d);if(typeof a==="function"){if(window.attachEvent){b.onreadystatechange=function(){var e=b.readyState;if(e==="loaded"||e==="complete"){b.onreadystatechange=null;a()}}}else{b.onload=a}}c.appendChild(b)};loadJs("https://changyan.sohu.com/upload/changyan.js",function(){
+        window.changyan.api.config({appid:appid,conf:conf})});
+      }
+    })();
+    </script>
+    <script type="text/javascript" src="https://assets.changyan.sohu.com/upload/plugins/plugins.count.js"></script>
+  
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("Tc7k1mbaieCUSgmM8LPk1IBO-gzGzoHsz", "sAb7L2vwENJTteRrvFKQacUU");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            
+              var $element = $(document.getElementById(url));
+              $element.find('.leancloud-visitors-count').text(counter.get('time'));
+            
+            counter.save(null, {
+              success: function(counter) {
+                
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            
+              var $element = $(document.getElementById(url));
+              $element.find('.leancloud-visitors-count').text('Counter not initialized! See more at console err msg.');
+              console.error('ATTENTION! LeanCloud counter has security bug, see here how to solve it: https://github.com/theme-next/hexo-leancloud-counter-security. \n But you also can use LeanCloud without security, by set \'security\' option to \'false\'.');
+            
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #333;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #eee;
+      background-image: linear-gradient(#fcfcfc, #eee);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('复制').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+          if(result)$(this).text('复制成功')
+          else $(this).text('复制失败')
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('复制')
+        }, 300)
+      }).append(e)
+    })
+  </script>
+
+
+  
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("Tc7k1mbaieCUSgmM8LPk1IBO-gzGzoHsz", "sAb7L2vwENJTteRrvFKQacUU");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+  
+</body>
+</html>
