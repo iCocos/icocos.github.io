@@ -120,7 +120,7 @@
 <meta property="og:site_name" content="iCocos">
 <meta property="og:description" content="我们平时在开发cocos2dx lua游戏的时候的，会遇到这样的情况：  在c++层定义了一些类，我们需要将这些类导出给Lua来使用，从而完成在c++层实现起来容易的需要，这个时候就需要将整个类作为模块导出。 而Cocos2d-x正是采用的这种思想，将Cocos中的类导出供用户使用，而不是再写一套Lua代码，用户使用Cocos导出的这套接口，在Lua脚本层写游戏代码。 为了更好的理解这部分的内容，">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2018-10-18T05:20:02.194Z">
+<meta property="og:updated_time" content="2018-10-18T05:39:13.556Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="cocos2dx lua 绑定详解与实战">
 <meta name="twitter:description" content="我们平时在开发cocos2dx lua游戏的时候的，会遇到这样的情况：  在c++层定义了一些类，我们需要将这些类导出给Lua来使用，从而完成在c++层实现起来容易的需要，这个时候就需要将整个类作为模块导出。 而Cocos2d-x正是采用的这种思想，将Cocos中的类导出供用户使用，而不是再写一套Lua代码，用户使用Cocos导出的这套接口，在Lua脚本层写游戏代码。 为了更好的理解这部分的内容，">
@@ -587,25 +587,24 @@ abstract_classes =
 # Determining whether to use script object(js object) to control the lifecycle of native(cpp) object or the other way around. Supported values are &apos;yes&apos; or &apos;no&apos;.
 script_control_cpp = no
 </code></pre><p>注意检查一下三个头文件对应的路径及文件问题</p>
-<p>android_headers<br>clang_headers<br>cocos_headers</p>
 <ul>
-<li>说明内容：<ul>
-<li>•[title]：要配置将被使用的工具/ tolua的/ gengindings.py脚本的称号。一般来说，标题可以是文件名。</li>
-<li>•prefix：要配置一个函数名的前缀，通常，我们还可以使用文件名作为前缀。</li>
-<li>•target_namespace：要配置在脚本层模块的名字。在这里，我们使用cc作为模块名，当你想在脚本层REF的名称，您必须将一个名为前缀，CC在名称的前面。例如，CustomClass可以参考作为cc.CustomClass。</li>
-<li>•headers：要配置所有需要解析的头文件和％（cocosdir）s是的Cocos2d-x的引擎的根路径。</li>
-<li>•classes：要配置所有绑定所需的类。在这里，它支持正则表达式。因此，我们可以设置MyCustomClass。*在这里，用于查找多个特定的用法，你可以对照到tools/tolua/cocos2dx.ini。</li>
-<li>•skip：要配置需要被忽略的功能。现在绑定发电机无法解析的void *类型，并委托类型，所以这些类型的需要进行手动绑定。而在这种情况下，你应该忽略所有这些类型，然后再手动将它们绑定。你可以对照到配置文件路径下的cocos/scripting/lua-bindings/auto 。</li>
-<li>•rename_functions：要配置的功能需要在脚本层进行重命名。由于某些原因，开发者希望更多的脚本友好的API，所以配置选项就是为了这个目的。</li>
-<li>•rename_classes：不在使用。</li>
-<li>•remove_prefix：不在使用。</li>
-<li>•classes_have_no_parents：要配置是过滤器所需要的父类。这个选项是很少修改。</li>
-<li>•abstract_classes：要配置的公共构造并不需要导出的类。</li>
-<li>•script_control_cpp：是的。要配置脚本层是否管理对象的生命周期。如果没有，那么C++层关心他们的生命周期。现在，它是不完善的，以控制原生对象的续航时间在脚本层。所以，你可以简单地把它设置为no</li>
+<li>android_headers</li>
+<li>clang_headers</li>
+<li>cocos_headers</li>
 </ul>
-</li>
-</ul>
-<p>修改framework/cocos2d-x/tools/tolua里面的genbindings.py。有个cmd_args键值对的配置，增加下面代码，作为自定义绑定配置</p>
+<h5 id="说明内容："><a href="#说明内容：" class="headerlink" title="说明内容："></a>说明内容：</h5><pre><code>+ •[title]：要配置将被使用的工具/ tolua的/ gengindings.py脚本的称号。一般来说，标题可以是文件名。
++ •prefix：要配置一个函数名的前缀，通常，我们还可以使用文件名作为前缀。
++ •target_namespace：要配置在脚本层模块的名字。在这里，我们使用cc作为模块名，当你想在脚本层REF的名称，您必须将一个名为前缀，CC在名称的前面。例如，CustomClass可以参考作为cc.CustomClass。
++ •headers：要配置所有需要解析的头文件和％（cocosdir）s是的Cocos2d-x的引擎的根路径。
++ •classes：要配置所有绑定所需的类。在这里，它支持正则表达式。因此，我们可以设置MyCustomClass。*在这里，用于查找多个特定的用法，你可以对照到tools/tolua/cocos2dx.ini。
++ •skip：要配置需要被忽略的功能。现在绑定发电机无法解析的void *类型，并委托类型，所以这些类型的需要进行手动绑定。而在这种情况下，你应该忽略所有这些类型，然后再手动将它们绑定。你可以对照到配置文件路径下的cocos/scripting/lua-bindings/auto 。
++ •rename_functions：要配置的功能需要在脚本层进行重命名。由于某些原因，开发者希望更多的脚本友好的API，所以配置选项就是为了这个目的。
++ •rename_classes：不在使用。
++ •remove_prefix：不在使用。
++ •classes_have_no_parents：要配置是过滤器所需要的父类。这个选项是很少修改。
++ •abstract_classes：要配置的公共构造并不需要导出的类。
++ •script_control_cpp：是的。要配置脚本层是否管理对象的生命周期。如果没有，那么C++层关心他们的生命周期。现在，它是不完善的，以控制原生对象的续航时间在脚本层。所以，你可以简单地把它设置为no
+</code></pre><p>修改framework/cocos2d-x/tools/tolua里面的genbindings.py。有个cmd_args键值对的配置，增加下面代码，作为自定义绑定配置</p>
 <pre><code>&apos;cocos2dx_binding.ini&apos; : (&apos;cocos2dx_binding&apos;, &apos;lua_cocos2dx_binding_auto&apos;), \
 </code></pre><blockquote>
 <p>注：python注释为#，这里将cmd_args其他的元素注释掉是因为这些文件都是生成过得，没必要再生成浪费时间<br>这行代码表示在cocos2dx_custom中找到cocos2dx_custom的模块，然后生成lua_cocos2dx_custom_auto文件</p>
@@ -715,11 +714,11 @@ Errors in parsing headers:
 location = &lt;SourceLocation file &apos;/Users/iCocos/Desktop/cocos2d/Products/cocos2dx-demo/SingleLua/frameworks/cocos2d-x/cocos/platform/android/CCPlatformDefine-android.h&apos;, line 33, column 10&gt;,
 details = &quot;&apos;android/log.h&apos; file not found&quot;&gt;
 ====
-</code></pre><h3 id="提示成功"><a href="#提示成功" class="headerlink" title="提示成功"></a>提示成功</h3><pre><code>---------------------------------
+</code></pre><p>…..</p>
+<h3 id="提示成功"><a href="#提示成功" class="headerlink" title="提示成功"></a>提示成功</h3><pre><code>---------------------------------
 Generating lua bindings succeeds.
 ---------------------------------
-</code></pre><p>######致谢：</p>
-<ul>
+</code></pre><h6 id="致谢："><a href="#致谢：" class="headerlink" title="致谢："></a>致谢：</h6><ul>
 <li><a href="https://blog.csdn.net/never_QH/article/details/45148835" target="_blank" rel="noopener">https://blog.csdn.net/never_QH/article/details/45148835</a></li>
 <li><a href="http://geekgaoyang.herokuapp.com/blog/2015/02/11/cocos2d-x-tutorial-of-binding-c-plus-plus-class-to-lua-usage/" target="_blank" rel="noopener">http://geekgaoyang.herokuapp.com/blog/2015/02/11/cocos2d-x-tutorial-of-binding-c-plus-plus-class-to-lua-usage/</a></li>
 <li><a href="https://www.cnblogs.com/ZhYQ-Note/p/5939783.html" target="_blank" rel="noopener">https://www.cnblogs.com/ZhYQ-Note/p/5939783.html</a></li>
@@ -1201,7 +1200,7 @@ Generating lua bindings succeeds.
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#期间遇到的错误"><span class="nav-number">1.</span> <span class="nav-text">期间遇到的错误</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#错误一"><span class="nav-number">1.0.1.</span> <span class="nav-text">错误一</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#错误二"><span class="nav-number">1.0.2.</span> <span class="nav-text">错误二</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#错误三"><span class="nav-number">1.0.3.</span> <span class="nav-text">错误三</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#错误四"><span class="nav-number">1.0.4.</span> <span class="nav-text">错误四</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#提示成功"><span class="nav-number">2.</span> <span class="nav-text">提示成功</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-5"><a class="nav-link" href="#说明内容："><span class="nav-number">1.</span> <span class="nav-text">说明内容：</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#期间遇到的错误"><span class="nav-number"></span> <span class="nav-text">期间遇到的错误</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#错误一"><span class="nav-number">1.</span> <span class="nav-text">错误一</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#错误二"><span class="nav-number">2.</span> <span class="nav-text">错误二</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#错误三"><span class="nav-number">3.</span> <span class="nav-text">错误三</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#错误四"><span class="nav-number">4.</span> <span class="nav-text">错误四</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#提示成功"><span class="nav-number"></span> <span class="nav-text">提示成功</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#致谢："><span class="nav-number">0.1.</span> <span class="nav-text">致谢：</span></a></li></ol></li></ol></div>
             
 
           </div>
