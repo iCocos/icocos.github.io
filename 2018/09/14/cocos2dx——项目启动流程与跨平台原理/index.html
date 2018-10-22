@@ -122,7 +122,7 @@
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/cocos2dx/data/cocoslaunch001.jpg">
 <meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/cocos2dx/data/cocoalaunch002.jpg">
-<meta property="og:updated_time" content="2018-10-14T05:07:41.233Z">
+<meta property="og:updated_time" content="2018-10-20T10:26:32.433Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="cocos2dx——项目启动流程与跨平台原理">
 <meta name="twitter:description" content="最近大部分空余时间都在开始学习cocos2d游戏开发相关技术，作为一个游戏行业菜鸟级别的选手，我觉得基础很重要，所以我决定从cocos2dx启动流程和快平台原理开始！  注:这里只针对Lua做相关介绍，为什么是Lua，有过cocos2dx经验的朋友应该都知道Lua小，快，简单，而且比较大众化，而C++就不多多说了，大部分程序员都有畏惧心理，当然也有一些C++比较好，或者有独特爱好和专研朋友！">
@@ -451,7 +451,7 @@
                 
                   <span class="post-meta-item-text">本文字数：</span>
                 
-                <span title="本文字数">10k</span>
+                <span title="本文字数">14k</span>
               
 
               
@@ -465,7 +465,7 @@
                 
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
-                <span title="阅读时长">9 分钟</span>
+                <span title="阅读时长">13 分钟</span>
               
             </div>
           
@@ -698,8 +698,31 @@ return YES;
     return true;
 }
 </code></pre><p>游戏逻辑就可以从这个Scene中的init函数开始，添加UI层，添加事件监听器，添加游戏层等等…如果我们有一些统计、资源管理器等，也可以在AppDelegate的applicationDidFinishLaunching函数中来进行。</p>
-<h4 id="5-Lua脚本初始化"><a href="#5-Lua脚本初始化" class="headerlink" title="5. Lua脚本初始化"></a>5. Lua脚本初始化</h4><p>再来看”main.lua”，这个时候我们就开始开发查看main.lua文件</p>
-<p>从MyApp开始，初始化，然后执行run运行程序</p>
+<h4 id="5-Lua脚本初始化"><a href="#5-Lua脚本初始化" class="headerlink" title="5. Lua脚本初始化"></a>5. Lua脚本初始化</h4><p>在这之前，我们先先看看，项目的配置文件config.json</p>
+<pre><code>{
+    &quot;init_cfg&quot;:{
+       &quot;isLandscape&quot;: true,
+       &quot;isWindowTop&quot;: false,
+       &quot;name&quot;: &quot;MyDemo&quot;,
+       &quot;width&quot;: 960,
+       &quot;height&quot;: 640,
+       &quot;entry&quot;: &quot;src/main.lua&quot;,
+       &quot;consolePort&quot;: 6050,
+       &quot;uploadPort&quot;: 6060
+    },
+    &quot;simulator_screen_size&quot;: [
+        {
+            &quot;title&quot;: &quot;iPhone 3Gs (480x320)&quot;,
+            &quot;width&quot;: 480,
+            &quot;height&quot;: 320
+        },
+         ......
+    ]
+}
+</code></pre><blockquote>
+<p>可以看到”entry”: “src/main.lua”,也就是说入口文件是main.lua，由此可以得知，即使我们不从iOS的启动流程来看，整个启动也会从这里开始，进入。</p>
+</blockquote>
+<h5 id="再来看”main-lua”，这个时候我们就开始开发查看main-lua文件"><a href="#再来看”main-lua”，这个时候我们就开始开发查看main-lua文件" class="headerlink" title="再来看”main.lua”，这个时候我们就开始开发查看main.lua文件"></a>再来看”main.lua”，这个时候我们就开始开发查看main.lua文件</h5><p>从MyApp开始，初始化，然后执行run运行程序</p>
 <pre><code>cc.FileUtils:getInstance():setPopupNotify(false)
 
 require &quot;config&quot;
@@ -713,10 +736,80 @@ local status, msg = xpcall(main, __G__TRACKBACK__)
 if not status then
     print(msg)
 end
-</code></pre><p>这里很重要的一个方法是run(),run()方法是设置启动View，</p>
-<h4 id="6-指定Scene"><a href="#6-指定Scene" class="headerlink" title="6. 指定Scene"></a>6. 指定Scene</h4><p>如果想指定启动，而不是使用默认的Scene，</p>
-<p>local function main()<br>    require(“app.MyApp”):create():run(“StartScene”)<br>end</p>
-<p>默认不设置会选择MainScene，如果仔细再AppBase里面会看到这样一行代码</p>
+</code></pre><p>这里很重要的一个方法是run(),run()方法是设置启动View，执行main函数，main函数里加载MyApp创建并运行，进而打开MyApp.lua：</p>
+<h4 id="6-MyApp-lua"><a href="#6-MyApp-lua" class="headerlink" title="6. MyApp.lua"></a>6. MyApp.lua</h4><p>我们看到MyApp仅仅是继承自AppBase，onCreate函数只是初始化了下随机数种子，也就意味着更多的操作在AppBase中，我们打开分析：</p>
+<pre><code>local AppBase = class(&quot;AppBase&quot;)
+
+function AppBase:ctor(configs)
+    self.configs_ = {
+        viewsRoot  = &quot;app.views&quot;,
+        modelsRoot = &quot;app.models&quot;,
+        defaultSceneName = &quot;TitleScene&quot;,
+    }
+
+    for k, v in pairs(configs or {}) do
+        self.configs_[k] = v
+    end
+
+    if type(self.configs_.viewsRoot) ~= &quot;table&quot; then
+        self.configs_.viewsRoot = {self.configs_.viewsRoot}
+    end
+    if type(self.configs_.modelsRoot) ~= &quot;table&quot; then
+        self.configs_.modelsRoot = {self.configs_.modelsRoot}
+    end
+
+    if DEBUG &gt; 1 then
+        dump(self.configs_, &quot;AppBase configs&quot;)
+    end
+
+    if CC_SHOW_FPS then
+        cc.Director:getInstance():setDisplayStats(true)
+    end
+
+    -- event
+    self:onCreate()
+end
+
+function AppBase:run(initSceneName)
+    initSceneName = initSceneName or self.configs_.defaultSceneName
+    self:enterScene(initSceneName)
+end
+
+function AppBase:enterScene(sceneName, transition, time, more)
+    local view = self:createView(sceneName)
+    view:showWithScene(transition, time, more)
+    return view
+end
+
+function AppBase:createView(name)
+    for _, root in ipairs(self.configs_.viewsRoot) do
+        local packageName = string.format(&quot;%s.%s&quot;, root, name)
+        local status, view = xpcall(function()
+                return require(packageName)
+            end, function(msg)
+            if not string.find(msg, string.format(&quot;&apos;%s&apos; not found:&quot;, packageName)) then
+                print(&quot;load view error: &quot;, msg)
+            end
+        end)
+        local t = type(view)
+        if status and (t == &quot;table&quot; or t == &quot;userdata&quot;) then
+            return view:create(self, name)
+        end
+    end
+    error(string.format(&quot;AppBase:createView() - not found view \&quot;%s\&quot; in search paths \&quot;%s\&quot;&quot;,
+        name, table.concat(self.configs_.viewsRoot, &quot;,&quot;)), 0)
+end
+
+function AppBase:onCreate()
+end
+
+return AppBase
+</code></pre><p>在前面的分析中知道main.lua是执行的是App的run函数，作为基类的AppBase，当然也要被调用run函数，因此直接看run函数：主要是创建并进入场景initSceneName，如果run的参数没有指定开始的场景则使用默认场景defaultSceneName，默认场景在构造函数的时候被初始化为MainScene，也就是说场景默认将从MainScene开始。</p>
+<h4 id="7-指定Scene"><a href="#7-指定Scene" class="headerlink" title="7. 指定Scene"></a>7. 指定Scene</h4><p>如果想指定启动，而不是使用默认的Scene，那么项目启动后会直接进入该场景，这点有个好处是如果要调试设计某场景可以直接从这个场景进入，不必从其他场景进入了。</p>
+<pre><code>local function main()
+    require(&quot;app.MyApp&quot;):create():run(&quot;StartScene&quot;)
+end
+</code></pre><p>默认不设置会选择MainScene，如果仔细再AppBase里面会看到这样一行代码</p>
 <pre><code>function AppBase:ctor(configs)
 self.configs_ = {
     viewsRoot  = &quot;app.views&quot;,
@@ -724,7 +817,10 @@ self.configs_ = {
     defaultSceneName = &quot;MainScene&quot;,
 }
 .....
-</code></pre><h4 id="7-根据脚本指定Scene，"><a href="#7-根据脚本指定Scene，" class="headerlink" title="7. 根据脚本指定Scene，"></a>7. 根据脚本指定Scene，</h4><p>上面说了，如果没有设置就会试着用默认的Scene，run里面的逻辑就是去真正指定Scene，</p>
+</code></pre><blockquote>
+<p> 那么项目启动后会直接进入StartScene场景，而不再是默认的MainScene场景。</p>
+</blockquote>
+<h4 id="8-根据脚本指定Scene，"><a href="#8-根据脚本指定Scene，" class="headerlink" title="8. 根据脚本指定Scene，"></a>8. 根据脚本指定Scene，</h4><p>上面说了，如果没有设置就会试着用默认的Scene，run里面的逻辑就是去真正指定Scene，</p>
 <pre><code>-- 创建完对象之后，就到了这一步
 function AppBase:run(initSceneName)
     initSceneName = initSceneName or self.configs_.defaultSceneName
@@ -739,7 +835,7 @@ end
 </code></pre><blockquote>
 <p>建议仔细读一下AppBase，ViewBase！</p>
 </blockquote>
-<h4 id="8-自定义Scene-StartScene"><a href="#8-自定义Scene-StartScene" class="headerlink" title="8. 自定义Scene(StartScene)"></a>8. 自定义Scene(StartScene)</h4><p>这个时候就会首先从StartScene开始，</p>
+<h4 id="9-自定义Scene-StartScene"><a href="#9-自定义Scene-StartScene" class="headerlink" title="9. 自定义Scene(StartScene)"></a>9. 自定义Scene(StartScene)</h4><p>这个时候就会首先从StartScene开始，</p>
 <pre><code>local StartScene = class(&quot;StartScene&quot;, cc.load(&quot;mvc&quot;).ViewBase)
 
 function StartScene:onCreate()
@@ -823,8 +919,25 @@ return StartScene
 <p>为了充分发挥硬件性能，手机游戏通常使用Native App开发模式，这就造成开发商要为iOS 和Android平台用户开发不同的应用，无论是产品迭代还是运行维护都非常麻烦。</p>
 </blockquote>
 <p>Cocos2d-x在iOS，Android等移动平台之上，封装了一层C++接口，从而屏蔽了平台的差异性，通过平台宏来控制使用哪个平台的代码，向开发者提供C++接口调用。这些接口主要包括UI、事件和网络，封装UI主要是使用OpenGL ES的接口来写UI，封装事件和网络，均是使用C++接口对原生接口进行一层封装。</p>
+<h4 id="其实对应cocos2dx跨平台在说，我们这么理解就可以了"><a href="#其实对应cocos2dx跨平台在说，我们这么理解就可以了" class="headerlink" title="其实对应cocos2dx跨平台在说，我们这么理解就可以了"></a>其实对应cocos2dx跨平台在说，我们这么理解就可以了</h4><ul>
+<li>Lua底层是通过C编写实现的</li>
+<li>Android通过JNI技术调用C</li>
+<li>iOS也是完全兼容C语言</li>
+</ul>
+<h5 id="我们打开对应的工程可以看到"><a href="#我们打开对应的工程可以看到" class="headerlink" title="我们打开对应的工程可以看到"></a>我们打开对应的工程可以看到</h5><ul>
+<li><p>Java项目中，有些关于Lua的文件，</p>
 <ul>
-<li>具体更多启动相关细节，可以参考这里<ul>
+<li>luajava.jar是Java代码封装包，</li>
+<li>libluajava-1.1.so在底层封装了.C 文件，实现了lua相关底层功能。</li>
+</ul>
+</li>
+<li><p>但是在iOS项目中，我们发现</p>
+<blockquote>
+<p>iOS允许开发者使用C语言文件和objective-c文件混合编程。但是，如果你在Objective-C的代码中调用C文件中的函数，你不能直接将.c文件import到你的OC文件中，这样是不起作用的。你需要先创建一个.h 头文件 里面包含你的函数申明，同时将这个.h 头文件import到.c文件中，.c文件负责实现要调用的函数。最后将你新创建的.h头文件import到OC文件中，这样你就可以在OC的文件中调用C的方法了</p>
+</blockquote>
+</li>
+<li><p>具体更多启动相关细节，可以参考这里</p>
+<ul>
 <li><a href="https://www.jianshu.com/p/781d835c88c9" target="_blank" rel="noopener">https://www.jianshu.com/p/781d835c88c9</a></li>
 <li><a href="http://www.cocos2d-x.org/docs/cocos2d-x/zh/about/learn.html" target="_blank" rel="noopener">http://www.cocos2d-x.org/docs/cocos2d-x/zh/about/learn.html</a></li>
 </ul>
@@ -991,7 +1104,7 @@ return StartScene
                 
                   <a href="/archives">
                 
-                    <span class="site-state-item-count">87</span>
+                    <span class="site-state-item-count">90</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -1309,7 +1422,7 @@ return StartScene
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#什么是Lua"><span class="nav-number">1.</span> <span class="nav-text">什么是Lua</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Cocos2d-lua，其实只是Cocos2d引擎添加了Lua绑定的版本。"><span class="nav-number">1.0.1.</span> <span class="nav-text">Cocos2d-lua，其实只是Cocos2d引擎添加了Lua绑定的版本。</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#各个平台的入口"><span class="nav-number">2.</span> <span class="nav-text">各个平台的入口</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#iOS"><span class="nav-number">2.0.1.</span> <span class="nav-text">iOS</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Mac-OS"><span class="nav-number">2.0.2.</span> <span class="nav-text">Mac OS</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Linux"><span class="nav-number">2.0.3.</span> <span class="nav-text">Linux</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Android"><span class="nav-number">2.0.4.</span> <span class="nav-text">Android</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#由于笔者一直着力于iOS平台，所以这里以iOS为例，其他平台可参考："><span class="nav-number">2.0.5.</span> <span class="nav-text">由于笔者一直着力于iOS平台，所以这里以iOS为例，其他平台可参考：</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-main函数入口"><span class="nav-number">2.1.</span> <span class="nav-text">1. main函数入口</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-代理对象AppController"><span class="nav-number">2.2.</span> <span class="nav-text">2. 代理对象AppController</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-run-cocos2d-delegate"><span class="nav-number">2.3.</span> <span class="nav-text">3. run cocos2d delegate</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-cocos2d配置，lua加载"><span class="nav-number">2.4.</span> <span class="nav-text">4. cocos2d配置，lua加载</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#原生集成补充"><span class="nav-number">2.4.1.</span> <span class="nav-text">原生集成补充</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-Lua脚本初始化"><span class="nav-number">2.5.</span> <span class="nav-text">5. Lua脚本初始化</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#6-指定Scene"><span class="nav-number">2.6.</span> <span class="nav-text">6. 指定Scene</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#7-根据脚本指定Scene，"><span class="nav-number">2.7.</span> <span class="nav-text">7. 根据脚本指定Scene，</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#8-自定义Scene-StartScene"><span class="nav-number">2.8.</span> <span class="nav-text">8. 自定义Scene(StartScene)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#然后后面步骤就是从StartScene开始，写脚本代码，处理UI，网络和逻辑等，"><span class="nav-number">2.9.</span> <span class="nav-text">然后后面步骤就是从StartScene开始，写脚本代码，处理UI，网络和逻辑等，</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#跨平台原理"><span class="nav-number">4.</span> <span class="nav-text">跨平台原理</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#什么是Lua"><span class="nav-number">1.</span> <span class="nav-text">什么是Lua</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Cocos2d-lua，其实只是Cocos2d引擎添加了Lua绑定的版本。"><span class="nav-number">1.0.1.</span> <span class="nav-text">Cocos2d-lua，其实只是Cocos2d引擎添加了Lua绑定的版本。</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#各个平台的入口"><span class="nav-number">2.</span> <span class="nav-text">各个平台的入口</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#iOS"><span class="nav-number">2.0.1.</span> <span class="nav-text">iOS</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Mac-OS"><span class="nav-number">2.0.2.</span> <span class="nav-text">Mac OS</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Linux"><span class="nav-number">2.0.3.</span> <span class="nav-text">Linux</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Android"><span class="nav-number">2.0.4.</span> <span class="nav-text">Android</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#由于笔者一直着力于iOS平台，所以这里以iOS为例，其他平台可参考："><span class="nav-number">2.0.5.</span> <span class="nav-text">由于笔者一直着力于iOS平台，所以这里以iOS为例，其他平台可参考：</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-main函数入口"><span class="nav-number">2.1.</span> <span class="nav-text">1. main函数入口</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-代理对象AppController"><span class="nav-number">2.2.</span> <span class="nav-text">2. 代理对象AppController</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-run-cocos2d-delegate"><span class="nav-number">2.3.</span> <span class="nav-text">3. run cocos2d delegate</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-cocos2d配置，lua加载"><span class="nav-number">2.4.</span> <span class="nav-text">4. cocos2d配置，lua加载</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#原生集成补充"><span class="nav-number">2.4.1.</span> <span class="nav-text">原生集成补充</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-Lua脚本初始化"><span class="nav-number">2.5.</span> <span class="nav-text">5. Lua脚本初始化</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#再来看”main-lua”，这个时候我们就开始开发查看main-lua文件"><span class="nav-number">2.5.1.</span> <span class="nav-text">再来看”main.lua”，这个时候我们就开始开发查看main.lua文件</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#6-MyApp-lua"><span class="nav-number">2.6.</span> <span class="nav-text">6. MyApp.lua</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#7-指定Scene"><span class="nav-number">2.7.</span> <span class="nav-text">7. 指定Scene</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#8-根据脚本指定Scene，"><span class="nav-number">2.8.</span> <span class="nav-text">8. 根据脚本指定Scene，</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#9-自定义Scene-StartScene"><span class="nav-number">2.9.</span> <span class="nav-text">9. 自定义Scene(StartScene)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#然后后面步骤就是从StartScene开始，写脚本代码，处理UI，网络和逻辑等，"><span class="nav-number">2.10.</span> <span class="nav-text">然后后面步骤就是从StartScene开始，写脚本代码，处理UI，网络和逻辑等，</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#跨平台原理"><span class="nav-number">4.</span> <span class="nav-text">跨平台原理</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#其实对应cocos2dx跨平台在说，我们这么理解就可以了"><span class="nav-number">4.1.</span> <span class="nav-text">其实对应cocos2dx跨平台在说，我们这么理解就可以了</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#我们打开对应的工程可以看到"><span class="nav-number">4.1.1.</span> <span class="nav-text">我们打开对应的工程可以看到</span></a></li></ol></li></ol></li></ol></div>
             
 
           </div>
@@ -1343,7 +1456,7 @@ return StartScene
     
       <span class="post-meta-item-text">站点总字数：</span>
     
-    <span title="站点总字数">435k</span>
+    <span title="站点总字数">455k</span>
   
 
   
@@ -1354,7 +1467,7 @@ return StartScene
     
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
     
-    <span title="站点阅读时长">6:35</span>
+    <span title="站点阅读时长">6:53</span>
   
 </div>
 

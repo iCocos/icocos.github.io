@@ -112,18 +112,18 @@
 
 
 
-  <meta name="description" content="我们平时在开发cocos2dx lua游戏的时候的，会遇到这样的情况：  在c++层定义了一些类，我们需要将这些类导出给Lua来使用，从而完成在c++层实现起来容易的需要，这个时候就需要将整个类作为模块导出。 而Cocos2d-x正是采用的这种思想，将Cocos中的类导出供用户使用，而不是再写一套Lua代码，用户使用Cocos导出的这套接口，在Lua脚本层写游戏代码。 为了更好的理解这部分的内容，">
+  <meta name="description" content="我们平时在开发cocos2dx lua游戏的时候的，会遇到这样的情况：  在c++层定义了一些类，我们需要将这些类导出给Lua来使用，从而完成在c++层实现起来容易的需求，这个时候就需要将整个类作为模块导出。  而Cocos2d-x正是采用的这种思想，将Cocos中的类导出供用户使用，而不是再写一套Lua代码，用户使用Cocos导出的这套接口，在Lua脚本层写游戏代码。  为了更好的理解这部分的内">
 <meta name="keywords" content="曹理鹏, iCocos, 梦工厂, iOS, IT, 技术, 程序猿, 码农">
 <meta property="og:type" content="article">
 <meta property="og:title" content="cocos2dx lua 绑定详解与实战">
 <meta property="og:url" content="https://icocos.github.io/2018/10/18/cocos2dx-lua-绑定详解与实战/index.html">
 <meta property="og:site_name" content="iCocos">
-<meta property="og:description" content="我们平时在开发cocos2dx lua游戏的时候的，会遇到这样的情况：  在c++层定义了一些类，我们需要将这些类导出给Lua来使用，从而完成在c++层实现起来容易的需要，这个时候就需要将整个类作为模块导出。 而Cocos2d-x正是采用的这种思想，将Cocos中的类导出供用户使用，而不是再写一套Lua代码，用户使用Cocos导出的这套接口，在Lua脚本层写游戏代码。 为了更好的理解这部分的内容，">
+<meta property="og:description" content="我们平时在开发cocos2dx lua游戏的时候的，会遇到这样的情况：  在c++层定义了一些类，我们需要将这些类导出给Lua来使用，从而完成在c++层实现起来容易的需求，这个时候就需要将整个类作为模块导出。  而Cocos2d-x正是采用的这种思想，将Cocos中的类导出供用户使用，而不是再写一套Lua代码，用户使用Cocos导出的这套接口，在Lua脚本层写游戏代码。  为了更好的理解这部分的内">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2018-10-18T05:39:13.556Z">
+<meta property="og:updated_time" content="2018-10-19T05:43:07.964Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="cocos2dx lua 绑定详解与实战">
-<meta name="twitter:description" content="我们平时在开发cocos2dx lua游戏的时候的，会遇到这样的情况：  在c++层定义了一些类，我们需要将这些类导出给Lua来使用，从而完成在c++层实现起来容易的需要，这个时候就需要将整个类作为模块导出。 而Cocos2d-x正是采用的这种思想，将Cocos中的类导出供用户使用，而不是再写一套Lua代码，用户使用Cocos导出的这套接口，在Lua脚本层写游戏代码。 为了更好的理解这部分的内容，">
+<meta name="twitter:description" content="我们平时在开发cocos2dx lua游戏的时候的，会遇到这样的情况：  在c++层定义了一些类，我们需要将这些类导出给Lua来使用，从而完成在c++层实现起来容易的需求，这个时候就需要将整个类作为模块导出。  而Cocos2d-x正是采用的这种思想，将Cocos中的类导出供用户使用，而不是再写一套Lua代码，用户使用Cocos导出的这套接口，在Lua脚本层写游戏代码。  为了更好的理解这部分的内">
 
 
 
@@ -484,12 +484,14 @@
       
         <p>我们平时在开发cocos2dx lua游戏的时候的，会遇到这样的情况：</p>
 <ul>
-<li>在c++层定义了一些类，我们需要将这些类导出给Lua来使用，从而完成在c++层实现起来容易的需要，这个时候就需要将整个类作为模块导出。</li>
-<li>而Cocos2d-x正是采用的这种思想，将Cocos中的类导出供用户使用，而不是再写一套Lua代码，用户使用Cocos导出的这套接口，在Lua脚本层写游戏代码。</li>
-<li>为了更好的理解这部分的内容，可以先看一下在Lua中调用c++函数这篇博客，了解c++中调用Lua的机制。该博客中我们将c++中需要导出的函数放到了一个模块中，其中我们手动的做了一些工作。</li>
+<li>在c++层定义了一些类，我们需要将这些类导出给Lua来使用，从而完成在c++层实现起来容易的需求，这个时候就需要将整个类作为模块导出。</li>
 </ul>
+<p>而Cocos2d-x正是采用的这种思想，将Cocos中的类导出供用户使用，而不是再写一套Lua代码，用户使用Cocos导出的这套接口，在Lua脚本层写游戏代码。</p>
+<blockquote>
+<p>为了更好的理解这部分的内容，可以先了解c++中调用Lua的机制。</p>
+</blockquote>
 <a id="more"></a>
-<p>前面我们说到了，Lua的本质是C，不是C++，Lua提供给C用的API也都是基于面向过程的C函数来用的，要把C++类注册进Lua形成一个一个的table环境是不太容易一下子办到的事。</p>
+<p>前面文章中，我们说到了，Lua的本质是C，不是C++，Lua提供给C用的API也都是基于面向过程的C函数来用的，要把C++类注册进Lua形成一个一个的table环境是不太容易一下子办到的事。</p>
 <p>为了实现我们的需求，同样也是官方的需求，在Cocos 2.x版本的时候，使用的是tolua++这个工具，但是这个工具用起来相当的麻烦，耗费体力，所以现在使用的是<a href="https://github.com/cocos2d/bindings-generator" target="_blank" rel="noopener">bindings-generator</a>工具（官方用Python写的一个工具），这个东西底层使用的也应该是tolua++。</p>
 <blockquote>
 <p>这里只针对iOS平台，Android和其他平台在tolua中README.mdown中有具体介绍，其他步骤基本上一样！</p>
@@ -805,6 +807,10 @@ Generating lua bindings succeeds.
 
           <div class="post-nav-prev post-nav-item">
             
+              <a href="/2018/10/19/cocos2dx-lua-TableView-ScrollView-ListView-介绍与使用实战/" rel="prev" title="cocos2dx lua TableView(ScrollView, ListView)介绍与使用实战">
+                cocos2dx lua TableView(ScrollView, ListView)介绍与使用实战 <i class="fa fa-chevron-right"></i>
+              </a>
+            
           </div>
         </div>
       
@@ -882,7 +888,7 @@ Generating lua bindings succeeds.
                 
                   <a href="/archives">
                 
-                    <span class="site-state-item-count">87</span>
+                    <span class="site-state-item-count">90</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -1234,7 +1240,7 @@ Generating lua bindings succeeds.
     
       <span class="post-meta-item-text">站点总字数：</span>
     
-    <span title="站点总字数">435k</span>
+    <span title="站点总字数">455k</span>
   
 
   
@@ -1245,7 +1251,7 @@ Generating lua bindings succeeds.
     
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
     
-    <span title="站点阅读时长">6:35</span>
+    <span title="站点阅读时长">6:53</span>
   
 </div>
 
