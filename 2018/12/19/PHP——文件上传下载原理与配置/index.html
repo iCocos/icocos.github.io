@@ -1,0 +1,2801 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.3.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="http://pd1l3bbt7.bkt.clouddn.com/img/favicon.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="http://pd1l3bbt7.bkt.clouddn.com/img/favicon.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="http://pd1l3bbt7.bkt.clouddn.com/img/favicon.png?v=6.3.0">
+
+
+  <link rel="mask-icon" href="http://pd1l3bbt7.bkt.clouddn.com/img/favicon.png?v=6.3.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="关于PHP上传和下载的原理一句话总结就是：将客户端文件上传到服务器端，再将服务器端的文件（临时文件）移动到指定目录即可。......">
+<meta name="keywords" content="PHP,文件上传下载原理与配置">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PHP——文件上传下载原理与配置">
+<meta property="og:url" content="https://icocos.github.io/2018/12/19/PHP——文件上传下载原理与配置/index.html">
+<meta property="og:site_name" content="iCocos">
+<meta property="og:description" content="关于PHP上传和下载的原理一句话总结就是：将客户端文件上传到服务器端，再将服务器端的文件（临时文件）移动到指定目录即可。......">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-12-28T02:51:42.102Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="PHP——文件上传下载原理与配置">
+<meta name="twitter:description" content="关于PHP上传和下载的原理一句话总结就是：将客户端文件上传到服务器端，再将服务器端的文件（临时文件）移动到指定目录即可。......">
+
+
+
+  <link rel="alternate" href="/atom.xml" title="iCocos" type="application/atom+xml" />
+
+
+
+
+  <link rel="canonical" href="https://icocos.github.io/2018/12/19/PHP——文件上传下载原理与配置/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>PHP——文件上传下载原理与配置 | iCocos</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">iCocos</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">www.icocos.cn</p>
+      
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-首页">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-归档">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-关于">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-作品">
+    <a href="/works/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-calendar"></i> <br />作品</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-简历">
+    <a href="/resume/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-sitemap"></i> <br />简历</a>
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+    <div class="reading-progress-bar"></div>
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://icocos.github.io/2018/12/19/PHP——文件上传下载原理与配置/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="曹理鹏@iCocos">
+      <meta itemprop="description" content="纯码迷、爱学习、爱交友、喜欢接触新鲜事物、迎接新的挑战，更爱游离于错综复杂的编码与逻辑中！">
+      <meta itemprop="image" content="http://pd1l3bbt7.bkt.clouddn.com/icocos_user_icon.JPG">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="iCocos">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">PHP——文件上传下载原理与配置
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-12-19 23:31:21" itemprop="dateCreated datePublished" datetime="2018-12-19T23:31:21+08:00">2018-12-19</time>
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/PHP/" itemprop="url" rel="index"><span itemprop="name">PHP</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+              <span class="post-meta-divider">|</span>
+              <span class="post-meta-item-icon">
+                <i class="fa fa-comment-o"></i>
+              </span>
+              
+                <a href="/2018/12/19/PHP——文件上传下载原理与配置/#SOHUCS" itemprop="discussionUrl">
+                  <span class="post-meta-item-text">评论数：</span> <span id="changyan_count_unit" class="post-comments-count hc-comment-count" data-xid="2018/12/19/PHP——文件上传下载原理与配置/" itemprop="commentsCount"></span>
+                </a>
+              
+            
+          
+
+          
+          
+             <span id="/2018/12/19/PHP——文件上传下载原理与配置/" class="leancloud_visitors" data-flag-title="PHP——文件上传下载原理与配置">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数：</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon"
+            >
+            <i class="fa fa-eye"></i>
+             阅读次数： 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+            <div class="post-symbolscount">
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">本文字数：</span>
+                
+                <span title="本文字数">19k</span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">17 分钟</span>
+              
+            </div>
+          
+
+          
+              <div class="post-description">关于PHP上传和下载的原理一句话总结就是：将客户端文件上传到服务器端，再将服务器端的文件（临时文件）移动到指定目录即可。......</div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>关于PHP上传和下载的原理一句话总结就是：将客户端文件上传到服务器端，再将服务器端的文件（临时文件）移动到指定目录即可。……</p>
+<h2 id="文件上传下载原理与配置"><a href="#文件上传下载原理与配置" class="headerlink" title="文件上传下载原理与配置"></a>文件上传下载原理与配置</h2><h2 id="一、上传原理与配置"><a href="#一、上传原理与配置" class="headerlink" title="一、上传原理与配置"></a>一、上传原理与配置</h2><h3 id="1-1-原理"><a href="#1-1-原理" class="headerlink" title="1.1 原理"></a>1.1 原理</h3><p>将客户端文件上传到服务器端，再将服务器端的文件（临时文件）移动到指定目录即可。</p>
+<h3 id="1-2-客户端配置"><a href="#1-2-客户端配置" class="headerlink" title="1.2 客户端配置"></a>1.2 客户端配置</h3><p>所需：表单页面（选择上传文件）；</p>
+<p>具体而言：发送方式为POST，添加enctype=”multipart/form-data”属性，两者缺一不可（但是，优缺点并存，这里也限定了上传的方式和上传的文件之后的调用等方面，后面会说到）</p>
+<pre><code>&lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD HTML 4.01 Transitional//EN&quot; &quot;http://www.w3.org/TR/html4/loose.dtd&quot;&gt;
+&lt;html&gt;
+&lt;head&gt;
+&lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html; charset=UTF-8&quot;&gt;
+&lt;title&gt;Insert title here&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;form action=&quot;doAction.php&quot; method=&quot;post&quot; enctype=&quot;multipart/form-data&quot;&gt;
+请选择您要上传的文件：
+&lt;input type=&quot;file&quot; name=&quot;myFile&quot; /&gt;&lt;br/&gt;
+&lt;input type=&quot;submit&quot; value=&quot;上传&quot;/&gt;
+&lt;/form&gt;
+&lt;?php
+
+?&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre><p>先是表单页面（请自动忽略前端问题。。。），关键就是form的属性；另外就是input 中用到了type=”file”这一点（体现到php的强大的拓展等等）。</p>
+<p>然后是doAction</p>
+<pre><code>&lt;?php
+//$_FILES:文件上传变量
+//print_r($_FILES);
+$filename=$_FILES[&apos;myFile&apos;][&apos;name&apos;];
+$type=$_FILES[&apos;myFile&apos;][&apos;type&apos;];
+$tmp_name=$_FILES[&apos;myFile&apos;][&apos;tmp_name&apos;];
+$size=$_FILES[&apos;myFile&apos;][&apos;size&apos;];
+$error=$_FILES[&apos;myFile&apos;][&apos;error&apos;];
+
+//将服务器上的临时文件移动到指定位置
+//方法一move_upload_file($tmp_name,$destination)
+//move_uploaded_file($tmp_name, &quot;uploads/&quot;.$filename);//文件夹应提前建立好，不然报错
+//方法二copy($src,$des)
+//以上两个函数都是成功返回真，否则返回false
+//copy($tmp_name, &quot;copies/&quot;.$filename);
+//注意，不能两个方法都对临时文件进行操作，临时文件似乎操作完就没了，我们试试反过来
+copy($tmp_name, &quot;copies/&quot;.$filename);
+move_uploaded_file($tmp_name, &quot;uploads/&quot;.$filename);
+//能够实现，说明move那个函数基本上相当于剪切；copy就是copy，临时文件还在
+
+//另外，错误信息也是不一样的，遇到错误可以查看或者直接报告给用户
+if ($error==0) {
+echo &quot;上传成功！&quot;;
+}else{
+switch ($error){
+case 1:
+echo &quot;超过了上传文件的最大值，请上传2M以下文件&quot;;
+break;
+case 2:
+echo &quot;上传文件过多，请一次上传20个及以下文件！&quot;;
+break;
+case 3:
+echo &quot;文件并未完全上传，请再次尝试！&quot;;
+break;
+case 4:
+echo &quot;未选择上传文件！&quot;;
+break;
+case 5:
+echo &quot;上传文件为0&quot;;
+break;
+}
+}
+</code></pre><p>先把print_r($_FILES)这个信息看一下</p>
+<pre><code>Array
+(
+[myFile] =&gt; Array
+(
+[name] =&gt; 梁博_简历.doc
+[type] =&gt; application/msword
+[tmp_name] =&gt; D:\wamp\tmp\php1D78.tmp
+[error] =&gt; 0
+[size] =&gt; 75776
+)
+
+)
+</code></pre><p>所以得到的是个二维数组，该怎么用，都是基本的东西（其实我喜欢降维再用）；</p>
+<p>基本是一眼就懂的东西，不罗嗦，关键有两个：tmp_name临时文件名；error报错信息（代号，后面可以利用）；</p>
+<p>然后这里看一下doAction后面一部分，利用报错信息来反馈给用户，需要说明的是为什么报错，和报错信息是什么都；</p>
+<h3 id="1-3-关于报错"><a href="#1-3-关于报错" class="headerlink" title="1.3 关于报错"></a>1.3 关于报错</h3><p>–报错原因</p>
+<pre><code>基本上都是超过或者不符合服务器关于上传文件的配置，那么服务器端配置有哪些呢？
+</code></pre><p>先考虑上传我们用了什么？POST，upload</p>
+<p>所以在php.ini中找这么几项：</p>
+<pre><code>file_upload:On
+
+upload_tmp_dir=——临时文件保存目录；
+
+upload_max_filesize=2M
+
+max_file_uploads=20——允许一次上传的最大文件数量（注意和上面那个的区别，有没有size，别乱想）
+
+post_max_size=8M——post方式发送数据的最大值
+</code></pre><p>其他相关配置</p>
+<pre><code>max_exectuion_time=-1——最大执行时间，避免程序不好占用服务器资源；
+
+max_input_time=60
+
+max_input_nesting_level=64——输入嵌套深度；
+
+memory_limit=128M——最大单线程的独立内存使用量
+</code></pre><p>总之都是有关资源的配置。</p>
+<p>–错误号</p>
+<p>以下（偷懒）引自<a href="http://blog.sina.com.cn/s/blog_3cdfaea201008utf.html" target="_blank" rel="noopener">http://blog.sina.com.cn/s/blog_3cdfaea201008utf.html</a></p>
+<pre><code>UPLOAD_ERR_OK             值：0; 没有错误发生，文件上传成功。
+UPLOAD_ERR_INI_SIZE      值：1; 上传的文件超过了 php.ini 中 upload_max_filesize 选项限制的值。
+UPLOAD_ERR_FORM_SIZE  值：2; 上传文件的大小超过了 HTML 表单中 MAX_FILE_SIZE 选项指定的值。
+UPLOAD_ERR_PARTIAL          值：3; 文件只有部分被上传。
+UPLOAD_ERR_NO_FILE          值：4; 没有文件被上传。 
+</code></pre><blockquote>
+<p>注意：这个错误信息是第一步上传的信息，也就是上传到临时文件夹的情况，而不是move或者copy的情况。</p>
+</blockquote>
+<h2 id="二、上传相关限制"><a href="#二、上传相关限制" class="headerlink" title="二、上传相关限制"></a>二、上传相关限制</h2><h3 id="2-1-客户端限制"><a href="#2-1-客户端限制" class="headerlink" title="2.1 客户端限制"></a>2.1 客户端限制</h3><pre><code>&lt;form action=&quot;doAction2.php&quot; method=&quot;post&quot; enctype=&quot;multipart/form-data&quot;&gt;
+&lt;input type=&quot;hidden&quot; name=&quot;MAX_FILE_SIZE&quot; value=&quot;101321&quot; /&gt;
+请选择您要上传的文件：
+&lt;input type=&quot;file&quot; name=&quot;myFile&quot; accept=&quot;image/jpeg,image/gif,text/html&quot;/&gt;&lt;br/&gt;
+&lt;input type=&quot;submit&quot; value=&quot;上传&quot;/&gt;
+&lt;/form&gt;
+</code></pre><p>这里用input的属性对上传文件的大小和类型进行了限制，但是个人感觉：一，html代码是“可见的”；二，常不起作用（没找到原因，但因为第一个我也想放弃它，知道就好。</p>
+<p>2.2 服务器端限制</p>
+<p>主要限制大小和类型，再有就是方式。</p>
+<pre><code>&lt;?php
+header(&apos;content-type:text/html;charset=utf-8&apos;);
+//接受文件，临时文件信息
+$fileinfo=$_FILES[&quot;myFile&quot;];//降维操作
+$filename=$fileinfo[&quot;name&quot;];
+$tmp_name=$fileinfo[&quot;tmp_name&quot;];
+$size=$fileinfo[&quot;size&quot;];
+$error=$fileinfo[&quot;error&quot;];
+$type=$fileinfo[&quot;type&quot;];
+
+//服务器端设定限制
+$maxsize=10485760;//10M,10*1024*1024
+$allowExt=array(&apos;jpeg&apos;,&apos;jpg&apos;,&apos;png&apos;,&apos;tif&apos;);//允许上传的文件类型（拓展名
+$ext=pathinfo($filename,PATHINFO_EXTENSION);//提取上传文件的拓展名
+
+//目的信息
+$path=&quot;uploads&quot;;
+if (!file_exists($path)) {  //当目录不存在，就创建目录
+mkdir($path,0777,true);
+chmod($path, 0777);
+}
+//$destination=$path.&quot;/&quot;.$filename;
+//得到唯一的文件名！防止因为文件名相同而产生覆盖
+$uniName=md5(uniqid(microtime(true),true)).$ext;//md5加密，uniqid产生唯一id，microtime做前缀
+
+if ($error==0) {
+if ($size&gt;$maxsize) {
+exit(&quot;上传文件过大！&quot;);
+}
+if (!in_array($ext, $allowExt)) {
+exit(&quot;非法文件类型&quot;);
+}
+if (!is_uploaded_file($tmp_name)) {
+exit(&quot;上传方式有误，请使用post方式&quot;);
+}
+if (@move_uploaded_file($tmp_name, $uniName)) {//@错误抑制符，不让用户看到警告
+echo &quot;文件&quot;.$filename.&quot;上传成功!&quot;;
+}else{
+echo &quot;文件&quot;.$filename.&quot;上传失败!&quot;;
+}
+//判断是否为真实图片（防止伪装成图片的病毒一类的
+if (!getimagesize($tmp_name)) {//getimagesize真实返回数组，否则返回false
+exit(&quot;不是真正的图片类型&quot;);
+}
+
+}else{
+switch ($error){
+case 1:
+echo &quot;超过了上传文件的最大值，请上传2M以下文件&quot;;
+break;
+case 2:
+echo &quot;上传文件过多，请一次上传20个及以下文件！&quot;;
+break;
+case 3:
+echo &quot;文件并未完全上传，请再次尝试！&quot;;
+break;
+case 4:
+echo &quot;未选择上传文件！&quot;;
+break;
+case 7:
+echo &quot;没有临时文件夹&quot;;
+break;
+}
+}
+</code></pre><p>这里，具体实现都有注释，每一步其实都可以自己试试的，很有趣。</p>
+<h3 id="2-3-封装"><a href="#2-3-封装" class="headerlink" title="2.3 封装"></a>2.3 封装</h3><p>函数</p>
+<pre><code>&lt;?php
+function uploadFile($fileInfo,$path,$allowExt,$maxSize){
+
+$filename=$fileInfo[&quot;name&quot;];
+$tmp_name=$fileInfo[&quot;tmp_name&quot;];
+$size=$fileInfo[&quot;size&quot;];
+$error=$fileInfo[&quot;error&quot;];
+$type=$fileInfo[&quot;type&quot;];
+
+//服务器端设定限制
+
+$ext=pathinfo($filename,PATHINFO_EXTENSION);
+
+//目的信息
+if (!file_exists($path)) {  
+mkdir($path,0777,true);
+chmod($path, 0777);
+}
+$uniName=md5(uniqid(microtime(true),true)).&apos;.&apos;.$ext;
+$destination=$path.&quot;/&quot;.$uniName;
+if ($error==0) {
+if ($size&gt;$maxSize) {
+exit(&quot;上传文件过大！&quot;);
+}
+if (!in_array($ext, $allowExt)) {
+exit(&quot;非法文件类型&quot;);
+}
+if (!is_uploaded_file($tmp_name)) {
+exit(&quot;上传方式有误，请使用post方式&quot;);
+}
+//判断是否为真实图片（防止伪装成图片的病毒一类的
+if (!getimagesize($tmp_name)) {//getimagesize真实返回数组，否则返回false
+exit(&quot;不是真正的图片类型&quot;);
+}
+if (@move_uploaded_file($tmp_name, $destination)) {//@错误抑制符，不让用户看到警告
+echo &quot;文件&quot;.$filename.&quot;上传成功!&quot;;
+}else{
+echo &quot;文件&quot;.$filename.&quot;上传失败!&quot;;
+}
+}else{
+switch ($error){
+case 1:
+echo &quot;超过了上传文件的最大值，请上传2M以下文件&quot;;
+break;
+case 2:
+echo &quot;上传文件过多，请一次上传20个及以下文件！&quot;;
+break;
+case 3:
+echo &quot;文件并未完全上传，请再次尝试！&quot;;
+break;
+case 4:
+echo &quot;未选择上传文件！&quot;;
+break;
+case 7:
+echo &quot;没有临时文件夹&quot;;
+break;
+}
+}
+return $destination;
+}
+</code></pre><p>调用</p>
+<pre><code>&lt;?php
+header(&apos;content-type:text/html;charset=utf-8&apos;);
+$fileInfo=$_FILES[&quot;myFile&quot;];
+$maxSize=10485760;//10M,10*1024*1024
+$allowExt=array(&apos;jpeg&apos;,&apos;jpg&apos;,&apos;png&apos;,&apos;tif&apos;);
+$path=&quot;uploads&quot;;
+include_once &apos;upFunc.php&apos;;
+uploadFile($fileInfo, $path, $allowExt, $maxSize);
+</code></pre><h2 id="三、多文件的上传实现"><a href="#三、多文件的上传实现" class="headerlink" title="三、多文件的上传实现"></a>三、多文件的上传实现</h2><h3 id="3-1-利用单文件封装"><a href="#3-1-利用单文件封装" class="headerlink" title="3.1 利用单文件封装"></a>3.1 利用单文件封装</h3><pre><code>&lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD HTML 4.01 Transitional//EN&quot; &quot;http://www.w3.org/TR/html4/loose.dtd&quot;&gt;
+&lt;html&gt;
+&lt;head&gt;
+&lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html; charset=UTF-8&quot;&gt;
+&lt;title&gt;Insert title here&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;form action=&quot;doAction5.php&quot; method=&quot;post&quot; enctype=&quot;multipart/form-data&quot;&gt;
+请选择您要上传的文件：&lt;input type=&quot;file&quot; name=&quot;myFile1&quot; /&gt;&lt;br/&gt;
+请选择您要上传的文件：&lt;input type=&quot;file&quot; name=&quot;myFile2&quot; /&gt;&lt;br/&gt;
+请选择您要上传的文件：&lt;input type=&quot;file&quot; name=&quot;myFile3&quot; /&gt;&lt;br/&gt;
+请选择您要上传的文件：&lt;input type=&quot;file&quot; name=&quot;myFile4&quot; /&gt;&lt;br/&gt;
+&lt;input type=&quot;submit&quot; value=&quot;上传&quot;/&gt;
+&lt;/form&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+
+&lt;?php
+//print_r($_FILES);
+header(&apos;content-type:text/html;charset=utf-8&apos;);
+include_once &apos;upFunc.php&apos;;
+foreach ($_FILES as $fileInfo){
+$file[]=uploadFile($fileInfo);
+}
+</code></pre><p>这里的思路，从print_r($_FILES)中去找，打印出来看到是个二维数组，很简单，遍历去用就好了！</p>
+<p>上面那个function的定义改一下，给定一些默认值</p>
+<pre><code>function uploadFile($fileInfo,$path=&quot;uploads&quot;,$allowExt=array(&apos;jpeg&apos;,&apos;jpg&apos;,&apos;png&apos;,&apos;tif&apos;),$maxSize=10485760){
+</code></pre><p>这样子，简单是简单，但遇到一些问题。</p>
+<p>正常的上传4个图片是没问题，但要是中间激活了函数中的exit，就会立即停止，导致其他图片也无法上传。</p>
+<h3 id="3-2-升级版封装"><a href="#3-2-升级版封装" class="headerlink" title="3.2 升级版封装"></a>3.2 升级版封装</h3><p>旨在实现针对多个或单个文件上传的封装</p>
+<p>首先这样子写个静态文件</p>
+<pre><code>&lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD HTML 4.01 Transitional//EN&quot; &quot;http://www.w3.org/TR/html4/loose.dtd&quot;&gt;
+&lt;html&gt;
+&lt;head&gt;
+&lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html; charset=UTF-8&quot;&gt;
+&lt;title&gt;Insert title here&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;form action=&quot;doAction5.php&quot; method=&quot;post&quot; enctype=&quot;multipart/form-data&quot;&gt;
+请选择您要上传的文件：&lt;input type=&quot;file&quot; name=&quot;myFile[]&quot; /&gt;&lt;br/&gt;
+请选择您要上传的文件：&lt;input type=&quot;file&quot; name=&quot;myFile[]&quot; /&gt;&lt;br/&gt;
+请选择您要上传的文件：&lt;input type=&quot;file&quot; name=&quot;myFile[]&quot; /&gt;&lt;br/&gt;
+请选择您要上传的文件：&lt;input type=&quot;file&quot; name=&quot;myFile[]&quot; /&gt;&lt;br/&gt;
+&lt;input type=&quot;submit&quot; value=&quot;上传&quot;/&gt;
+&lt;/form&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre><p>打印一下$_FILES</p>
+<pre><code>Array
+(
+[myFile] =&gt; Array
+(
+[name] =&gt; Array
+(
+[0] =&gt; test32.png
+[1] =&gt; test32.png
+[2] =&gt; 333.png
+[3] =&gt; test41.png
+)
+
+[type] =&gt; Array
+(
+[0] =&gt; image/png
+[1] =&gt; image/png
+[2] =&gt; image/png
+[3] =&gt; image/png
+)
+
+[tmp_name] =&gt; Array
+(
+[0] =&gt; D:\wamp\tmp\php831C.tmp
+[1] =&gt; D:\wamp\tmp\php834C.tmp
+[2] =&gt; D:\wamp\tmp\php837C.tmp
+[3] =&gt; D:\wamp\tmp\php83BB.tmp
+)
+
+[error] =&gt; Array
+(
+[0] =&gt; 0
+[1] =&gt; 0
+[2] =&gt; 0
+[3] =&gt; 0
+)
+
+[size] =&gt; Array
+(
+[0] =&gt; 46174
+[1] =&gt; 46174
+[2] =&gt; 34196
+[3] =&gt; 38514
+)
+
+)
+
+)
+</code></pre><p>可以得到一个三维数组。</p>
+<p>复杂是复杂了，但复杂的有规律，各项数值都在一起了，很方便我们取值！！</p>
+<p>所以先得到文件信息，变成单文件处理那种信息</p>
+<pre><code>function getFiles(){
+$i=0;
+foreach($_FILES as $file){
+if(is_string($file[&apos;name&apos;])){ //单文件判定
+$files[$i]=$file;
+$i++;
+}elseif(is_array($file[&apos;name&apos;])){
+foreach($file[&apos;name&apos;] as $key=&gt;$val){ //我的天，这个$key用的diao
+$files[$i][&apos;name&apos;]=$file[&apos;name&apos;][$key];
+$files[$i][&apos;type&apos;]=$file[&apos;type&apos;][$key];
+$files[$i][&apos;tmp_name&apos;]=$file[&apos;tmp_name&apos;][$key];
+$files[$i][&apos;error&apos;]=$file[&apos;error&apos;][$key];
+$files[$i][&apos;size&apos;]=$file[&apos;size&apos;][$key];
+$i++;
+}
+}
+}
+return $files;
+
+}
+</code></pre><p>然后之前的那种exit错误，就把exit改一下就好了，这里用res</p>
+<pre><code>function uploadFile($fileInfo,$path=&apos;./uploads&apos;,$flag=true,$maxSize=1048576,$allowExt=array(&apos;jpeg&apos;,&apos;jpg&apos;,&apos;png&apos;,&apos;gif&apos;)){
+//$flag=true;
+//$allowExt=array(&apos;jpeg&apos;,&apos;jpg&apos;,&apos;gif&apos;,&apos;png&apos;);
+//$maxSize=1048576;//1M
+//判断错误号
+$res=array();
+if($fileInfo[&apos;error&apos;]===UPLOAD_ERR_OK){
+//检测上传得到小
+if($fileInfo[&apos;size&apos;]&gt;$maxSize){
+$res[&apos;mes&apos;]=$fileInfo[&apos;name&apos;].&apos;上传文件过大&apos;;
+}
+$ext=getExt($fileInfo[&apos;name&apos;]);
+//检测上传文件的文件类型
+if(!in_array($ext,$allowExt)){
+$res[&apos;mes&apos;]=$fileInfo[&apos;name&apos;].&apos;非法文件类型&apos;;
+}
+//检测是否是真实的图片类型
+if($flag){
+if(!getimagesize($fileInfo[&apos;tmp_name&apos;])){
+$res[&apos;mes&apos;]=$fileInfo[&apos;name&apos;].&apos;不是真实图片类型&apos;;
+}
+}
+//检测文件是否是通过HTTP POST上传上来的
+if(!is_uploaded_file($fileInfo[&apos;tmp_name&apos;])){
+$res[&apos;mes&apos;]=$fileInfo[&apos;name&apos;].&apos;文件不是通过HTTP POST方式上传上来的&apos;;
+}
+if($res) return $res;
+//$path=&apos;./uploads&apos;;
+if(!file_exists($path)){
+mkdir($path,0777,true);
+chmod($path,0777);
+}
+$uniName=getUniName();
+$destination=$path.&apos;/&apos;.$uniName.&apos;.&apos;.$ext;
+if(!move_uploaded_file($fileInfo[&apos;tmp_name&apos;],$destination)){
+$res[&apos;mes&apos;]=$fileInfo[&apos;name&apos;].&apos;文件移动失败&apos;;
+}
+$res[&apos;mes&apos;]=$fileInfo[&apos;name&apos;].&apos;上传成功&apos;;
+$res[&apos;dest&apos;]=$destination;
+return $res;
+
+}else{
+//匹配错误信息
+switch ($fileInfo [&apos;error&apos;]) {
+case 1 :
+$res[&apos;mes&apos;] = &apos;上传文件超过了PHP配置文件中upload_max_filesize选项的值&apos;;
+break;
+case 2 :
+$res[&apos;mes&apos;] = &apos;超过了表单MAX_FILE_SIZE限制的大小&apos;;
+break;
+case 3 :
+$res[&apos;mes&apos;] = &apos;文件部分被上传&apos;;
+break;
+case 4 :
+$res[&apos;mes&apos;] = &apos;没有选择上传文件&apos;;
+break;
+case 6 :
+$res[&apos;mes&apos;] = &apos;没有找到临时目录&apos;;
+break;
+case 7 :
+case 8 :
+$res[&apos;mes&apos;] = &apos;系统错误&apos;;
+break;
+}
+return $res;
+}
+}
+</code></pre><p>里面封装了两个小的</p>
+<pre><code>function getExt($filename){
+return strtolower(pathinfo($filename,PATHINFO_EXTENSION));
+}
+
+/**
+* 产生唯一字符串
+* @return string
+*/
+function getUniName(){
+return md5(uniqid(microtime(true),true));
+}
+</code></pre><p>然后静态中，用multiple属性实现多个文件的输入；</p>
+<pre><code>&lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD HTML 4.01 Transitional//EN&quot; &quot;http://www.w3.org/TR/html4/loose.dtd&quot;&gt;
+&lt;html&gt;
+&lt;head&gt;
+&lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html; charset=UTF-8&quot;&gt;
+&lt;title&gt;Insert title here&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;form action=&quot;doAction6.php&quot; method=&quot;POST&quot; enctype=&quot;multipart/form-data&quot;&gt;
+请选择您要上传的文件：&lt;input type=&quot;file&quot; name=&quot;myFile[]&quot; multiple=&apos;multiple&apos; /&gt;&lt;br/&gt;
+&lt;input type=&quot;submit&quot; value=&quot;上传&quot;/&gt;
+&lt;/form&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+
+doAction6
+
+&lt;?php 
+//print_r($_FILES);
+header(&quot;content-type:text/html;charset=utf-8&quot;);
+require_once &apos;upFunc2.php&apos;;
+require_once &apos;common.func.php&apos;;
+$files=getFiles();
+// print_r($files);
+foreach($files as $fileInfo){
+$res=uploadFile($fileInfo);
+echo $res[&apos;mes&apos;],&apos;&lt;br/&gt;&apos;;
+$uploadFiles[]=@$res[&apos;dest&apos;];
+}
+$uploadFiles=array_values(array_filter($uploadFiles));
+//print_r($uploadFiles);
+</code></pre><p>这样子的几个文件，就实现比较强大的面向过程的上传文件的功能（学的叫一个心酸。。。）；</p>
+<h2 id="四、面向对象的文件上传"><a href="#四、面向对象的文件上传" class="headerlink" title="四、面向对象的文件上传"></a>四、面向对象的文件上传</h2><p>（不是很写的动了。。。先粘过来，再说吧。。。</p>
+<pre><code>&lt;?php 
+class upload{
+protected $fileName;
+protected $maxSize;
+protected $allowMime;
+protected $allowExt;
+protected $uploadPath;
+protected $imgFlag;
+protected $fileInfo;
+protected $error;
+protected $ext;
+/**
+* @param string $fileName
+* @param string $uploadPath
+* @param string $imgFlag
+* @param number $maxSize
+* @param array $allowExt
+* @param array $allowMime
+*/
+public function __construct($fileName=&apos;myFile&apos;,$uploadPath=&apos;./uploads&apos;,$imgFlag=true,$maxSize=5242880,$allowExt=array(&apos;jpeg&apos;,&apos;jpg&apos;,&apos;png&apos;,&apos;gif&apos;),$allowMime=array(&apos;image/jpeg&apos;,&apos;image/png&apos;,&apos;image/gif&apos;)){
+$this-&gt;fileName=$fileName;
+$this-&gt;maxSize=$maxSize;
+$this-&gt;allowMime=$allowMime;
+$this-&gt;allowExt=$allowExt;
+$this-&gt;uploadPath=$uploadPath;
+$this-&gt;imgFlag=$imgFlag;
+$this-&gt;fileInfo=$_FILES[$this-&gt;fileName];
+}
+/**
+* 检测上传文件是否出错
+* @return boolean
+*/
+protected function checkError(){
+if(!is_null($this-&gt;fileInfo)){
+if($this-&gt;fileInfo[&apos;error&apos;]&gt;0){
+switch($this-&gt;fileInfo[&apos;error&apos;]){
+case 1:
+$this-&gt;error=&apos;超过了PHP配置文件中upload_max_filesize选项的值&apos;;
+break;
+case 2:
+$this-&gt;error=&apos;超过了表单中MAX_FILE_SIZE设置的值&apos;;
+break;
+case 3:
+$this-&gt;error=&apos;文件部分被上传&apos;;
+break;
+case 4:
+$this-&gt;error=&apos;没有选择上传文件&apos;;
+break;
+case 6:
+$this-&gt;error=&apos;没有找到临时目录&apos;;
+break;
+case 7:
+$this-&gt;error=&apos;文件不可写&apos;;
+break;
+case 8:
+$this-&gt;error=&apos;由于PHP的扩展程序中断文件上传&apos;;
+break;
+
+}
+return false;
+}else{
+return true;
+}
+}else{
+$this-&gt;error=&apos;文件上传出错&apos;;
+return false;
+}
+}
+/**
+* 检测上传文件的大小
+* @return boolean
+*/
+protected function checkSize(){
+if($this-&gt;fileInfo[&apos;size&apos;]&gt;$this-&gt;maxSize){
+$this-&gt;error=&apos;上传文件过大&apos;;
+return false;
+}
+return true;
+}
+/**
+* 检测扩展名
+* @return boolean
+*/
+protected function checkExt(){
+$this-&gt;ext=strtolower(pathinfo($this-&gt;fileInfo[&apos;name&apos;],PATHINFO_EXTENSION));
+if(!in_array($this-&gt;ext,$this-&gt;allowExt)){
+$this-&gt;error=&apos;不允许的扩展名&apos;;
+return false;
+}
+return true;
+}
+/**
+* 检测文件的类型
+* @return boolean
+*/
+protected function checkMime(){
+if(!in_array($this-&gt;fileInfo[&apos;type&apos;],$this-&gt;allowMime)){
+$this-&gt;error=&apos;不允许的文件类型&apos;;
+return false;
+}
+return true;
+}
+/**
+* 检测是否是真实图片
+* @return boolean
+*/
+protected function checkTrueImg(){
+if($this-&gt;imgFlag){
+if(!@getimagesize($this-&gt;fileInfo[&apos;tmp_name&apos;])){
+$this-&gt;error=&apos;不是真实图片&apos;;
+return false;
+}
+return true;
+}
+}
+/**
+* 检测是否通过HTTP POST方式上传上来的
+* @return boolean
+*/
+protected function checkHTTPPost(){
+if(!is_uploaded_file($this-&gt;fileInfo[&apos;tmp_name&apos;])){
+$this-&gt;error=&apos;文件不是通过HTTP POST方式上传上来的&apos;;
+return false;
+}
+return true;
+}
+/**
+*显示错误 
+*/
+protected function showError(){
+exit(&apos;&lt;span style=&quot;color:red&quot;&gt;&apos;.$this-&gt;error.&apos;&lt;/span&gt;&apos;);
+}
+/**
+* 检测目录不存在则创建
+*/
+protected function checkUploadPath(){
+if(!file_exists($this-&gt;uploadPath)){
+mkdir($this-&gt;uploadPath,0777,true);
+}
+}
+/**
+* 产生唯一字符串
+* @return string
+*/
+protected function getUniName(){
+return md5(uniqid(microtime(true),true));
+}
+/**
+* 上传文件
+* @return string
+*/
+public function uploadFile(){
+if($this-&gt;checkError()&amp;&amp;$this-&gt;checkSize()&amp;&amp;$this-&gt;checkExt()&amp;&amp;$this-&gt;checkMime()&amp;&amp;$this-&gt;checkTrueImg()&amp;&amp;$this-&gt;checkHTTPPost()){
+$this-&gt;checkUploadPath();
+$this-&gt;uniName=$this-&gt;getUniName();
+$this-&gt;destination=$this-&gt;uploadPath.&apos;/&apos;.$this-&gt;uniName.&apos;.&apos;.$this-&gt;ext;
+if(@move_uploaded_file($this-&gt;fileInfo[&apos;tmp_name&apos;], $this-&gt;destination)){
+return $this-&gt;destination;
+}else{
+$this-&gt;error=&apos;文件移动失败&apos;;
+$this-&gt;showError();
+}
+}else{
+$this-&gt;showError();
+}
+}
+}
+
+&lt;?php 
+header(&apos;content-type:text/html;charset=utf-8&apos;);
+require_once &apos;upload.class.php&apos;;
+$upload=new upload(&apos;myFile1&apos;,&apos;imooc&apos;);
+$dest=$upload-&gt;uploadFile();
+echo $dest;
+</code></pre><h2 id="五、下载"><a href="#五、下载" class="headerlink" title="五、下载"></a>五、下载</h2><p>对于浏览器不识别的，可以直接下载，但对于能识别的，需要多一两步</p>
+<pre><code>&lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD XHTML 1.0 Transitional//EN&quot; &quot;http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd&quot;&gt;
+&lt;html xmlns=&quot;http://www.w3.org/1999/xhtml&quot;&gt;
+&lt;head&gt;
+&lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html; charset=UTF-8&quot; /&gt;
+&lt;title&gt;Insert title here&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;a href=&quot;1.rar&quot;&gt;下载1.rar&lt;/a&gt;
+&lt;br /&gt;
+&lt;a href=&quot;1.jpg&quot;&gt;下载1.jpg&lt;/a&gt;
+&lt;br /&gt;
+&lt;a href=&quot;doDownload.php?filename=1.jpg&quot;&gt;通过程序下载1.jpg&lt;/a&gt;
+&lt;br /&gt;
+&lt;a href=&quot;doDownload.php?filename=../upload/nv.jpg&quot;&gt;下载nv.jpg&lt;/a&gt;
+&lt;?php
+
+?&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+
+&lt;?php 
+$filename=$_GET[&apos;filename&apos;];
+header(&apos;content-disposition:attachment;filename=&apos;.basename($filename));
+header(&apos;content-length:&apos;.filesize($filename));
+readfile($filename);
+</code></pre><p>——————总结———————–</p>
+<p><form action="doAction.php" method="post" enctype="multipart/form-data"></form></p>
+<p><input type="file" name="myFile"><br></p>
+<pre><code>二维数组的降维处理；
+
+$_FILES变量
+
+move_upload_file();copy();
+
+tmp_name临时文件；
+
+拓展名的提取；
+
+真实图片的验证；
+
+唯一文件名的生成；
+
+函数封装以及调用；
+
+利用单个文件函数实现多文件上传；
+
+小功能的封装；
+
+多文件的遍历；
+
+面向对象的开发过程；
+</code></pre>
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="http://pd1l3bbt7.bkt.clouddn.com/img/wechatimg.jpg" alt="曹理鹏@iCocos 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="http://pd1l3bbt7.bkt.clouddn.com/img/alipayimg.jpg" alt="曹理鹏@iCocos 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>曹理鹏@iCocos</li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://icocos.github.io/2018/12/19/PHP——文件上传下载原理与配置/" title="PHP——文件上传下载原理与配置">https://icocos.github.io/2018/12/19/PHP——文件上传下载原理与配置/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明出处！</li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/PHP/" rel="tag"># PHP</a>
+          
+            <a href="/tags/文件上传下载原理与配置/" rel="tag"># 文件上传下载原理与配置</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/12/17/PHP——文件上传下载实战/" rel="next" title="PHP——文件上传下载实战">
+                <i class="fa fa-chevron-left"></i> PHP——文件上传下载实战
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/12/20/PHP——核心技术之缓存/" rel="prev" title="PHP——核心技术之缓存">
+                PHP——核心技术之缓存 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="SOHUCS"></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="http://pd1l3bbt7.bkt.clouddn.com/icocos_user_icon.JPG"
+                alt="曹理鹏@iCocos" />
+            
+              <p class="site-author-name" itemprop="name">曹理鹏@iCocos</p>
+              <p class="site-description motion-element" itemprop="description">纯码迷、爱学习、爱交友、喜欢接触新鲜事物、迎接新的挑战，更爱游离于错综复杂的编码与逻辑中！</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives">
+                
+                    <span class="site-state-item-count">117</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">17</span>
+                    <span class="site-state-item-name">分类</span>
+                  
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">190</span>
+                    <span class="site-state-item-name">标签</span>
+                  
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/al1020119" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:al1020119@163.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://stackoverflow.com/users/10186720" target="_blank" title="StackOverflow"><i class="fa fa-fw fa-stack-overflow"></i>StackOverflow</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.icocos.cn/" title="梦工厂" target="_blank">梦工厂</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://al1020119.github.io/" title="iOS梦工厂" target="_blank">iOS梦工厂</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#文件上传下载原理与配置"><span class="nav-number">1.</span> <span class="nav-text">文件上传下载原理与配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#一、上传原理与配置"><span class="nav-number">2.</span> <span class="nav-text">一、上传原理与配置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-原理"><span class="nav-number">2.1.</span> <span class="nav-text">1.1 原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-客户端配置"><span class="nav-number">2.2.</span> <span class="nav-text">1.2 客户端配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-3-关于报错"><span class="nav-number">2.3.</span> <span class="nav-text">1.3 关于报错</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二、上传相关限制"><span class="nav-number">3.</span> <span class="nav-text">二、上传相关限制</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-客户端限制"><span class="nav-number">3.1.</span> <span class="nav-text">2.1 客户端限制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-封装"><span class="nav-number">3.2.</span> <span class="nav-text">2.3 封装</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#三、多文件的上传实现"><span class="nav-number">4.</span> <span class="nav-text">三、多文件的上传实现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-利用单文件封装"><span class="nav-number">4.1.</span> <span class="nav-text">3.1 利用单文件封装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-升级版封装"><span class="nav-number">4.2.</span> <span class="nav-text">3.2 升级版封装</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#四、面向对象的文件上传"><span class="nav-number">5.</span> <span class="nav-text">四、面向对象的文件上传</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#五、下载"><span class="nav-number">6.</span> <span class="nav-text">五、下载</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2017 – <span itemprop="copyrightYear">2018</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">曹理鹏@iCocos</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">站点总字数：</span>
+    
+    <span title="站点总字数">608k</span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    
+    <span title="站点阅读时长">9:13</span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv" title="总访客量">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="site-pv" title="总访问量">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/reading_progress/reading_progress.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.3.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.3.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.3.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.3.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+  
+    <script type="text/javascript">
+    (function(){
+      var appid = 'cytKHBEtW';
+      var conf = '43989b8e63b25c4e9f1fde821c996a39';
+      var width = window.innerWidth || document.documentElement.clientWidth;
+      if (width < 960) {
+      window.document.write('<script id="changyan_mobile_js" charset="utf-8" type="text/javascript" src="https://changyan.sohu.com/upload/mobile/wap-js/changyan_mobile.js?client_id=' + appid + '&conf=' + conf + '"><\/script>'); } else { var loadJs=function(d,a){var c=document.getElementsByTagName("head")[0]||document.head||document.documentElement;var b=document.createElement("script");b.setAttribute("type","text/javascript");b.setAttribute("charset","UTF-8");b.setAttribute("src",d);if(typeof a==="function"){if(window.attachEvent){b.onreadystatechange=function(){var e=b.readyState;if(e==="loaded"||e==="complete"){b.onreadystatechange=null;a()}}}else{b.onload=a}}c.appendChild(b)};loadJs("https://changyan.sohu.com/upload/changyan.js",function(){
+        window.changyan.api.config({appid:appid,conf:conf})});
+      }
+    })();
+    </script>
+    <script type="text/javascript" src="https://assets.changyan.sohu.com/upload/plugins/plugins.count.js"></script>
+  
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("Tc7k1mbaieCUSgmM8LPk1IBO-gzGzoHsz", "sAb7L2vwENJTteRrvFKQacUU");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            
+              var $element = $(document.getElementById(url));
+              $element.find('.leancloud-visitors-count').text(counter.get('time'));
+            
+            counter.save(null, {
+              success: function(counter) {
+                
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            
+              var $element = $(document.getElementById(url));
+              $element.find('.leancloud-visitors-count').text('Counter not initialized! See more at console err msg.');
+              console.error('ATTENTION! LeanCloud counter has security bug, see here how to solve it: https://github.com/theme-next/hexo-leancloud-counter-security. \n But you also can use LeanCloud without security, by set \'security\' option to \'false\'.');
+            
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #333;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #eee;
+      background-image: linear-gradient(#fcfcfc, #eee);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('复制').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+          if(result)$(this).text('复制成功')
+          else $(this).text('复制失败')
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('复制')
+        }, 300)
+      }).append(e)
+    })
+  </script>
+
+
+  
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("Tc7k1mbaieCUSgmM8LPk1IBO-gzGzoHsz", "sAb7L2vwENJTteRrvFKQacUU");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+  
+</body>
+</html>

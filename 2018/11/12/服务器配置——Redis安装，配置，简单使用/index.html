@@ -1,0 +1,2436 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.3.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="http://pd1l3bbt7.bkt.clouddn.com/img/favicon.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="http://pd1l3bbt7.bkt.clouddn.com/img/favicon.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="http://pd1l3bbt7.bkt.clouddn.com/img/favicon.png?v=6.3.0">
+
+
+  <link rel="mask-icon" href="http://pd1l3bbt7.bkt.clouddn.com/img/favicon.png?v=6.3.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="本文是因为在做API接口开发的时候，要数据每次都需要从数据读取而写，那样太耗性能了，其实类型iOS中的Cache或者NSUserDefault，用法都和NSUserDefault类似....">
+<meta name="keywords" content="PHP,Redis">
+<meta property="og:type" content="article">
+<meta property="og:title" content="服务器配置——Redis安装，配置，简单使用">
+<meta property="og:url" content="https://icocos.github.io/2018/11/12/服务器配置——Redis安装，配置，简单使用/index.html">
+<meta property="og:site_name" content="iCocos">
+<meta property="og:description" content="本文是因为在做API接口开发的时候，要数据每次都需要从数据读取而写，那样太耗性能了，其实类型iOS中的Cache或者NSUserDefault，用法都和NSUserDefault类似....">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-12-28T02:25:56.417Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="服务器配置——Redis安装，配置，简单使用">
+<meta name="twitter:description" content="本文是因为在做API接口开发的时候，要数据每次都需要从数据读取而写，那样太耗性能了，其实类型iOS中的Cache或者NSUserDefault，用法都和NSUserDefault类似....">
+
+
+
+  <link rel="alternate" href="/atom.xml" title="iCocos" type="application/atom+xml" />
+
+
+
+
+  <link rel="canonical" href="https://icocos.github.io/2018/11/12/服务器配置——Redis安装，配置，简单使用/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>服务器配置——Redis安装，配置，简单使用 | iCocos</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">iCocos</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">www.icocos.cn</p>
+      
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-首页">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-归档">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-关于">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-作品">
+    <a href="/works/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-calendar"></i> <br />作品</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-简历">
+    <a href="/resume/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-sitemap"></i> <br />简历</a>
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+    <div class="reading-progress-bar"></div>
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://icocos.github.io/2018/11/12/服务器配置——Redis安装，配置，简单使用/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="曹理鹏@iCocos">
+      <meta itemprop="description" content="纯码迷、爱学习、爱交友、喜欢接触新鲜事物、迎接新的挑战，更爱游离于错综复杂的编码与逻辑中！">
+      <meta itemprop="image" content="http://pd1l3bbt7.bkt.clouddn.com/icocos_user_icon.JPG">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="iCocos">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">服务器配置——Redis安装，配置，简单使用
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-11-12 22:02:32" itemprop="dateCreated datePublished" datetime="2018-11-12T22:02:32+08:00">2018-11-12</time>
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/PHP/" itemprop="url" rel="index"><span itemprop="name">PHP</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+              <span class="post-meta-divider">|</span>
+              <span class="post-meta-item-icon">
+                <i class="fa fa-comment-o"></i>
+              </span>
+              
+                <a href="/2018/11/12/服务器配置——Redis安装，配置，简单使用/#SOHUCS" itemprop="discussionUrl">
+                  <span class="post-meta-item-text">评论数：</span> <span id="changyan_count_unit" class="post-comments-count hc-comment-count" data-xid="2018/11/12/服务器配置——Redis安装，配置，简单使用/" itemprop="commentsCount"></span>
+                </a>
+              
+            
+          
+
+          
+          
+             <span id="/2018/11/12/服务器配置——Redis安装，配置，简单使用/" class="leancloud_visitors" data-flag-title="服务器配置——Redis安装，配置，简单使用">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数：</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon"
+            >
+            <i class="fa fa-eye"></i>
+             阅读次数： 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+            <div class="post-symbolscount">
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">本文字数：</span>
+                
+                <span title="本文字数">13k</span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">12 分钟</span>
+              
+            </div>
+          
+
+          
+              <div class="post-description">本文是因为在做API接口开发的时候，要数据每次都需要从数据读取而写，那样太耗性能了，其实类型iOS中的Cache或者NSUserDefault，用法都和NSUserDefault类似....</div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>本文是因为在做API接口开发的时候，要数据每次都需要从数据读取而写，那样太耗性能了，其实类型iOS中的Cache或者NSUserDefault，用法都和NSUserDefault类似….</p>
+<h2 id="Redis"><a href="#Redis" class="headerlink" title="Redis"></a>Redis</h2><h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>下载安装包 redis-3.2.8.tar.gz</p>
+<pre><code>官网地址：http://redis.io/download
+</code></pre><p>解压：</p>
+<pre><code>tar -zvxf redis-3.2.8.tar.gz  将解压后的文件夹放到 /Users/local目录下
+</code></pre><p>编译测试:接下来在终端中切换到/Users/local/redis目录下,输入：sudo make test</p>
+<pre><code>编译安装：在终端中输入命令：sudo make install
+</code></pre><p>启动Redis,输入命令redis-server</p>
+<pre><code>redis-server
+78407:C 18 Apr 21:32:31.361 # Warning: no config file specified, using the default config. In order to specify a config file use redis-server /path/to/redis.conf
+78407:M 18 Apr 21:32:31.362 * Increased maximum number of open files to 10032 (it was originally set to 256).
+_._                                                  
+_.-``__ &apos;&apos;-._                                             
+_.-``    `.  `_.  &apos;&apos;-._           Redis 3.2.8 (00000000/0) 64 bit
+.-`` .-```.  ```\/    _.,_ &apos;&apos;-._                                   
+(    &apos;      ,       .-`  | `,    )     Running in standalone mode
+|`-._`-...-` __...-.``-._|&apos;` _.-&apos;|     Port: 6379
+|    `-._   `._    /     _.-&apos;    |     PID: 78407
+`-._    `-._  `-./  _.-&apos;    _.-&apos;                                   
+|`-._`-._    `-.__.-&apos;    _.-&apos;_.-&apos;|                                  
+|    `-._`-._        _.-&apos;_.-&apos;    |           http://redis.io        
+`-._    `-._`-.__.-&apos;_.-&apos;    _.-&apos;                                   
+|`-._`-._    `-.__.-&apos;    _.-&apos;_.-&apos;|                                  
+|    `-._`-._        _.-&apos;_.-&apos;    |                                  
+`-._    `-._`-.__.-&apos;_.-&apos;    _.-&apos;                                   
+`-._    `-.__.-&apos;    _.-&apos;                                       
+`-._        _.-&apos;                                           
+`-.__.-&apos;                                               
+
+78407:M 18 Apr 21:32:31.363 # Server started, Redis version 3.2.8
+78407:M 18 Apr 21:32:31.364 * DB loaded from disk: 0.001 seconds
+78407:M 18 Apr 21:32:31.364 * The server is now ready to accept connections on port 6379
+</code></pre><p>看到这个界面表示我们已经成功的安装Redis。</p>
+<h2 id="二配置"><a href="#二配置" class="headerlink" title="二配置"></a>二配置</h2><h3 id="1、在-Users-local-redis目录下建立bin，etc，db三个目录"><a href="#1、在-Users-local-redis目录下建立bin，etc，db三个目录" class="headerlink" title="1、在 /Users/local/redis目录下建立bin，etc，db三个目录"></a>1、在 /Users/local/redis目录下建立bin，etc，db三个目录</h3><h3 id="2、把-Users-local-redis-src目录下的mkreleasehdr-sh，redis-benchmark，-redis-cli，-redis-server拷贝到bin目录"><a href="#2、把-Users-local-redis-src目录下的mkreleasehdr-sh，redis-benchmark，-redis-cli，-redis-server拷贝到bin目录" class="headerlink" title="2、把/Users/local/redis/src目录下的mkreleasehdr.sh，redis-benchmark， redis-cli， redis-server拷贝到bin目录"></a>2、把/Users/local/redis/src目录下的mkreleasehdr.sh，redis-benchmark， redis-cli， redis-server拷贝到bin目录</h3><h3 id="3、在etc下，参考原-Users-local-redis目录下的redis-conf，新建一个redis-conf"><a href="#3、在etc下，参考原-Users-local-redis目录下的redis-conf，新建一个redis-conf" class="headerlink" title="3、在etc下，参考原/Users/local/redis目录下的redis.conf，新建一个redis.conf"></a>3、在etc下，参考原/Users/local/redis目录下的redis.conf，新建一个redis.conf</h3><p>修改redis.conf，具体如下：</p>
+<pre><code>#修改为守护模式
+
+daemonize yes
+
+#设置进程锁文件
+
+pidfile /Users/local/redis/redis.pid
+
+#端口
+
+port 6379
+
+#客户端超时时间
+
+timeout 300
+
+#日志级别
+
+loglevel debug
+
+#日志文件位置
+
+logfile /Users/local/redis/log-redis.log
+
+#设置数据库的数量，默认数据库为16，可以使用SELECT 命令在连接上指定数据库id
+
+databases 16
+
+##指定在多长时间内，有多少次更新操作，就将数据同步到数据文件，可以多个条件配合
+
+#save
+
+#Redis默认配置文件中提供了三个条件：
+
+save 900 1
+
+save 300 10
+
+save 60 10000
+
+#指定存储至本地数据库时是否压缩数据，默认为yes，Redis采用LZF压缩，如果为了节省CPU时间，
+
+#可以关闭该#选项，但会导致数据库文件变的巨大
+
+rdbcompression yes
+
+#指定本地数据库文件名
+
+dbfilename dump.rdb
+
+#指定本地数据库路径
+
+dir /Users/local/redis/db/
+
+#指定是否在每次更新操作后进行日志记录，Redis在默认情况下是异步的把数据写入磁盘，如果不开启，可能
+
+#会在断电时导致一段时间内的数据丢失。因为 redis本身同步数据文件是按上面save条件来同步的，所以有
+
+#的数据会在一段时间内只存在于内存中
+
+appendonly no
+
+#指定更新日志条件，共有3个可选值：
+
+#no：表示等操作系统进行数据缓存同步到磁盘（快）
+
+#always：表示每次更新操作后手动调用fsync()将数据写到磁盘（慢，安全）
+
+#everysec：表示每秒同步一次（折衷，默认值）
+
+appendfsync everysec
+</code></pre><p>其实只需要拷贝，然后修改对应的值就可以</p>
+<h3 id="4、保存后，启动redis：-bin-redis-server-etc-redis-conf"><a href="#4、保存后，启动redis：-bin-redis-server-etc-redis-conf" class="headerlink" title="4、保存后，启动redis：./bin/redis-server etc/redis.conf"></a>4、保存后，启动redis：./bin/redis-server etc/redis.conf</h3><p>注意这里log-redis.log文件需要我自己创建</p>
+<pre><code>iCocosdeMacBook-Pro:redis icocos$ redis-server etc/redis.conf回车之后没有输出说明成功了
+</code></pre><h3 id="5、查看日志文件：tail-f-log-redis-log"><a href="#5、查看日志文件：tail-f-log-redis-log" class="headerlink" title="5、查看日志文件：tail -f log-redis.log"></a>5、查看日志文件：tail -f log-redis.log</h3><pre><code>|    `-._`-._        _.-&apos;_.-&apos;    |                                  
+`-._    `-._`-.__.-&apos;_.-&apos;    _.-&apos;                                   
+`-._    `-.__.-&apos;    _.-&apos;                                       
+`-._        _.-&apos;                                           
+`-.__.-&apos;                                               
+
+78584:M 18 Apr 21:48:02.777 # Server started, Redis version 3.2.8
+78584:M 18 Apr 21:48:02.777 * The server is now ready to accept connections on port 6379
+78584:M 18 Apr 21:48:02.779 - 0 clients connected (0 slaves), 957072 bytes in use
+</code></pre><p>到这里，我们已经完成redis安装和配置。</p>
+<h2 id="三使用"><a href="#三使用" class="headerlink" title="三使用"></a>三使用</h2><h3 id="1、检查是否启动：redis-cli-ping"><a href="#1、检查是否启动：redis-cli-ping" class="headerlink" title="1、检查是否启动：redis-cli ping"></a>1、检查是否启动：redis-cli ping</h3><h3 id="2、redis-cli"><a href="#2、redis-cli" class="headerlink" title="2、redis-cli"></a>2、redis-cli</h3><h3 id="3、ping"><a href="#3、ping" class="headerlink" title="3、ping"></a>3、ping</h3><h3 id="4、redis-cli-跟上命令会将参数发送到本地redis-6379-的端口，下面来看看基本操作："><a href="#4、redis-cli-跟上命令会将参数发送到本地redis-6379-的端口，下面来看看基本操作：" class="headerlink" title="4、redis-cli 跟上命令会将参数发送到本地redis 6379 的端口，下面来看看基本操作："></a>4、redis-cli 跟上命令会将参数发送到本地redis 6379 的端口，下面来看看基本操作：</h3><p>使用方式</p>
+<pre><code>iCocosdeMacBook-Pro:redis icocos$ redis-cli
+127.0.0.1:6379&gt; ping
+PONG
+127.0.0.1:6379&gt; set key1 name
+OK
+127.0.0.1:6379&gt; get key1
+&quot;name&quot;
+</code></pre><h3 id="5、关闭命令：redis-cli-shutdown"><a href="#5、关闭命令：redis-cli-shutdown" class="headerlink" title="5、关闭命令：redis-cli shutdown"></a>5、关闭命令：redis-cli shutdown</h3><pre><code>上面我们演示了redis安装与配置，接下来后面的工作在真实上线之前只需要熟练redis的使用就差不多了，注意细节，并应用到实战，没错就这么简单！
+</code></pre><h2 id="四-服务器配置"><a href="#四-服务器配置" class="headerlink" title="四.服务器配置"></a>四.服务器配置</h2><p>上面只是基本的安装，如果要用到生产环境，得配置一些文件</p>
+<h3 id="1-首先把redis-cli-移动到-Users-local-bin-目录，方便执行，和JAVA-HOME-类似"><a href="#1-首先把redis-cli-移动到-Users-local-bin-目录，方便执行，和JAVA-HOME-类似" class="headerlink" title="1.首先把redis-cli 移动到/Users/local/bin 目录，方便执行，和JAVA_HOME 类似"></a>1.首先把redis-cli 移动到/Users/local/bin 目录，方便执行，和JAVA_HOME 类似</h3><pre><code>默认install 的时候已经有了
+</code></pre><h3 id="2-创建你存放配置文件和数据文件的目录"><a href="#2-创建你存放配置文件和数据文件的目录" class="headerlink" title="2.创建你存放配置文件和数据文件的目录"></a>2.创建你存放配置文件和数据文件的目录</h3><pre><code>sudomkdir /etc/redissudo mkdir /var/redis
+</code></pre><h3 id="3-复制初始化脚本到-etc-init-d-目录-建议默认只有这个端口-作开机启动"><a href="#3-复制初始化脚本到-etc-init-d-目录-建议默认只有这个端口-作开机启动" class="headerlink" title="3.复制初始化脚本到/etc/init.d 目录,建议默认只有这个端口,作开机启动"></a>3.复制初始化脚本到/etc/init.d 目录,建议默认只有这个端口,作开机启动</h3><pre><code>$ sudocp utils/redis_init_script /etc/init.d/redis_6379
+</code></pre><h3 id="4-进入脚本-确保你的REDISPORT-是你正在使用的"><a href="#4-进入脚本-确保你的REDISPORT-是你正在使用的" class="headerlink" title="4.进入脚本,确保你的REDISPORT 是你正在使用的"></a>4.进入脚本,确保你的REDISPORT 是你正在使用的</h3><pre><code>sudovi /etc/init.d/redis_6379
+</code></pre><h3 id="5-复制redis-conf-和脚本保持一致"><a href="#5-复制redis-conf-和脚本保持一致" class="headerlink" title="5.复制redis.conf ,和脚本保持一致"></a>5.复制redis.conf ,和脚本保持一致</h3><pre><code>sudocp redis.conf /etc/redis/6379.conf
+</code></pre><h3 id="6-创建一个存放工作数据的目录"><a href="#6-创建一个存放工作数据的目录" class="headerlink" title="6.创建一个存放工作数据的目录"></a>6.创建一个存放工作数据的目录</h3><pre><code>sudomkdir /var/redis/6379
+</code></pre><p>同时可以对redis.conf配置其他属性</p>
+<pre><code># 来源：http://www.cnblogs.com/shanyou/archive/2012/01/28/2330451.htmldaemonize：是否以后台daemon方式运行pidfile：pid文件位置port：监听的端口号timeout：请求超时时间loglevel：log信息级别logfile：log文件位置databases：开启数据库的数量save **：保存快照的频率，第一个*表示多长时间，第三个*表示执行多少次写操作。在一定时间内执行一定数量的写操作时，自动保存快照。可设置多个条件。rdbcompression：是否使用压缩dbfilename：数据快照文件名（只是文件名，不包括目录）dir：数据快照的保存目录（这个是目录）appendonly：是否开启appendonlylog，开启的话每次写操作会记一条log，这会提高数据抗风险能力，但影响效率。appendfsync：appendonlylog如何同步到磁盘（三个选项，分别是每次写都强制调用fsync、每秒启用一次fsync、不调用fsync等待系统自己同步）
+</code></pre><h3 id="7-最后将脚本设置默认启动"><a href="#7-最后将脚本设置默认启动" class="headerlink" title="7.最后将脚本设置默认启动"></a>7.最后将脚本设置默认启动</h3><pre><code>sudoupdate-rc.d redis_6379 defaults
+</code></pre><h3 id="8-现在可以执行脚本了"><a href="#8-现在可以执行脚本了" class="headerlink" title="8.现在可以执行脚本了"></a>8.现在可以执行脚本了</h3><pre><code>/etc/init.d/redis_6379start
+</code></pre><h2 id="五-MAC-版本差异"><a href="#五-MAC-版本差异" class="headerlink" title="五.MAC 版本差异"></a>五.MAC 版本差异</h2><p>一个不幸的事实是：mac 上是没有init.d 目录的，mac启动脚本是 以.plist 结尾了，</p>
+<p>好吧，我在 ~/Library/LaunchAgents 目录下自己建立一个 redis.plist</p>
+<p>参考：<a href="http://www.js2node.com/redis-io/install-redis-io-2-4-17-on-mac-osx-as-service" target="_blank" rel="noopener">http://www.js2node.com/redis-io/install-redis-io-2-4-17-on-mac-osx-as-service</a></p>
+<pre><code>$ sudovi redis.plist
+</code></pre><p>然后输入以下内容</p>
+<pre><code>Labelio.redis.redis-serverProgramArguments/Users/local/bin/redis-server/Users/local/etc/redis.confRunAtLoad
+</code></pre><p>执行命令</p>
+<pre><code>$ sudo launchctlload/Library/LaunchDaemons/io.redis.redis-server.plist
+</code></pre><p>打开关闭：</p>
+<pre><code>$ sudo launchctlstartio.redis.redis-server$ sudo launchctl stop io.redis.redis-server
+</code></pre><h2 id="六-brew-进行安装"><a href="#六-brew-进行安装" class="headerlink" title="六.brew 进行安装"></a>六.brew 进行安装</h2><p>下面我用brew来操作，关于brew 的安装我看的：<a href="http://my.oschina.net/liygheart/blog/284668" target="_blank" rel="noopener">http://my.oschina.net/liygheart/blog/284668</a></p>
+<p>安装好了，然后 参考：<a href="https://gist.github.com/tonypujals/9631143" target="_blank" rel="noopener">https://gist.github.com/tonypujals/9631143</a></p>
+<pre><code>$brew info redis
+</code></pre><p>会有提示，然后输入</p>
+<pre><code>$ln -nfs /Users/local/opt/redis/*.plist ~/Library/LaunchAgents
+</code></pre><p>和</p>
+<pre><code>$load ~/Library/LaunchAgents/homebrew.mxcl.redis.plist
+</code></pre><h2 id="网上还找到一种方式，貌似可以成功"><a href="#网上还找到一种方式，貌似可以成功" class="headerlink" title="网上还找到一种方式，貌似可以成功"></a>网上还找到一种方式，貌似可以成功</h2><p>1.获取github中的redis-php扩展代码：<br>    git clone <a href="https://github.com/phpredis/phpredis.git" target="_blank" rel="noopener">https://github.com/phpredis/phpredis.git</a></p>
+<p>2.cd phpredis/</p>
+<p>3.phpize mac os 如果这里有</p>
+<pre><code>Cannot find autoconf. Please check your autoconf installation and the
+$PHP_AUTOCONF environment variable. Then, rerun this script.的问题，那么：
+执行：brew install autoconf
+</code></pre><p>4.之后执行phpize</p>
+<p>5../configure</p>
+<p>6.make &amp;&amp; sudo make install 输入密码就会提示成功</p>
+<pre><code>Password:
+Installing shared extensions:     /usr/lib/php/extensions/no-debug-non-zts-20131226/
+</code></pre><p>7.之后在php.ini中加一句 extension=redis.so 就ok了</p>
+<pre><code>路径：/etc/php.ini
+</code></pre><p>然后重启 apache/nginx 和 php-fpm ，输入命令：php -m |grep redis 或者通过 phpinfo() 输出php信息查看redis是否安装成功。</p>
+<h3 id="期间我在执行install的时候出现这样的问题"><a href="#期间我在执行install的时候出现这样的问题" class="headerlink" title="期间我在执行install的时候出现这样的问题"></a>期间我在执行install的时候出现这样的问题</h3><p>装不了PHP的扩展，make install失败</p>
+<pre><code>RudonMacBook:igbinary-master rudon$ make install
+Installing shared extensions:     /usr/lib/php/extensions/no-debug-non-zts-20131226/
+cp: /usr/lib/php/extensions/no-debug-non-zts-20131226/#INST@12567#: Operation not permitted
+make: *** [install-modules] Error 1
+
+cp: /usr/lib/php/extensions/no-debug-non-zts-20121212/#INST@17000#: Operation not permitted
+</code></pre><p>原因是</p>
+<pre><code>原来是OSX 10.11 El Capitan（或更高）新添加了一个新的安全机制叫系统完整性保护System Integrity Protection (SIP)，所以对于目录
+/System
+/sbin
+/usr
+不包含(/usr/local/)
+仅仅供系统使用，其它用户或者程序无法直接使用，而我们的/usr/lib/php/extensions/刚好在受保护范围内
+</code></pre><p>所以解决方法就是禁掉SIP保护机制，步骤是：</p>
+<pre><code>重启系统
+按住Command + R   （重新亮屏之后就开始按，象征地按几秒再松开，出现苹果标志，ok）
+菜单“实用工具” ==&gt;&gt; “终端” ==&gt;&gt; 输入csrutil disable；执行后会输出：Successfully disabled System Integrity Protection. Please restart the machine for the changes to take effect.
+再次重启系统
+
+禁止掉SIP后，就可以顺利的安装了，当然装完了以后你可以重新打开SIP，方法同上，只是命令是csrutil enable
+</code></pre><h2 id="平时使用"><a href="#平时使用" class="headerlink" title="平时使用"></a>平时使用</h2><pre><code>iCocosdeMacBook-Pro:redis icocos$ cd /Users/local/redis
+iCocosdeMacBook-Pro:redis icocos$ redis-server
+78728:C 18 Apr 22:00:25.105 # Warning: no config file specified, using the default config. In order to specify a config file use redis-server /path/to/redis.conf
+78728:M 18 Apr 22:00:25.107 * Increased maximum number of open files to 10032 (it was originally set to 256).
+_._                                                  
+_.-``__ &apos;&apos;-._                                             
+_.-``    `.  `_.  &apos;&apos;-._           Redis 3.2.8 (00000000/0) 64 bit
+.-`` .-```.  ```\/    _.,_ &apos;&apos;-._                                   
+(    &apos;      ,       .-`  | `,    )     Running in standalone mode
+|`-._`-...-` __...-.``-._|&apos;` _.-&apos;|     Port: 6379
+|    `-._   `._    /     _.-&apos;    |     PID: 78728
+`-._    `-._  `-./  _.-&apos;    _.-&apos;                                   
+|`-._`-._    `-.__.-&apos;    _.-&apos;_.-&apos;|                                  
+|    `-._`-._        _.-&apos;_.-&apos;    |           http://redis.io        
+`-._    `-._`-.__.-&apos;_.-&apos;    _.-&apos;                                   
+|`-._`-._    `-.__.-&apos;    _.-&apos;_.-&apos;|                                  
+|    `-._`-._        _.-&apos;_.-&apos;    |                                  
+`-._    `-._`-.__.-&apos;_.-&apos;    _.-&apos;                                   
+`-._    `-.__.-&apos;    _.-&apos;                                       
+`-._        _.-&apos;                                           
+`-.__.-&apos;                                               
+
+78728:M 18 Apr 22:00:25.108 # Server started, Redis version 3.2.8
+78728:M 18 Apr 22:00:25.108 * DB loaded from disk: 0.000 seconds
+78728:M 18 Apr 22:00:25.108 * The server is now ready to accept connections on port 6379
+^C78728:signal-handler (1492524027) Received SIGINT scheduling shutdown...
+78728:M 18 Apr 22:00:27.286 # User requested shutdown...
+78728:M 18 Apr 22:00:27.286 * Saving the final RDB snapshot before exiting.
+78728:M 18 Apr 22:00:27.288 * DB saved on disk
+78728:M 18 Apr 22:00:27.288 # Redis is now ready to exit, bye bye...
+iCocosdeMacBook-Pro:redis icocos$ redis-cli
+127.0.0.1:6379&gt; ping
+PONG
+127.0.0.1:6379&gt; set key1 name
+OK
+127.0.0.1:6379&gt; get key1
+&quot;name&quot;
+127.0.0.1:6379&gt; 
+</code></pre><h3 id="PHP中使用的话"><a href="#PHP中使用的话" class="headerlink" title="PHP中使用的话"></a>PHP中使用的话</h3><pre><code>&lt;?php
+
+$redis = new Redis();
+$redis-&gt;connect(&apos;127.0.0.1&apos;, 6379);
+
+$redis-&gt;set(&apos;iCocos&apos;,1234);
+
+$redis-&gt;get(&apos;iCocos&apos;);
+</code></pre><p>执行PHP文件，可以直接网页执行，也可以直接命令执行，方法基本上类似.</p>
+<h2 id="Redis基本命令"><a href="#Redis基本命令" class="headerlink" title="Redis基本命令"></a>Redis基本命令</h2><p>Redis数据类型及操作:</p>
+<pre><code>String:
+指令:{
+    set
+    setnx       :如果key已经存在, 返回0
+    setex       :指定键值对的有效期, setex [key] [expire] [value]   /类似于:set [key] [value] [EX expire]
+    setrange    :设置key-value值的子字符串,下标从0开始到第i位置,不包含i
+    mset
+    msetnx
+    get
+    getset
+    getrange
+    mget
+    incr
+    incrby
+    decr
+    decrby
+    append
+    strlen
+}
+</code></pre><p>Hash:是一个string类型的field-value的映射表,它的添加删除平均都是O(1)的效率</p>
+<pre><code>指令:{
+    hset
+    hsetnx
+    hmset
+    hget
+    hmget
+    hincrby
+    hexists
+    hlen
+    hdel
+    hkeys
+    hvals
+    hgetall
+}
+</code></pre><p>List:是一个链表结构, 主要功能是pop,push,获取一个范围的所有值等,key理解为链表的名字<br>list类型其实就是每一个子元素都是string类型的双向链表.</p>
+<pre><code>指令:{
+    lpush   
+    rpush
+    linsert   : linsert key [BEFORE|AFTER] [pivot] [value]
+    在list的特定的值的位置之前或之后添加字符串元素
+    lset      : lset key [index] [value] 设置list中指定下标的元素值
+    lrem      : lrem key [count] [value] 从list中删除count个和value相同的元素
+    count&gt;0,从头删除;
+    count=0,全部删除;
+    count&lt;0,从尾删除;
+    ltrim     : ltrim key [start] [stop] 保留key的值中指定范围内的数据
+    lpop      : 从list的头部删除元素
+    rpop      : 从list的尾部删除元素
+    rpoplpush : rpoplpush [source] [destination], 整个操作是原子的
+    从source的尾部移除元素,并添加到destination的头部,返回被移除的元素值
+    lindex    : lindex key [index] 取list中index位置的元素
+    llen      : 返回key对应list的长度
+}
+</code></pre><p>Set: 指令:{}</p>
+<p>键值指令:</p>
+<pre><code>[ 
+    keys :返回给定pattern的所有key
+    exists: 确认一个key是否存在
+    del : 删除一个key
+    expire : 设置一个key的过期时间(秒为单位)
+    ttl : 用于获取key的有效时长
+    persist : 移除给定key的过期时间
+    move : 把当前数据库中的key移动到其它库中
+    rename : 重命名key
+]
+</code></pre><p>服务指令:</p>
+<pre><code>[
+    select :选择数据库存取, redis数据库编号从 0~15 默认16个库
+    dbsize :获取当前数据库的key
+    info :  获取服务器的信息和统计,用于说明服务器的基础信息,包括版本启动时间等;
+    config get: 获取服务器配置信息
+    flushdb : 删除当前选择数据库中的所有key
+    flushall : 删除所有库中的所有key
+]
+</code></pre><p>主从复制基本配置:</p>
+<pre><code>Redis主从复制中一个主服务可以有多个服务, 一个从服务可以有多个从服务;
+对应配置,只需要修改redis.conf中的slaveof参数
+#slaveof &lt;masterip&gt; &lt;masterport&gt;
+slaveof 127.0.0.1 6379
+</code></pre><p>启动master</p>
+<pre><code>#redis-server /usr/local/redis/conf/redis_6379.conf
+#redis-cli
+启动slave(假设端口3689)
+#redis-server /usr/local/redis/conf/slave.conf
+#redis-cli -p 6389
+</code></pre><p>如果master服务设置有密码,则需要配置masterauth参数</p>
+<pre><code>masterauth &lt;master-password&gt;
+</code></pre><p>查看redis连接数</p>
+<pre><code>redis-cli info | grep connected
+</code></pre><p>如果客户端的idle空闲时间太长,连接池维持了太多的连接,则需要把不用的连接及时释放掉;</p>
+<pre><code>redis 127.0.0.1:6379&gt; client list
+redis 127.0.0.1:6379&gt; CONFIG SET timeout 30
+</code></pre><p>Cluster集群配置</p>
+<pre><code>cluster-enabled yes 开启
+</code></pre><p>每一个集群节点有一个集群配置文件;它不是手工创建的,是redis节点创建和更新的;</p>
+<h3 id="确保同一系统上运行的redis集群节点的配置文件名不重叠"><a href="#确保同一系统上运行的redis集群节点的配置文件名不重叠" class="headerlink" title="确保同一系统上运行的redis集群节点的配置文件名不重叠"></a>确保同一系统上运行的redis集群节点的配置文件名不重叠</h3><ol>
+<li><p>redis会周期性的把更新的数据写入磁盘或者把修改操作写入追加的记录文件,</p>
+<p> 并且在此基础上实现了master-slave(主从)同步</p>
+</li>
+<li><p>pipeline 压缩请求数量</p>
+<p> pipeline机制将多个命令汇聚到一个请求中,可以有效减少请求数量,减少网络延时。</p>
+</li>
+<li><p>script 压缩复杂请求</p>
+<p> script核心思想是在redis命令里嵌入Lua脚本,来实现一些复杂操作。</p>
+</li>
+<li><p>cluster</p>
+<p> Redis 集群不像单机版本的 Redis 那样支持多个数据库，集群只有数据库 0，而且也不支持 SELECT 命令。</p>
+</li>
+</ol>
+<p>学习Redis命令请参考</p>
+<p><a href="http://www.redis.cn/" target="_blank" rel="noopener">http://www.redis.cn/</a><br><a href="http://www.cnblogs.com/woshimrf/p/5198361.html" target="_blank" rel="noopener">http://www.cnblogs.com/woshimrf/p/5198361.html</a></p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="http://pd1l3bbt7.bkt.clouddn.com/img/wechatimg.jpg" alt="曹理鹏@iCocos 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="http://pd1l3bbt7.bkt.clouddn.com/img/alipayimg.jpg" alt="曹理鹏@iCocos 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>曹理鹏@iCocos</li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://icocos.github.io/2018/11/12/服务器配置——Redis安装，配置，简单使用/" title="服务器配置——Redis安装，配置，简单使用">https://icocos.github.io/2018/11/12/服务器配置——Redis安装，配置，简单使用/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明出处！</li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/PHP/" rel="tag"># PHP</a>
+          
+            <a href="/tags/Redis/" rel="tag"># Redis</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/11/12/服务器配置——Php安装与配置/" rel="next" title="服务器配置——Php安装与配置">
+                <i class="fa fa-chevron-left"></i> 服务器配置——Php安装与配置
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/11/15/服务器配置——实战验证与补充/" rel="prev" title="服务器配置——实战验证与补充">
+                服务器配置——实战验证与补充 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="SOHUCS"></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="http://pd1l3bbt7.bkt.clouddn.com/icocos_user_icon.JPG"
+                alt="曹理鹏@iCocos" />
+            
+              <p class="site-author-name" itemprop="name">曹理鹏@iCocos</p>
+              <p class="site-description motion-element" itemprop="description">纯码迷、爱学习、爱交友、喜欢接触新鲜事物、迎接新的挑战，更爱游离于错综复杂的编码与逻辑中！</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives">
+                
+                    <span class="site-state-item-count">117</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">17</span>
+                    <span class="site-state-item-name">分类</span>
+                  
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">190</span>
+                    <span class="site-state-item-name">标签</span>
+                  
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/al1020119" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:al1020119@163.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://stackoverflow.com/users/10186720" target="_blank" title="StackOverflow"><i class="fa fa-fw fa-stack-overflow"></i>StackOverflow</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.icocos.cn/" title="梦工厂" target="_blank">梦工厂</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://al1020119.github.io/" title="iOS梦工厂" target="_blank">iOS梦工厂</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis"><span class="nav-number">1.</span> <span class="nav-text">Redis</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装"><span class="nav-number">2.</span> <span class="nav-text">安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二配置"><span class="nav-number">3.</span> <span class="nav-text">二配置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1、在-Users-local-redis目录下建立bin，etc，db三个目录"><span class="nav-number">3.1.</span> <span class="nav-text">1、在 /Users/local/redis目录下建立bin，etc，db三个目录</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2、把-Users-local-redis-src目录下的mkreleasehdr-sh，redis-benchmark，-redis-cli，-redis-server拷贝到bin目录"><span class="nav-number">3.2.</span> <span class="nav-text">2、把/Users/local/redis/src目录下的mkreleasehdr.sh，redis-benchmark， redis-cli， redis-server拷贝到bin目录</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3、在etc下，参考原-Users-local-redis目录下的redis-conf，新建一个redis-conf"><span class="nav-number">3.3.</span> <span class="nav-text">3、在etc下，参考原/Users/local/redis目录下的redis.conf，新建一个redis.conf</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4、保存后，启动redis：-bin-redis-server-etc-redis-conf"><span class="nav-number">3.4.</span> <span class="nav-text">4、保存后，启动redis：./bin/redis-server etc/redis.conf</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5、查看日志文件：tail-f-log-redis-log"><span class="nav-number">3.5.</span> <span class="nav-text">5、查看日志文件：tail -f log-redis.log</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#三使用"><span class="nav-number">4.</span> <span class="nav-text">三使用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1、检查是否启动：redis-cli-ping"><span class="nav-number">4.1.</span> <span class="nav-text">1、检查是否启动：redis-cli ping</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2、redis-cli"><span class="nav-number">4.2.</span> <span class="nav-text">2、redis-cli</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3、ping"><span class="nav-number">4.3.</span> <span class="nav-text">3、ping</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4、redis-cli-跟上命令会将参数发送到本地redis-6379-的端口，下面来看看基本操作："><span class="nav-number">4.4.</span> <span class="nav-text">4、redis-cli 跟上命令会将参数发送到本地redis 6379 的端口，下面来看看基本操作：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5、关闭命令：redis-cli-shutdown"><span class="nav-number">4.5.</span> <span class="nav-text">5、关闭命令：redis-cli shutdown</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#四-服务器配置"><span class="nav-number">5.</span> <span class="nav-text">四.服务器配置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-首先把redis-cli-移动到-Users-local-bin-目录，方便执行，和JAVA-HOME-类似"><span class="nav-number">5.1.</span> <span class="nav-text">1.首先把redis-cli 移动到/Users/local/bin 目录，方便执行，和JAVA_HOME 类似</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-创建你存放配置文件和数据文件的目录"><span class="nav-number">5.2.</span> <span class="nav-text">2.创建你存放配置文件和数据文件的目录</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-复制初始化脚本到-etc-init-d-目录-建议默认只有这个端口-作开机启动"><span class="nav-number">5.3.</span> <span class="nav-text">3.复制初始化脚本到/etc/init.d 目录,建议默认只有这个端口,作开机启动</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-进入脚本-确保你的REDISPORT-是你正在使用的"><span class="nav-number">5.4.</span> <span class="nav-text">4.进入脚本,确保你的REDISPORT 是你正在使用的</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-复制redis-conf-和脚本保持一致"><span class="nav-number">5.5.</span> <span class="nav-text">5.复制redis.conf ,和脚本保持一致</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-创建一个存放工作数据的目录"><span class="nav-number">5.6.</span> <span class="nav-text">6.创建一个存放工作数据的目录</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-最后将脚本设置默认启动"><span class="nav-number">5.7.</span> <span class="nav-text">7.最后将脚本设置默认启动</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-现在可以执行脚本了"><span class="nav-number">5.8.</span> <span class="nav-text">8.现在可以执行脚本了</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#五-MAC-版本差异"><span class="nav-number">6.</span> <span class="nav-text">五.MAC 版本差异</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#六-brew-进行安装"><span class="nav-number">7.</span> <span class="nav-text">六.brew 进行安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#网上还找到一种方式，貌似可以成功"><span class="nav-number">8.</span> <span class="nav-text">网上还找到一种方式，貌似可以成功</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#期间我在执行install的时候出现这样的问题"><span class="nav-number">8.1.</span> <span class="nav-text">期间我在执行install的时候出现这样的问题</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#平时使用"><span class="nav-number">9.</span> <span class="nav-text">平时使用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#PHP中使用的话"><span class="nav-number">9.1.</span> <span class="nav-text">PHP中使用的话</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis基本命令"><span class="nav-number">10.</span> <span class="nav-text">Redis基本命令</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#确保同一系统上运行的redis集群节点的配置文件名不重叠"><span class="nav-number">10.1.</span> <span class="nav-text">确保同一系统上运行的redis集群节点的配置文件名不重叠</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2017 – <span itemprop="copyrightYear">2018</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">曹理鹏@iCocos</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">站点总字数：</span>
+    
+    <span title="站点总字数">608k</span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    
+    <span title="站点阅读时长">9:13</span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv" title="总访客量">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="site-pv" title="总访问量">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/reading_progress/reading_progress.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.3.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.3.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.3.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.3.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+  
+    <script type="text/javascript">
+    (function(){
+      var appid = 'cytKHBEtW';
+      var conf = '43989b8e63b25c4e9f1fde821c996a39';
+      var width = window.innerWidth || document.documentElement.clientWidth;
+      if (width < 960) {
+      window.document.write('<script id="changyan_mobile_js" charset="utf-8" type="text/javascript" src="https://changyan.sohu.com/upload/mobile/wap-js/changyan_mobile.js?client_id=' + appid + '&conf=' + conf + '"><\/script>'); } else { var loadJs=function(d,a){var c=document.getElementsByTagName("head")[0]||document.head||document.documentElement;var b=document.createElement("script");b.setAttribute("type","text/javascript");b.setAttribute("charset","UTF-8");b.setAttribute("src",d);if(typeof a==="function"){if(window.attachEvent){b.onreadystatechange=function(){var e=b.readyState;if(e==="loaded"||e==="complete"){b.onreadystatechange=null;a()}}}else{b.onload=a}}c.appendChild(b)};loadJs("https://changyan.sohu.com/upload/changyan.js",function(){
+        window.changyan.api.config({appid:appid,conf:conf})});
+      }
+    })();
+    </script>
+    <script type="text/javascript" src="https://assets.changyan.sohu.com/upload/plugins/plugins.count.js"></script>
+  
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("Tc7k1mbaieCUSgmM8LPk1IBO-gzGzoHsz", "sAb7L2vwENJTteRrvFKQacUU");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            
+              var $element = $(document.getElementById(url));
+              $element.find('.leancloud-visitors-count').text(counter.get('time'));
+            
+            counter.save(null, {
+              success: function(counter) {
+                
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            
+              var $element = $(document.getElementById(url));
+              $element.find('.leancloud-visitors-count').text('Counter not initialized! See more at console err msg.');
+              console.error('ATTENTION! LeanCloud counter has security bug, see here how to solve it: https://github.com/theme-next/hexo-leancloud-counter-security. \n But you also can use LeanCloud without security, by set \'security\' option to \'false\'.');
+            
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #333;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #eee;
+      background-image: linear-gradient(#fcfcfc, #eee);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('复制').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+          if(result)$(this).text('复制成功')
+          else $(this).text('复制失败')
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('复制')
+        }, 300)
+      }).append(e)
+    })
+  </script>
+
+
+  
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("Tc7k1mbaieCUSgmM8LPk1IBO-gzGzoHsz", "sAb7L2vwENJTteRrvFKQacUU");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+  
+</body>
+</html>

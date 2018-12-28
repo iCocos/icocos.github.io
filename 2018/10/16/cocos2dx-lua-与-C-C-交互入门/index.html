@@ -113,14 +113,14 @@
 
 
   <meta name="description" content="目录 中间栈 1.中间件栈 C/C++访问Lua数据和函数 Lua访问C/C++数据和函数     集成Lua 集成Lua环境到C_Cpp项目中   C/C++ 调用Lua C/C++调用Lua之标准Lua读取类 C/C++调用Lua中的变量 C/C++调用Lua中的函数 C/C++调用Lua之遍历和获取Table的值   Lua 调用 C/C++ 1.Lua调用C/C++函数 深入理解编写C函数">
-<meta name="keywords" content="曹理鹏, iCocos, 梦工厂, iOS, IT, 技术, 程序猿, 码农">
+<meta name="keywords" content="cocos2dx,游戏,cocos2dx lua 与 C&#x2F;C++ 交互入门">
 <meta property="og:type" content="article">
 <meta property="og:title" content="cocos2dx lua 与 C&#x2F;C++ 交互入门">
 <meta property="og:url" content="https://icocos.github.io/2018/10/16/cocos2dx-lua-与-C-C-交互入门/index.html">
 <meta property="og:site_name" content="iCocos">
 <meta property="og:description" content="目录 中间栈 1.中间件栈 C/C++访问Lua数据和函数 Lua访问C/C++数据和函数     集成Lua 集成Lua环境到C_Cpp项目中   C/C++ 调用Lua C/C++调用Lua之标准Lua读取类 C/C++调用Lua中的变量 C/C++调用Lua中的函数 C/C++调用Lua之遍历和获取Table的值   Lua 调用 C/C++ 1.Lua调用C/C++函数 深入理解编写C函数">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2018-10-19T05:47:57.008Z">
+<meta property="og:updated_time" content="2018-10-31T09:33:45.121Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="cocos2dx lua 与 C&#x2F;C++ 交互入门">
 <meta name="twitter:description" content="目录 中间栈 1.中间件栈 C/C++访问Lua数据和函数 Lua访问C/C++数据和函数     集成Lua 集成Lua环境到C_Cpp项目中   C/C++ 调用Lua C/C++调用Lua之标准Lua读取类 C/C++调用Lua中的变量 C/C++调用Lua中的函数 C/C++调用Lua之遍历和获取Table的值   Lua 调用 C/C++ 1.Lua调用C/C++函数 深入理解编写C函数">
@@ -397,6 +397,24 @@
           </span>
 
           
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/cocos2dx/" itemprop="url" rel="index"><span itemprop="name">cocos2dx</span></a></span>
+
+                
+                
+              
+            </span>
+          
 
           
             
@@ -462,7 +480,7 @@
                 
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
-                <span title="阅读时长">14 分钟</span>
+                <span title="阅读时长">15 分钟</span>
               
             </div>
           
@@ -518,11 +536,27 @@
 <p>lua(<a href="https://www.lua.org/)作为一种轻量级的脚本语言" target="_blank" rel="noopener">https://www.lua.org/)作为一种轻量级的脚本语言</a>, 以其简单的语法结构, 方便的c++集成能力, 高效的执行效率收到广大游戏开发者的热爱, 也是cocos2d-x官方首次引入的脚本语言.</p>
 </blockquote>
 <p>作为一种脚本语言, lua是在一个运行时环境(State)里执行的, 这个运行时环境保存了脚本运行所需的内存空间, 创建的全局变量, 加载的库文件等. 在这个运行时环境里还有一个栈空间(Stack), 其作用就是在lua和c语言进行数据传递和函数调用. lua原生实现了很多c api对栈空间进行操作, 让开发者能够方便地实现lua脚本代码与c编译代码的双向通信.</p>
+<ul>
+<li>推荐：<a href="https://blog.csdn.net/banruoju/article/details/75115061" target="_blank" rel="noopener">Lua中的栈概念</a></li>
+</ul>
+<p>Lua的栈是一个线性数组，栈中的每一项元素的类型都是TValue，它是Lua表示内部数据的数据结构。栈的最大空间在luaconf.h中给出：#define LUAI_MAXSTACK 1000000。</p>
+<blockquote>
+<p>栈包括：基指针、栈顶指针、栈大小。图中的stack-&gt;top表示栈顶指针。其实在Lua中栈的很多空间都留作它用，如call info也使用一部分的栈。</p>
+</blockquote>
 <h4 id="1-中间件栈"><a href="#1-中间件栈" class="headerlink" title="1.中间件栈"></a>1.中间件栈</h4><blockquote>
 <p>背后其实是lua和c api的互相调用, 所有c++的功能都要通过一层c函数的包装, 这点是要牢记在心的, 这也正是lua-binding的核心.</p>
 </blockquote>
 <p>cocos2d-x提供的lua-bingding工具使用libclang分析c++源码, 提取语法树, 将c++的类成员函数封装为c函数, 然后根据参数类型自动调用lua c api, 实现对栈空间的操作, 将c++的数据传递给lua. lua脚本加载编译好的c++库, 就可以自由调用c++里面的类对象和成员函数了; c++的代码则可以直接使用lua c api, 执行一段lua脚本, 并通过栈空间获取返回结果.</p>
-<p>开始撸代码 ——————————- 华丽的分割线 ——————————-</p>
+<ul>
+<li>执行过程如下：<ul>
+<li>1）C程序读取Lua脚本</li>
+<li>2）lualib库解析脚本，并保存解析结果。</li>
+<li>3）通过Lua API，将解析结果中的某一个值放入栈中。</li>
+<li>4）C程序通过Lua提供的API到栈中取得数据。</li>
+</ul>
+</li>
+</ul>
+<h6 id="经过上面的过程C语言程序和Lua脚本就能相互传值了。"><a href="#经过上面的过程C语言程序和Lua脚本就能相互传值了。" class="headerlink" title="经过上面的过程C语言程序和Lua脚本就能相互传值了。"></a>经过上面的过程C语言程序和Lua脚本就能相互传值了。</h6><p>开始撸代码 ——————————- 华丽的分割线 ——————————-</p>
 <h5 id="创建一个Lua管理类，"><a href="#创建一个Lua管理类，" class="headerlink" title="创建一个Lua管理类，"></a>创建一个Lua管理类，</h5><p>用利用栈的原理，使用C++简单访问Lua</p>
 <h6 id="h文件"><a href="#h文件" class="headerlink" title=".h文件"></a>.h文件</h6><pre><code>#ifndef LuaInterface01_h
 #define LuaInterface01_h
@@ -1147,6 +1181,14 @@ print(my_lib.result2(&quot;I am showResult2&quot;))
 </code></pre><h2 id="待续"><a href="#待续" class="headerlink" title="待续"></a>待续</h2><ul>
 <li>后续的学习和开发，会相继介绍和分析一下totua，luajit，手动和自动绑定，第三个引入(支付，分析，分析，统计)，插件引入(sqlite，json,zlib)</li>
 </ul>
+<ul>
+<li>推荐<ul>
+<li><a href="https://blog.csdn.net/wu554513392/article/details/60594724" target="_blank" rel="noopener">https://blog.csdn.net/wu554513392/article/details/60594724</a></li>
+<li><a href="https://blog.csdn.net/wyl1987527/article/details/77340896" target="_blank" rel="noopener">https://blog.csdn.net/wyl1987527/article/details/77340896</a></li>
+<li><a href="https://www.cnblogs.com/zisou/p/cocos2dx-lua2.html" target="_blank" rel="noopener">https://www.cnblogs.com/zisou/p/cocos2dx-lua2.html</a></li>
+</ul>
+</li>
+</ul>
 
       
     </div>
@@ -1207,6 +1249,16 @@ print(my_lib.result2(&quot;I am showResult2&quot;))
     
 
     <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/cocos2dx/" rel="tag"># cocos2dx</a>
+          
+            <a href="/tags/游戏/" rel="tag"># 游戏</a>
+          
+            <a href="/tags/cocos2dx-lua-与-C-C-交互入门/" rel="tag"># cocos2dx lua 与 C/C++ 交互入门</a>
+          
+        </div>
       
 
       
@@ -1308,7 +1360,7 @@ print(my_lib.result2(&quot;I am showResult2&quot;))
                 
                   <a href="/archives">
                 
-                    <span class="site-state-item-count">90</span>
+                    <span class="site-state-item-count">117</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -1357,7 +1409,9 @@ print(my_lib.result2(&quot;I am showResult2&quot;))
                     
                       
                     
-                    <span class="site-state-item-count">18</span>
+                      
+                    
+                    <span class="site-state-item-count">17</span>
                     <span class="site-state-item-name">分类</span>
                   
                 </div>
@@ -1546,7 +1600,263 @@ print(my_lib.result2(&quot;I am showResult2&quot;))
                     
                       
                     
-                    <span class="site-state-item-count">88</span>
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">190</span>
                     <span class="site-state-item-name">标签</span>
                   
                 </div>
@@ -1626,7 +1936,7 @@ print(my_lib.result2(&quot;I am showResult2&quot;))
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-5"><a class="nav-link" href="#目录"><span class="nav-number">1.</span> <span class="nav-text">目录</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#中间栈"><span class="nav-number"></span> <span class="nav-text">中间栈</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-中间件栈"><span class="nav-number"></span> <span class="nav-text">1.中间件栈</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#创建一个Lua管理类，"><span class="nav-number">1.</span> <span class="nav-text">创建一个Lua管理类，</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#h文件"><span class="nav-number">1.1.</span> <span class="nav-text">.h文件</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#cpp文件"><span class="nav-number">1.2.</span> <span class="nav-text">.cpp文件</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#新建一个-lua的访问类文件，并且输入"><span class="nav-number">2.</span> <span class="nav-text">新建一个.lua的访问类文件，并且输入</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#控制答应结果："><span class="nav-number">3.</span> <span class="nav-text">控制答应结果：</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#C-C-访问Lua数据和函数"><span class="nav-number">3.1.</span> <span class="nav-text">C/C++访问Lua数据和函数</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#创建一个Lua管理类，-1"><span class="nav-number">4.</span> <span class="nav-text">创建一个Lua管理类，</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#h文件-1"><span class="nav-number">4.1.</span> <span class="nav-text">.h文件</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#cpp文件-1"><span class="nav-number">4.2.</span> <span class="nav-text">.cpp文件</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#新建一个-lua的访问类文件，并且输入-1"><span class="nav-number">5.</span> <span class="nav-text">新建一个.lua的访问类文件，并且输入</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#控制答应结果：-1"><span class="nav-number">6.</span> <span class="nav-text">控制答应结果：</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#Lua访问C-C-数据和函数"><span class="nav-number">6.1.</span> <span class="nav-text">Lua访问C/C++数据和函数</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#LuaInterface02-h中增加函数"><span class="nav-number">7.</span> <span class="nav-text">LuaInterface02.h中增加函数</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#然后在init-中输入执行方法"><span class="nav-number">8.</span> <span class="nav-text">然后在init()中输入执行方法</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#然后在-lua的访问类文件，并且输入"><span class="nav-number">9.</span> <span class="nav-text">然后在.lua的访问类文件，并且输入</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#控制答应结果：-2"><span class="nav-number">10.</span> <span class="nav-text">控制答应结果：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#总结"><span class="nav-number">11.</span> <span class="nav-text">总结</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#集成Lua"><span class="nav-number"></span> <span class="nav-text">集成Lua</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#集成Lua环境到C-C-项目中"><span class="nav-number"></span> <span class="nav-text">集成Lua环境到C/C++项目中</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#在lua中文件类型有三种"><span class="nav-number">1.</span> <span class="nav-text">在lua中文件类型有三种</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#开始接入"><span class="nav-number">2.</span> <span class="nav-text">开始接入</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#最后"><span class="nav-number">3.</span> <span class="nav-text">最后</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#验证"><span class="nav-number">4.</span> <span class="nav-text">验证</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#C-C-调用Lua"><span class="nav-number"></span> <span class="nav-text">C/C++ 调用Lua</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#C-C-调用Lua之标准Lua读取类"><span class="nav-number"></span> <span class="nav-text">C/C++调用Lua之标准Lua读取类</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#创建一个Lua管理类，-2"><span class="nav-number">1.</span> <span class="nav-text">创建一个Lua管理类，</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#h文件-2"><span class="nav-number">1.1.</span> <span class="nav-text">.h文件</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#cpp文件-2"><span class="nav-number">1.2.</span> <span class="nav-text">.cpp文件</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#新建一个-lua的访问类文件，并且输入-2"><span class="nav-number">2.</span> <span class="nav-text">新建一个.lua的访问类文件，并且输入</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#控制答应结果：-3"><span class="nav-number">3.</span> <span class="nav-text">控制答应结果：</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#C-C-调用Lua中的变量"><span class="nav-number"></span> <span class="nav-text">C/C++调用Lua中的变量</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#增加方法和对应的实现，用来获取变量"><span class="nav-number">1.</span> <span class="nav-text">增加方法和对应的实现，用来获取变量</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Lua中增加变量"><span class="nav-number">2.</span> <span class="nav-text">Lua中增加变量</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#控制答应结果：-4"><span class="nav-number">3.</span> <span class="nav-text">控制答应结果：</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#C-C-调用Lua中的函数"><span class="nav-number"></span> <span class="nav-text">C/C++调用Lua中的函数</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#增加方法和对应的实现，用来获取变量-1"><span class="nav-number">1.</span> <span class="nav-text">增加方法和对应的实现，用来获取变量</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Lua中增加变量-1"><span class="nav-number">2.</span> <span class="nav-text">Lua中增加变量</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#控制答应结果：-5"><span class="nav-number">3.</span> <span class="nav-text">控制答应结果：</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#C-C-调用Lua之遍历和获取Table的值"><span class="nav-number"></span> <span class="nav-text">C/C++调用Lua之遍历和获取Table的值</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#增加方法"><span class="nav-number">1.</span> <span class="nav-text">增加方法</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#初始化方法-void-LuaInterface03-init-中增加如下代码"><span class="nav-number">2.</span> <span class="nav-text">初始化方法(void LuaInterface03::init())中增加如下代码</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Lua中增加Table"><span class="nav-number">3.</span> <span class="nav-text">Lua中增加Table</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Lua-调用-C-C"><span class="nav-number"></span> <span class="nav-text">Lua 调用 C/C++</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-Lua调用C-C-函数"><span class="nav-number"></span> <span class="nav-text">1.Lua调用C/C++函数</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#创建一个Lua管理类，-3"><span class="nav-number">1.</span> <span class="nav-text">创建一个Lua管理类，</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#h文件-3"><span class="nav-number">1.1.</span> <span class="nav-text">.h文件</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#cpp文件-3"><span class="nav-number">1.2.</span> <span class="nav-text">.cpp文件</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#新建一个-lua的访问类文件，并且输入-3"><span class="nav-number">2.</span> <span class="nav-text">新建一个.lua的访问类文件，并且输入</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#控制答应结果：-6"><span class="nav-number">3.</span> <span class="nav-text">控制答应结果：</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#深入理解编写C函数上"><span class="nav-number">3.1.</span> <span class="nav-text">深入理解编写C函数上</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#增加register-my-function方法"><span class="nav-number">4.</span> <span class="nav-text">增加register_my_function方法</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#h"><span class="nav-number">4.1.</span> <span class="nav-text">.h</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#cpp"><span class="nav-number">4.2.</span> <span class="nav-text">.cpp</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#在init中输入如下替换原始的调用方法"><span class="nav-number">5.</span> <span class="nav-text">在init中输入如下替换原始的调用方法</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#新建一个-lua的访问类文件，并且输入-4"><span class="nav-number">6.</span> <span class="nav-text">新建一个.lua的访问类文件，并且输入</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#深入理解编写C函数下"><span class="nav-number">6.1.</span> <span class="nav-text">深入理解编写C函数下</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#增加register-my-function方法-1"><span class="nav-number">7.</span> <span class="nav-text">增加register_my_function方法</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#h-1"><span class="nav-number">7.1.</span> <span class="nav-text">.h</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#cpp-1"><span class="nav-number">7.2.</span> <span class="nav-text">.cpp</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#在init中输入如下替换原始的调用方法-1"><span class="nav-number">8.</span> <span class="nav-text">在init中输入如下替换原始的调用方法</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#新建一个-lua的访问类文件，并且输入-5"><span class="nav-number">9.</span> <span class="nav-text">新建一个.lua的访问类文件，并且输入</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-Lua调用C-C-之标准C模块"><span class="nav-number"></span> <span class="nav-text">2.Lua调用C/C++之标准C模块</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#在lua中init-c"><span class="nav-number">1.</span> <span class="nav-text">在lua中init.c</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#在static-const-luaL-Reg-loadedlibs-里面增加"><span class="nav-number">2.</span> <span class="nav-text">在static const luaL_Reg loadedlibs[] 里面增加</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#在lua中引入并调用方法"><span class="nav-number">3.</span> <span class="nav-text">在lua中引入并调用方法</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#待续"><span class="nav-number"></span> <span class="nav-text">待续</span></a></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-5"><a class="nav-link" href="#目录"><span class="nav-number">1.</span> <span class="nav-text">目录</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#中间栈"><span class="nav-number"></span> <span class="nav-text">中间栈</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-中间件栈"><span class="nav-number"></span> <span class="nav-text">1.中间件栈</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#经过上面的过程C语言程序和Lua脚本就能相互传值了。"><span class="nav-number">0.1.</span> <span class="nav-text">经过上面的过程C语言程序和Lua脚本就能相互传值了。</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#创建一个Lua管理类，"><span class="nav-number">1.</span> <span class="nav-text">创建一个Lua管理类，</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#h文件"><span class="nav-number">1.1.</span> <span class="nav-text">.h文件</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#cpp文件"><span class="nav-number">1.2.</span> <span class="nav-text">.cpp文件</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#新建一个-lua的访问类文件，并且输入"><span class="nav-number">2.</span> <span class="nav-text">新建一个.lua的访问类文件，并且输入</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#控制答应结果："><span class="nav-number">3.</span> <span class="nav-text">控制答应结果：</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#C-C-访问Lua数据和函数"><span class="nav-number">3.1.</span> <span class="nav-text">C/C++访问Lua数据和函数</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#创建一个Lua管理类，-1"><span class="nav-number">4.</span> <span class="nav-text">创建一个Lua管理类，</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#h文件-1"><span class="nav-number">4.1.</span> <span class="nav-text">.h文件</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#cpp文件-1"><span class="nav-number">4.2.</span> <span class="nav-text">.cpp文件</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#新建一个-lua的访问类文件，并且输入-1"><span class="nav-number">5.</span> <span class="nav-text">新建一个.lua的访问类文件，并且输入</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#控制答应结果：-1"><span class="nav-number">6.</span> <span class="nav-text">控制答应结果：</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#Lua访问C-C-数据和函数"><span class="nav-number">6.1.</span> <span class="nav-text">Lua访问C/C++数据和函数</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#LuaInterface02-h中增加函数"><span class="nav-number">7.</span> <span class="nav-text">LuaInterface02.h中增加函数</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#然后在init-中输入执行方法"><span class="nav-number">8.</span> <span class="nav-text">然后在init()中输入执行方法</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#然后在-lua的访问类文件，并且输入"><span class="nav-number">9.</span> <span class="nav-text">然后在.lua的访问类文件，并且输入</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#控制答应结果：-2"><span class="nav-number">10.</span> <span class="nav-text">控制答应结果：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#总结"><span class="nav-number">11.</span> <span class="nav-text">总结</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#集成Lua"><span class="nav-number"></span> <span class="nav-text">集成Lua</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#集成Lua环境到C-C-项目中"><span class="nav-number"></span> <span class="nav-text">集成Lua环境到C/C++项目中</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#在lua中文件类型有三种"><span class="nav-number">1.</span> <span class="nav-text">在lua中文件类型有三种</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#开始接入"><span class="nav-number">2.</span> <span class="nav-text">开始接入</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#最后"><span class="nav-number">3.</span> <span class="nav-text">最后</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#验证"><span class="nav-number">4.</span> <span class="nav-text">验证</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#C-C-调用Lua"><span class="nav-number"></span> <span class="nav-text">C/C++ 调用Lua</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#C-C-调用Lua之标准Lua读取类"><span class="nav-number"></span> <span class="nav-text">C/C++调用Lua之标准Lua读取类</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#创建一个Lua管理类，-2"><span class="nav-number">1.</span> <span class="nav-text">创建一个Lua管理类，</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#h文件-2"><span class="nav-number">1.1.</span> <span class="nav-text">.h文件</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#cpp文件-2"><span class="nav-number">1.2.</span> <span class="nav-text">.cpp文件</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#新建一个-lua的访问类文件，并且输入-2"><span class="nav-number">2.</span> <span class="nav-text">新建一个.lua的访问类文件，并且输入</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#控制答应结果：-3"><span class="nav-number">3.</span> <span class="nav-text">控制答应结果：</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#C-C-调用Lua中的变量"><span class="nav-number"></span> <span class="nav-text">C/C++调用Lua中的变量</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#增加方法和对应的实现，用来获取变量"><span class="nav-number">1.</span> <span class="nav-text">增加方法和对应的实现，用来获取变量</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Lua中增加变量"><span class="nav-number">2.</span> <span class="nav-text">Lua中增加变量</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#控制答应结果：-4"><span class="nav-number">3.</span> <span class="nav-text">控制答应结果：</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#C-C-调用Lua中的函数"><span class="nav-number"></span> <span class="nav-text">C/C++调用Lua中的函数</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#增加方法和对应的实现，用来获取变量-1"><span class="nav-number">1.</span> <span class="nav-text">增加方法和对应的实现，用来获取变量</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Lua中增加变量-1"><span class="nav-number">2.</span> <span class="nav-text">Lua中增加变量</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#控制答应结果：-5"><span class="nav-number">3.</span> <span class="nav-text">控制答应结果：</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#C-C-调用Lua之遍历和获取Table的值"><span class="nav-number"></span> <span class="nav-text">C/C++调用Lua之遍历和获取Table的值</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#增加方法"><span class="nav-number">1.</span> <span class="nav-text">增加方法</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#初始化方法-void-LuaInterface03-init-中增加如下代码"><span class="nav-number">2.</span> <span class="nav-text">初始化方法(void LuaInterface03::init())中增加如下代码</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Lua中增加Table"><span class="nav-number">3.</span> <span class="nav-text">Lua中增加Table</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Lua-调用-C-C"><span class="nav-number"></span> <span class="nav-text">Lua 调用 C/C++</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-Lua调用C-C-函数"><span class="nav-number"></span> <span class="nav-text">1.Lua调用C/C++函数</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#创建一个Lua管理类，-3"><span class="nav-number">1.</span> <span class="nav-text">创建一个Lua管理类，</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#h文件-3"><span class="nav-number">1.1.</span> <span class="nav-text">.h文件</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#cpp文件-3"><span class="nav-number">1.2.</span> <span class="nav-text">.cpp文件</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#新建一个-lua的访问类文件，并且输入-3"><span class="nav-number">2.</span> <span class="nav-text">新建一个.lua的访问类文件，并且输入</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#控制答应结果：-6"><span class="nav-number">3.</span> <span class="nav-text">控制答应结果：</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#深入理解编写C函数上"><span class="nav-number">3.1.</span> <span class="nav-text">深入理解编写C函数上</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#增加register-my-function方法"><span class="nav-number">4.</span> <span class="nav-text">增加register_my_function方法</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#h"><span class="nav-number">4.1.</span> <span class="nav-text">.h</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#cpp"><span class="nav-number">4.2.</span> <span class="nav-text">.cpp</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#在init中输入如下替换原始的调用方法"><span class="nav-number">5.</span> <span class="nav-text">在init中输入如下替换原始的调用方法</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#新建一个-lua的访问类文件，并且输入-4"><span class="nav-number">6.</span> <span class="nav-text">新建一个.lua的访问类文件，并且输入</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#深入理解编写C函数下"><span class="nav-number">6.1.</span> <span class="nav-text">深入理解编写C函数下</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#增加register-my-function方法-1"><span class="nav-number">7.</span> <span class="nav-text">增加register_my_function方法</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#h-1"><span class="nav-number">7.1.</span> <span class="nav-text">.h</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#cpp-1"><span class="nav-number">7.2.</span> <span class="nav-text">.cpp</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#在init中输入如下替换原始的调用方法-1"><span class="nav-number">8.</span> <span class="nav-text">在init中输入如下替换原始的调用方法</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#新建一个-lua的访问类文件，并且输入-5"><span class="nav-number">9.</span> <span class="nav-text">新建一个.lua的访问类文件，并且输入</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-Lua调用C-C-之标准C模块"><span class="nav-number"></span> <span class="nav-text">2.Lua调用C/C++之标准C模块</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#在lua中init-c"><span class="nav-number">1.</span> <span class="nav-text">在lua中init.c</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#在static-const-luaL-Reg-loadedlibs-里面增加"><span class="nav-number">2.</span> <span class="nav-text">在static const luaL_Reg loadedlibs[] 里面增加</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#在lua中引入并调用方法"><span class="nav-number">3.</span> <span class="nav-text">在lua中引入并调用方法</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#待续"><span class="nav-number"></span> <span class="nav-text">待续</span></a></div>
             
 
           </div>
@@ -1660,7 +1970,7 @@ print(my_lib.result2(&quot;I am showResult2&quot;))
     
       <span class="post-meta-item-text">站点总字数：</span>
     
-    <span title="站点总字数">455k</span>
+    <span title="站点总字数">608k</span>
   
 
   
@@ -1671,7 +1981,7 @@ print(my_lib.result2(&quot;I am showResult2&quot;))
     
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
     
-    <span title="站点阅读时长">6:54</span>
+    <span title="站点阅读时长">9:13</span>
   
 </div>
 
