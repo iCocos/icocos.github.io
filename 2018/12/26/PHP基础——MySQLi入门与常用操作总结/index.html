@@ -1,0 +1,3065 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.3.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="http://pd1l3bbt7.bkt.clouddn.com/img/favicon.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="http://pd1l3bbt7.bkt.clouddn.com/img/favicon.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="http://pd1l3bbt7.bkt.clouddn.com/img/favicon.png?v=6.3.0">
+
+
+  <link rel="mask-icon" href="http://pd1l3bbt7.bkt.clouddn.com/img/favicon.png?v=6.3.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="目录 1.数据库 2.SQL语言 3.MySQLi扩展简介 为什么使用MySQLi扩展 MySQLi的安装及配置">
+<meta name="keywords" content="曹理鹏, iCocos, 梦工厂, iOS, IT, 技术, 程序猿, 码农">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PHP基础——MySQLi入门与常用操作总结">
+<meta property="og:url" content="https://icocos.github.io/2018/12/26/PHP基础——MySQLi入门与常用操作总结/index.html">
+<meta property="og:site_name" content="iCocos">
+<meta property="og:description" content="目录 1.数据库 2.SQL语言 3.MySQLi扩展简介 为什么使用MySQLi扩展 MySQLi的安装及配置">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-01-05T07:12:45.319Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="PHP基础——MySQLi入门与常用操作总结">
+<meta name="twitter:description" content="目录 1.数据库 2.SQL语言 3.MySQLi扩展简介 为什么使用MySQLi扩展 MySQLi的安装及配置">
+
+
+
+  <link rel="alternate" href="/atom.xml" title="iCocos" type="application/atom+xml" />
+
+
+
+
+  <link rel="canonical" href="https://icocos.github.io/2018/12/26/PHP基础——MySQLi入门与常用操作总结/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>PHP基础——MySQLi入门与常用操作总结 | iCocos</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">iCocos</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">www.icocos.cn</p>
+      
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-首页">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-归档">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-关于">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-作品">
+    <a href="/works/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-calendar"></i> <br />作品</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-简历">
+    <a href="/resume/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-sitemap"></i> <br />简历</a>
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+    <div class="reading-progress-bar"></div>
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://icocos.github.io/2018/12/26/PHP基础——MySQLi入门与常用操作总结/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="曹理鹏@iCocos">
+      <meta itemprop="description" content="纯码迷、爱学习、爱交友、喜欢接触新鲜事物、迎接新的挑战，更爱游离于错综复杂的编码与逻辑中！">
+      <meta itemprop="image" content="http://pd1l3bbt7.bkt.clouddn.com/icocos_user_icon.JPG">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="iCocos">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">PHP基础——MySQLi入门与常用操作总结
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-12-26 23:06:14" itemprop="dateCreated datePublished" datetime="2018-12-26T23:06:14+08:00">2018-12-26</time>
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+              <span class="post-meta-divider">|</span>
+              <span class="post-meta-item-icon">
+                <i class="fa fa-comment-o"></i>
+              </span>
+              
+                <a href="/2018/12/26/PHP基础——MySQLi入门与常用操作总结/#SOHUCS" itemprop="discussionUrl">
+                  <span class="post-meta-item-text">评论数：</span> <span id="changyan_count_unit" class="post-comments-count hc-comment-count" data-xid="2018/12/26/PHP基础——MySQLi入门与常用操作总结/" itemprop="commentsCount"></span>
+                </a>
+              
+            
+          
+
+          
+          
+             <span id="/2018/12/26/PHP基础——MySQLi入门与常用操作总结/" class="leancloud_visitors" data-flag-title="PHP基础——MySQLi入门与常用操作总结">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数：</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon"
+            >
+            <i class="fa fa-eye"></i>
+             阅读次数： 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+            <div class="post-symbolscount">
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">本文字数：</span>
+                
+                <span title="本文字数">24k</span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">22 分钟</span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h4 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h4><ul>
+<li>1.数据库</li>
+<li>2.SQL语言</li>
+<li>3.MySQLi扩展简介<ul>
+<li>为什么使用MySQLi扩展</li>
+<li>MySQLi的安装及配置</li>
+</ul>
+</li>
+</ul>
+<a id="more"></a>
+<ul>
+<li>4.MySQLi操作数据库步骤<ul>
+<li>1.连接MySQL</li>
+<li>2.设置字符集</li>
+<li>3.打开指定数据库</li>
+<li>4.执行SQL查询<ul>
+<li>增</li>
+<li>删</li>
+<li>改</li>
+<li>查</li>
+</ul>
+</li>
+<li>5.释放结果集</li>
+<li>6.关闭连接</li>
+</ul>
+</li>
+<li>5.MySQLi常用函数<ul>
+<li>连接相关</li>
+<li>数据操作</li>
+<li>预处理操作</li>
+<li>结果集相关</li>
+<li>事务</li>
+</ul>
+</li>
+</ul>
+<h3 id="数据库"><a href="#数据库" class="headerlink" title="数据库"></a>数据库</h3><ul>
+<li><p>数据库是一某种有组织的方式存储数据或文件的集合，容器</p>
+</li>
+<li><p>表是一种结构化的文件(特定类型数据的结构化清单)，存储特定类型的数据</p>
+</li>
+</ul>
+<p>模式：描述了数据库和表的布局及特性信息，定义数据在表中如何存储，存储什么样的数据，数据如何分解，各部分信息如何命名</p>
+<pre><code>列：表中的一个字段 
+行：一条记录
+主健：一列或一组(多)列，其值能唯一区分表中的每一行。即表示特定的行。习惯：不重用，不更新，不修改
+</code></pre><ul>
+<li>任意两行都不具有相同的值</li>
+<li>每一个行都必须具有一个主健值，且不允许为空</li>
+</ul>
+<p>数据库的好处：将数据持久化到本地，可以实现结构化查询，方便管理</p>
+<ul>
+<li>DB：数据库</li>
+<li>DBMS：数据库管理系统/软件</li>
+<li>SQL：结构化查询语言，用户和DBMS通讯</li>
+</ul>
+<p>MySQL缺点: 并不总是支持其他DBMS提供的功能和特性</p>
+<ul>
+<li>存储特点：将数据存储到表中，再将表存储到库中，<ul>
+<li>一个数据库中多个表，有名字且唯一。</li>
+<li>表具有一些特性，定义数据在表中如何存储，类似‘类’。</li>
+<li>表由列(字段)组成，类似’属性’.</li>
+<li>表中数据按照行存储，类似‘对象’.</li>
+</ul>
+</li>
+</ul>
+<h5 id="DBMS分类"><a href="#DBMS分类" class="headerlink" title="DBMS分类"></a>DBMS分类</h5><ol>
+<li>基础共享文件系统</li>
+<li>基础客户机-服务器软件: 服务器负责所有数据的访问处理软件，客户机与用户打交道的软件。</li>
+</ol>
+<p>MySQL在4中引入InnoDB引擎，增加事务处理，改进全文搜索。4.1增加函数库，子查询，集成帮助。5增加存储过程，触发器，游标，视图。</p>
+<ul>
+<li>读写分离：路由和分发的DS(datasource)<ul>
+<li>一个server方法必须定位到一个唯一的数据库上</li>
+<li>在应用中需要自己去确定或者高速路由DS,访问的真实目标DS</li>
+<li>让路由知道有那些真实的DS和他们的名字对应</li>
+<li>让路由根据我传入的名字去返回真实的DataSource</li>
+</ul>
+</li>
+</ul>
+<p>依赖注入容器：就是一个对象，他知道怎么样初始化并配置对象及其依赖的所有对象</p>
+<h3 id="SQL语言"><a href="#SQL语言" class="headerlink" title="SQL语言"></a>SQL语言</h3><ul>
+<li>DQL：数据库查询语言<ul>
+<li>基础查询，条件查询，排序查询，常见函数，分组函数，分组查询，连接查询，子查询，分页查询，union查询</li>
+</ul>
+</li>
+<li>DML：数据操作语言<ul>
+<li>插入，修改，删除</li>
+</ul>
+</li>
+<li>DDL：数据定义语言<ul>
+<li>库和表管理，常见数据类型，常见约束</li>
+</ul>
+</li>
+<li>TCL：事务控制语言<ul>
+<li>事务和事务处理</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>不区分大小写：建议关键字大小，自定义名字小写！<br>分号结尾，索引与换行<br>注释 (#)或(– )或(/<em> </em>/)</p>
+</blockquote>
+<h5 id="相关操作"><a href="#相关操作" class="headerlink" title="相关操作"></a>相关操作</h5><ul>
+<li><p>显示所有数据库</p>
+<ul>
+<li>show databases;</li>
+</ul>
+</li>
+<li><p>使用(进入)指定数据库</p>
+<ul>
+<li>use mysql;</li>
+</ul>
+</li>
+<li><p>显示库中所有表</p>
+<ul>
+<li>show tables;</li>
+<li>show tables from phpstudy;</li>
+</ul>
+</li>
+<li><p>选择查询当前所在数据库</p>
+<ul>
+<li>select databases();</li>
+</ul>
+</li>
+<li><p>创建表：</p>
+<ul>
+<li>create table t_mysql (id int, name varchar(20));</li>
+</ul>
+</li>
+<li><p>删除表：</p>
+<ul>
+<li>drop table t_mysql;</li>
+</ul>
+</li>
+<li><p>查看表结构：</p>
+<ul>
+<li>desc t_mysql;</li>
+</ul>
+</li>
+<li><p>插入数据：</p>
+<ul>
+<li>insert into t_mysql (id, name) values (2,”Vivian”);</li>
+</ul>
+</li>
+<li><p>查询数据库所有字段：</p>
+<ul>
+<li>select * from t_mysql;</li>
+</ul>
+</li>
+<li><p>更新数据库：</p>
+<ul>
+<li>update t_mysql set name=”MySQL” where id=4;</li>
+</ul>
+</li>
+<li><p>删除表中数据</p>
+<ul>
+<li>delete from t_mysql where id=4 or name=”MySQL”;</li>
+<li>delete from t_mysql; // 删除所有</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>使用delete删除的数据可以找回<br>使用drop删除的数据找不回来</p>
+</blockquote>
+<ul>
+<li>查看版本：<ul>
+<li>mysql&gt; select version();</li>
+</ul>
+</li>
+</ul>
+<h3 id="MySQLi简介"><a href="#MySQLi简介" class="headerlink" title="MySQLi简介"></a>MySQLi简介</h3><p>PHP5.4之后mysql扩展废弃，不再更新，官方推荐使用mysqli，mysqli是mysql扩展的增强版，5.4默认支持</p>
+<p>#####mysqli功能</p>
+<ol>
+<li>操作数据库</li>
+<li>面向对象和面向过程</li>
+<li>支持预处理</li>
+<li>支持多语句</li>
+<li>支持事务</li>
+</ol>
+<h3 id="MySQLi配置"><a href="#MySQLi配置" class="headerlink" title="MySQLi配置"></a>MySQLi配置</h3><blockquote>
+<p>略过安装，因为默认支持，如果是集成环境，也是不用安装和配置的！</p>
+</blockquote>
+<ol>
+<li>配置php_mysqli.dll扩展，在php.ini中开启</li>
+<li>配置extension_dir=”ext所在目录”</li>
+<li>重启服务器</li>
+</ol>
+<h5 id="MySQL相关配置"><a href="#MySQL相关配置" class="headerlink" title="MySQL相关配置"></a>MySQL相关配置</h5><ul>
+<li>mysqli.max_persistent = -1<ul>
+<li>可以创建的持久化连接的最大数量，-1代表无限制</li>
+</ul>
+</li>
+<li>mysqli.allow_local_infile = On<ul>
+<li>允许Mysql的Load Data语句访问PHP角度看的本地文件。</li>
+</ul>
+</li>
+<li>mysqli.allow_persistent = On<ul>
+<li>开启使用mysqli_connect()函数创建持久化连接的能力</li>
+</ul>
+</li>
+<li>mysqli.max_links = -1<ul>
+<li>最大连接数，-1代表无限制</li>
+</ul>
+</li>
+<li>mysqli.default_port = 3306<ul>
+<li>默认端口号3306</li>
+</ul>
+</li>
+<li>mysqli.default_socket =<ul>
+<li>当连接到本地数据库服务器时如果没有指定其他socket名称，使用的默认socket名称</li>
+</ul>
+</li>
+<li>mysqli.default_host =<ul>
+<li>当连接到数据库服务器时， 如果没有指定其他主机地址，使用的默认服务器主机。不要在 安全模式下使用</li>
+</ul>
+</li>
+<li>mysqli.default_user =<ul>
+<li>当连接到数据库服务器时，如果没有指定其他用户名，使用的默认用户名。不要在 安全模式下使用。</li>
+</ul>
+</li>
+<li>mysqli.default_pw =<ul>
+<li>当连接到数据库服务器时，如果灭有指定其他密码，使用的默认密码。不要在 安全模式下使用。</li>
+</ul>
+</li>
+<li>mysqli.reconnect = Off<ul>
+<li>连接丢失时是否自动重新连接。</li>
+</ul>
+</li>
+</ul>
+<h3 id="MySQLi检测"><a href="#MySQLi检测" class="headerlink" title="MySQLi检测"></a>MySQLi检测</h3><ol>
+<li>phpinfo #php配置</li>
+<li>extension_loaded(‘mysqli’) #连接方法</li>
+<li>mysqli_connect() # 直接调用</li>
+<li>function_exists(‘mysqli_connect’) #是否存在方法</li>
+<li>get_defined_functions() #s获取定义的方法</li>
+</ol>
+<h3 id="MySQLi操作步骤"><a href="#MySQLi操作步骤" class="headerlink" title="MySQLi操作步骤"></a>MySQLi操作步骤</h3><h5 id="PHP打开错误提示和关闭错误提示的方法"><a href="#PHP打开错误提示和关闭错误提示的方法" class="headerlink" title="PHP打开错误提示和关闭错误提示的方法"></a>PHP打开错误提示和关闭错误提示的方法</h5><ol>
+<li>找到php的配置文件，也就是php.ini</li>
+</ol>
+<blockquote>
+<p>在文件中查找 ‘display_errors’   查找到 display_errors = Off 或者 display_errors = On， Off为关闭错误提示，On为打开错误提示，根据需求修改即可。</p>
+</blockquote>
+<ol start="2">
+<li>也可在php文件中加入以下代码</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">//禁用错误报告</span><br><span class="line">error_reporting(0);</span><br><span class="line">//报告运行时错误</span><br><span class="line">error_reporting(E_ERROR | E_WARNING | E_PARSE);</span><br><span class="line">//报告所有错误</span><br><span class="line">error_reporting(E_ALL);</span><br></pre></td></tr></table></figure>
+<h5 id="一、建立连接"><a href="#一、建立连接" class="headerlink" title="一、建立连接"></a>一、建立连接</h5><ul>
+<li>直接连接</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">header(<span class="string">'content-type:text/html;charset=utf-8'</span>);</span><br><span class="line"><span class="comment">##### 建立连接: 这里使用MAMP默认提供的mysql和端口</span></span><br><span class="line"><span class="variable">$link</span> = mysqli_connect(<span class="string">'localhost'</span>, <span class="string">'root'</span>, <span class="string">'root'</span>, <span class="string">'mysqli'</span>,<span class="string">'8889'</span>);</span><br><span class="line">var_dump(<span class="variable">$link</span>);</span><br><span class="line"><span class="keyword">if</span> (!<span class="variable">$link</span>) &#123;</span><br><span class="line">    <span class="built_in">echo</span> <span class="string">"错误连接"</span>;</span><br><span class="line">    <span class="built_in">echo</span> <span class="string">'ERROR'</span>.mysqli_connect_errno().<span class="string">':'</span>.mysqli_connect_error();</span><br><span class="line">    <span class="built_in">exit</span>();</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">echo</span> <span class="string">"成功"</span>;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>初始化连接</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="variable">$link</span>=mysqli_init();</span><br><span class="line"><span class="keyword">if</span>(!<span class="variable">$link</span>)&#123;</span><br><span class="line">    die(<span class="string">'MySQLi Init Failed'</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">设置连接选项</span><br><span class="line"><span class="keyword">if</span>(!mysqli_options(<span class="variable">$link</span>,MYSQLI_INIT_COMMAND,<span class="string">'SET AUTOCOMMIT=0'</span>))&#123;</span><br><span class="line">    die(<span class="string">'MySQLI Options Failed'</span>);</span><br><span class="line">&#125;</span><br><span class="line">//建立MySQL的连接</span><br><span class="line"><span class="keyword">if</span>(!mysqli_real_connect(<span class="variable">$link</span>,<span class="string">'localhost'</span>,<span class="string">'root'</span>,<span class="string">'root'</span>))&#123;</span><br><span class="line">	die(<span class="string">'Connect Error &lt;br/&gt;'</span>.mysqli_connect_errno().<span class="string">':'</span>.mysqli_connect_error());</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">if</span>(mysqli_ping(<span class="variable">$link</span>))&#123;</span><br><span class="line">	<span class="built_in">echo</span> <span class="string">'Connect is Ok'</span>;</span><br><span class="line">&#125;<span class="keyword">else</span>&#123;</span><br><span class="line">	<span class="built_in">echo</span> <span class="string">'Error '</span>.mysqli_error();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>查看配置信息</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">//得到和MySQL相关信息</span><br><span class="line"><span class="built_in">echo</span> <span class="string">'MySQL客户端版本信息：'</span>.mysqli_get_client_info(<span class="variable">$link</span>).<span class="string">'&lt;br/&gt;'</span>;</span><br><span class="line"><span class="built_in">echo</span> <span class="string">'MySQL客户端版本：'</span>.mysqli_get_client_version(<span class="variable">$link</span>).<span class="string">'&lt;br/&gt;'</span>;</span><br><span class="line"><span class="built_in">echo</span> <span class="string">'MySQL服务器的版本号：'</span>.mysqli_get_server_info(<span class="variable">$link</span>).<span class="string">'&lt;br/&gt;'</span>;</span><br><span class="line"><span class="built_in">echo</span> <span class="string">'MySQL服务器的版本：'</span>.mysqli_get_server_version(<span class="variable">$link</span>).<span class="string">'&lt;br/&gt;'</span>;</span><br><span class="line"><span class="built_in">echo</span> <span class="string">'MySQL服务器主机名和连接类型：'</span>.mysqli_get_host_info(<span class="variable">$link</span>).<span class="string">'&lt;br/&gt;'</span>;</span><br><span class="line"><span class="built_in">echo</span> <span class="string">'MySQL协议的版本信息：'</span>.mysqli_get_proto_info(<span class="variable">$link</span>).<span class="string">'&lt;br/&gt;'</span>;</span><br><span class="line"><span class="built_in">echo</span> <span class="string">'当前系统的状态：'</span>.mysqli_stat(<span class="variable">$link</span>).<span class="string">'&lt;br/&gt;'</span>;</span><br><span class="line"><span class="built_in">echo</span> <span class="string">'当前线程连接ID：'</span>.mysqli_thread_id(<span class="variable">$link</span>).<span class="string">'&lt;br/&gt;'</span>;</span><br><span class="line"><span class="keyword">if</span>(mysqli_thread_safe())&#123;</span><br><span class="line">	<span class="built_in">echo</span> <span class="string">'启动安全线程'</span>;</span><br><span class="line">&#125;<span class="keyword">else</span>&#123;</span><br><span class="line">	<span class="built_in">echo</span> <span class="string">'未启动安全线程'</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>错误类型</p>
+<ul>
+<li>1》用户名密码不正确<ul>
+<li>Warning: mysqli_connect(): (HY000/1045): Access denied for user ‘root‘@’localhost’<br>(using password: YES) in G:\maizi\PHPAdvance\MySQLi\2-mysqli_connect.php on line 5<br>bool(false)<ul>
+<li>2》MySQL服务器没有开启<ul>
+<li>ERROR 2003 (HY000): Can’t connect to MySQL server on ‘localhost’ (10061)<br>Warning: mysqli_connect(): in G:\maizi\PHPAdvance\MySQLi\2-mysqli_connect.php on line 13<br>bool(false)</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>抑制错误：</p>
+<ul>
+<li>@mysqli_connect(‘localhost’, ‘root’, ‘root’, ‘mysqli’,’8889’) or die(‘数据库连接失败<br>ERROR’.mysqli_connect_errno().’:’.mysqli_connect_error());</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">//mysqli_connect_errno():连接产生的错误编号</span><br><span class="line">//mysqli_connect_error():连接产生的错误信息</span><br></pre></td></tr></table></figure>
+<h5 id="二、设置字符集"><a href="#二、设置字符集" class="headerlink" title="二、设置字符集"></a>二、设置字符集</h5><ol>
+<li>命令：SET NAMES GBK</li>
+<li>mysqli_set_charset($link, ‘UTF8’);</li>
+<li>mysqli_query($link, ‘SET NAMES UTF8’);<ul>
+<li>print_r(mysqli_character_set_name($link)); // 默认</li>
+<li>print_r(mysqli_get_charset($link)); // 获取</li>
+</ul>
+</li>
+</ol>
+<h5 id="三、打开指定数据库"><a href="#三、打开指定数据库" class="headerlink" title="三、打开指定数据库"></a>三、打开指定数据库</h5><pre><code>$res = mysqli_select_db($link,&apos;mysqli&apos;); # or die(&apos;指定数据库不存在&lt;\br&gt;&apos;.mysqli__errno($link).&apos;:&apos;.mysqli__error($link));
+var_dump($res);
+</code></pre><h5 id="执行SQL查询"><a href="#执行SQL查询" class="headerlink" title="执行SQL查询"></a>执行SQL查询</h5><ul>
+<li>SQL直接Query创建和插入</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">执行SQL查询 mysqli_query()执行SQL查询</span><br><span class="line">//创建test2数据库</span><br><span class="line">// <span class="variable">$sql</span>=<span class="string">"CREATE DATABASE IF NOT EXISTS test2 DEFAULT CHARACTER SET 'utf8'"</span>;</span><br><span class="line">// <span class="variable">$sql</span>=<span class="string">"DROP DATABASE IF EXISTS test2"</span>;</span><br><span class="line">// mysqli_query(<span class="variable">$link</span>,<span class="variable">$sql</span>);</span><br><span class="line">/*</span><br><span class="line">mysqli_query(<span class="variable">$link</span>,<span class="variable">$sql</span>):执行SQL查询</span><br><span class="line">1》只能执行一条SQL语句，SQL语句可以没有分号 </span><br><span class="line">2》mysqli_query()执行SELECT/SHOW/EXPLAIN/DESC/DESCRIBE这样关键字的SQL语句，执行</span><br><span class="line">成功返回的是mysqli_result结果集，执行失败返回<span class="literal">false</span>；</span><br><span class="line">执行其他SQL语句，执行成功返回<span class="literal">true</span>，失败返回<span class="literal">false</span></span><br><span class="line"> */</span><br><span class="line"><span class="variable">$sql</span>=&lt;&lt;&lt;EOF</span><br><span class="line">INSERT user(username,password,age,regTime)</span><br><span class="line">VALUES(<span class="string">'king1'</span>,<span class="string">'king1'</span>,123,<span class="string">'123123'</span>);</span><br><span class="line">EOF;</span><br><span class="line"><span class="variable">$res</span>=mysqli_query(<span class="variable">$link</span>,<span class="variable">$sql</span>);</span><br><span class="line">var_dump(<span class="variable">$res</span>);</span><br></pre></td></tr></table></figure>
+<ul>
+<li>SQL-Query插入和查询</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">执行SQL查询</span><br><span class="line">// <span class="variable">$sql</span>=<span class="string">'INSERT user(username,password,age,regTime) VALUES("maizi1","maizi1",3,"1234123")'</span>;</span><br><span class="line">// <span class="variable">$sql</span>=<span class="string">"INSERT user1(id,username,password,age,regTime) VALUES(8,'queen','queen',14,'123123123')"</span>;</span><br><span class="line"><span class="variable">$sql</span>=&lt;&lt;&lt;EOF</span><br><span class="line">INSERT user(username,password,age,regTime) VALUES(<span class="string">'maizi11'</span>,<span class="string">'maizi11'</span>,3,<span class="string">'123123'</span>),</span><br><span class="line">(<span class="string">'maizi12'</span>,<span class="string">'maizi12'</span>,3,<span class="string">'123123'</span>),</span><br><span class="line">(<span class="string">'maizi13'</span>,<span class="string">'maizi13'</span>,3,<span class="string">'123123'</span>),</span><br><span class="line">(<span class="string">'maizi14'</span>,<span class="string">'maizi14'</span>,3,<span class="string">'123123'</span>),</span><br><span class="line">(<span class="string">'maizi15'</span>,<span class="string">'maizi15'</span>,3,<span class="string">'123123'</span>);</span><br><span class="line">EOF;</span><br><span class="line"><span class="variable">$res</span>=mysqli_query(<span class="variable">$link</span>,<span class="variable">$sql</span>);</span><br><span class="line"><span class="keyword">if</span>(<span class="variable">$res</span>)&#123;</span><br><span class="line">    // 	mysqli_insert_id(<span class="variable">$link</span>)：得到上一步插入操作产生的自增长(AUTO_INCREMENT)值,如果表中没有自增长，返回0</span><br><span class="line">	<span class="variable">$lastInsertId</span>=mysqli_insert_id(<span class="variable">$link</span>);</span><br><span class="line">	<span class="built_in">echo</span> <span class="string">'恭喜您注册成功，您是网站的第'</span>.<span class="variable">$lastInsertId</span>.<span class="string">'位用户&lt;br/&gt;'</span>;</span><br><span class="line">	//mysqli_affected_rows(<span class="variable">$link</span>):得到上一步操作产生的受影响的记录数</span><br><span class="line">	<span class="variable">$affectRows</span>=mysqli_affected_rows(<span class="variable">$link</span>);</span><br><span class="line">	<span class="built_in">echo</span> <span class="string">'Query Ok, '</span>.<span class="variable">$affectRows</span>.<span class="string">' Rows Affected'</span>;</span><br><span class="line">&#125;<span class="keyword">else</span>&#123;</span><br><span class="line">	<span class="built_in">echo</span> <span class="string">'Insert Error '</span>.mysqli_errno(<span class="variable">$link</span>).<span class="string">':'</span>.mysqli_error(<span class="variable">$link</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>mysqli_affected_rows</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">执行SQL查询</span><br><span class="line">// <span class="variable">$sql</span>=<span class="string">"INSERT user(username,password,age,regTime) VALUES('AA','AA',12,'123123')"</span>;</span><br><span class="line">// <span class="variable">$sql</span>=<span class="string">"UPDATE user SET age=78 WHERE id&lt;=5"</span>;</span><br><span class="line"><span class="variable">$sql</span>=<span class="string">"DELETE FROM user324234 WHERE id=9"</span>;</span><br><span class="line"><span class="variable">$res</span>=mysqli_query(<span class="variable">$link</span>,<span class="variable">$sql</span>);</span><br><span class="line"><span class="built_in">echo</span> <span class="string">'受影响的记录数为：'</span>.mysqli_affected_rows(<span class="variable">$link</span>).<span class="string">'&lt;br/&gt;'</span>;</span><br><span class="line">/*</span><br><span class="line"> mysqli_affected_rows(<span class="variable">$link</span>):得到上一步操作产生的受影响的记录数</span><br><span class="line"> 大于0的：受影响的记录数</span><br><span class="line"> 等于0：没有记录被影响</span><br><span class="line"> 等于-1：代表的SQL语句有问题</span><br><span class="line"> */</span><br></pre></td></tr></table></figure>
+<ul>
+<li>mysqli_fetch</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">执行SQL查询</span><br><span class="line"><span class="variable">$sql</span>=<span class="string">"SELECT * FROM user"</span>;</span><br><span class="line">// <span class="variable">$sql</span>=<span class="string">"SHOW DATABASES;"</span>;</span><br><span class="line">// <span class="variable">$sql</span>=<span class="string">"DESC user"</span>;</span><br><span class="line">// <span class="variable">$sql</span>=<span class="string">"DESCRIBE user"</span>;</span><br><span class="line">// <span class="variable">$sql</span>=<span class="string">"EXPLAIN SELECT * FROM user WHERE id=12"</span>;</span><br><span class="line"><span class="variable">$result</span>=mysqli_query(<span class="variable">$link</span>,<span class="variable">$sql</span>);</span><br><span class="line">//得到结果集中的记录条数</span><br><span class="line"><span class="built_in">echo</span> <span class="string">'结果集中记录条数为：'</span>.mysqli_num_rows(<span class="variable">$result</span>).<span class="string">'&lt;br/&gt;'</span>;</span><br><span class="line"><span class="built_in">echo</span> <span class="string">'上一步操作产生的受影响的记录条数为：'</span>.mysqli_affected_rows(<span class="variable">$link</span>).<span class="string">'&lt;br/&gt;'</span>;</span><br><span class="line"><span class="built_in">echo</span> <span class="string">'结果集中字段数为：'</span>.mysqli_num_fields(<span class="variable">$result</span>).<span class="string">'&lt;br/&gt;'</span>;</span><br><span class="line"><span class="built_in">echo</span> <span class="string">'获得最近一次查询所得到的列数：'</span>.mysqli_field_count(<span class="variable">$link</span>).<span class="string">'&lt;br/&gt;'</span>;</span><br><span class="line"></span><br><span class="line"><span class="built_in">echo</span> <span class="string">'&lt;hr color="red"/&gt;'</span>;</span><br><span class="line">//取得结果集中的记录</span><br><span class="line">// mysqli_fetch_row(<span class="variable">$result</span>):取得结果集中的一条记录作为索引数组返回</span><br><span class="line"><span class="built_in">echo</span> <span class="string">'&lt;pre&gt;'</span>;</span><br><span class="line"><span class="variable">$row</span>=mysqli_fetch_row(<span class="variable">$result</span>);</span><br><span class="line">print_r(<span class="variable">$row</span>);</span><br><span class="line">//mysqli_fetch_assoc(<span class="variable">$result</span>):取得结果集中的一条记录作为关联数组返回</span><br><span class="line"><span class="variable">$row</span>=mysqli_fetch_assoc(<span class="variable">$result</span>);</span><br><span class="line">print_r(<span class="variable">$row</span>);</span><br><span class="line">//mysqli_fetch_array(<span class="variable">$result</span>,<span class="variable">$result_type</span>):取得结果集中的一条记录作为关联数组或者索引数组或者二者都有的数组来返回</span><br><span class="line"><span class="variable">$row</span>=mysqli_fetch_array(<span class="variable">$result</span>, MYSQLI_ASSOC);</span><br><span class="line">/*</span><br><span class="line"> <span class="variable">$result_type</span>的值为：</span><br><span class="line"> MYSQLI_BOTH:关联+索引</span><br><span class="line"> MYSQLI_ASSOC:关联</span><br><span class="line"> MYSQLI_NUM:索引</span><br><span class="line"> */</span><br><span class="line">print_r(<span class="variable">$row</span>);</span><br><span class="line">// mysqli_fetch_object(<span class="variable">$result</span>):作为对象返回</span><br><span class="line"><span class="variable">$row</span>=mysqli_fetch_object(<span class="variable">$result</span>);</span><br><span class="line">print_r(<span class="variable">$row</span>);</span><br><span class="line"><span class="built_in">echo</span> <span class="string">'&lt;hr color="red"/&gt;'</span>;</span><br><span class="line">var_dump(mysqli_fetch_assoc(<span class="variable">$result</span>));</span><br></pre></td></tr></table></figure>
+<h5 id="查询并显示用户列表数据"><a href="#查询并显示用户列表数据" class="headerlink" title="查询并显示用户列表数据"></a>查询并显示用户列表数据</h5><ul>
+<li>mysqli_fetch</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">执行SQL查询</span><br><span class="line"><span class="variable">$sql</span>=<span class="string">"SELECT * FROM user"</span>;</span><br><span class="line">//5.得到所有记录</span><br><span class="line"><span class="variable">$result</span>=mysqli_query(<span class="variable">$link</span>,<span class="variable">$sql</span>);</span><br><span class="line">//是结果集，并且结果集中有记录</span><br><span class="line">// <span class="keyword">if</span>(<span class="variable">$result</span> &amp;&amp; mysqli_num_rows(<span class="variable">$result</span>)&gt;0)&#123;</span><br><span class="line">// 	<span class="keyword">while</span>(<span class="variable">$row</span>=mysqli_fetch_assoc(<span class="variable">$result</span>))&#123;</span><br><span class="line">// 		<span class="variable">$rows</span>[]=<span class="variable">$row</span>;</span><br><span class="line">// 	&#125;</span><br><span class="line">// &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">// 	<span class="built_in">echo</span> <span class="string">'没有记录&lt;br/&gt;'</span>;</span><br><span class="line">// &#125;</span><br><span class="line"></span><br><span class="line">// print_r(<span class="variable">$rows</span>);</span><br><span class="line">// <span class="keyword">if</span>(<span class="variable">$result</span> &amp;&amp; mysqli_num_rows(<span class="variable">$result</span>)&gt;0)&#123;</span><br><span class="line">// // 	<span class="variable">$rows</span>=mysqli_fetch_all(<span class="variable">$result</span>);</span><br><span class="line">// 	<span class="variable">$rows</span>=mysqli_fetch_all(<span class="variable">$result</span>,MYSQLI_BOTH);</span><br><span class="line">// &#125;</span><br><span class="line">// print_r(<span class="variable">$rows</span>);</span><br><span class="line"><span class="variable">$string</span>=join(<span class="string">''</span>,array_merge(range(<span class="string">'a'</span>,<span class="string">'z'</span>),range(<span class="string">'A'</span>,<span class="string">'Z'</span>)));</span><br><span class="line"><span class="keyword">for</span>(<span class="variable">$i</span>=1;<span class="variable">$i</span>&lt;=100;<span class="variable">$i</span>++)&#123;</span><br><span class="line">	<span class="variable">$username</span>=substr(str_shuffle(<span class="variable">$string</span>),0,5);</span><br><span class="line">	<span class="variable">$password</span>=md5(<span class="variable">$username</span>);</span><br><span class="line">	<span class="variable">$age</span>=mt_rand(1,99);</span><br><span class="line">	<span class="variable">$regTime</span>=time()+10*<span class="variable">$i</span>;</span><br><span class="line">	<span class="variable">$sql</span>=<span class="string">"INSERT user(username,password,age,regTime) VALUES('&#123;<span class="variable">$username</span>&#125;','&#123;<span class="variable">$password</span>&#125;','&#123;<span class="variable">$age</span>&#125;','&#123;<span class="variable">$regTime</span>&#125;')"</span>;</span><br><span class="line">	mysqli_query(<span class="variable">$link</span>,<span class="variable">$sql</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>user_list</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">执行SQL查询</span><br><span class="line"><span class="variable">$sql</span>=<span class="string">"SELECT id,username,age,regTime FROM user"</span>;</span><br><span class="line">//5.得到所有记录</span><br><span class="line"><span class="variable">$result</span>=mysqli_query(<span class="variable">$link</span>,<span class="variable">$sql</span>);</span><br><span class="line"><span class="keyword">if</span>(<span class="variable">$result</span> &amp;&amp; mysqli_num_rows(<span class="variable">$result</span>)&gt;0)&#123;</span><br><span class="line">	<span class="variable">$rows</span>=mysqli_fetch_all(<span class="variable">$result</span>,MYSQLI_ASSOC);</span><br><span class="line">&#125;</span><br><span class="line">?&gt;</span><br><span class="line">&lt;!doctype html&gt;</span><br><span class="line">&lt;html lang=<span class="string">"en"</span>&gt;</span><br><span class="line">&lt;head&gt;</span><br><span class="line">	&lt;meta charset=<span class="string">"UTF-8"</span> /&gt;</span><br><span class="line">	&lt;title&gt;Document&lt;/title&gt;</span><br><span class="line">&lt;/head&gt;</span><br><span class="line">&lt;body&gt;</span><br><span class="line">&lt;h3&gt;用户列表&lt;/h3&gt;</span><br><span class="line">&lt;table border=<span class="string">'1'</span> cellpadding=<span class="string">'0'</span> cellspacing=<span class="string">'0'</span> bgcolor=<span class="string">'#ABCDEF'</span> width=<span class="string">'80%'</span>&gt;</span><br><span class="line">	&lt;tr&gt;</span><br><span class="line">		&lt;td&gt;编号&lt;/td&gt;</span><br><span class="line">		&lt;td&gt;用户名&lt;/td&gt;</span><br><span class="line">		&lt;td&gt;年龄&lt;/td&gt;</span><br><span class="line">		&lt;td&gt;注册时间&lt;/td&gt;</span><br><span class="line">	&lt;/tr&gt;</span><br><span class="line">	&lt;?php <span class="variable">$i</span>=1; foreach(<span class="variable">$rows</span> as <span class="variable">$user</span>):?&gt;</span><br><span class="line">	&lt;tr&gt;</span><br><span class="line">		&lt;td&gt;&lt;?php <span class="built_in">echo</span> <span class="variable">$i</span>++;?&gt;&lt;/td&gt;</span><br><span class="line">		&lt;td&gt;&lt;?php <span class="built_in">echo</span> <span class="variable">$user</span>[<span class="string">'username'</span>];?&gt;&lt;/td&gt;</span><br><span class="line">		&lt;td&gt;&lt;?php <span class="built_in">echo</span> <span class="variable">$user</span>[<span class="string">'age'</span>];?&gt;&lt;/td&gt;</span><br><span class="line">		&lt;td&gt;&lt;?php <span class="built_in">echo</span> date(<span class="string">"Y-m-d H:i:s"</span>,<span class="variable">$user</span>[<span class="string">'regTime'</span>]);?&gt;&lt;/td&gt;</span><br><span class="line">	&lt;/tr&gt;</span><br><span class="line">	&lt;?php endforeach;?&gt;</span><br><span class="line">&lt;/table&gt;</span><br><span class="line">	</span><br><span class="line">&lt;/body&gt;</span><br><span class="line">&lt;/html&gt;</span><br></pre></td></tr></table></figure>
+<hr>
+<hr>
+<ul>
+<li>mysqli_data_seek</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$sql</span>=<span class="string">"SELECT * FROM user"</span>;</span><br><span class="line"><span class="variable">$result</span>=mysqli_query(<span class="variable">$link</span>, <span class="variable">$sql</span>);</span><br><span class="line"><span class="built_in">echo</span> <span class="string">'&lt;pre&gt;'</span>;</span><br><span class="line">// <span class="variable">$row</span>=mysqli_fetch_assoc(<span class="variable">$result</span>);</span><br><span class="line">// print_r(<span class="variable">$row</span>);</span><br><span class="line">// <span class="variable">$row</span>=mysqli_fetch_assoc(<span class="variable">$result</span>);</span><br><span class="line">// print_r(<span class="variable">$row</span>);</span><br><span class="line">// <span class="variable">$row</span>=mysqli_fetch_assoc(<span class="variable">$result</span>);</span><br><span class="line">// print_r(<span class="variable">$row</span>);</span><br><span class="line">// <span class="built_in">echo</span> <span class="string">'&lt;hr/&gt;'</span>;</span><br><span class="line">// //mysqli_data_seek(<span class="variable">$result</span>,<span class="variable">$offset</span>):将结果集的指针移动到指定位置</span><br><span class="line">// mysqli_data_seek(<span class="variable">$result</span>, 0);</span><br><span class="line"></span><br><span class="line">// <span class="variable">$row</span>=mysqli_fetch_assoc(<span class="variable">$result</span>);</span><br><span class="line">// print_r(<span class="variable">$row</span>);</span><br><span class="line"></span><br><span class="line"><span class="variable">$rows</span>=mysqli_fetch_all(<span class="variable">$result</span>,MYSQLI_ASSOC);</span><br><span class="line">print_r(<span class="variable">$rows</span>);</span><br><span class="line"><span class="built_in">echo</span> <span class="string">'&lt;hr color="red"/&gt;'</span>;</span><br><span class="line">mysqli_data_seek(<span class="variable">$result</span>, 0);</span><br><span class="line"><span class="variable">$row</span>=mysqli_fetch_assoc(<span class="variable">$result</span>);</span><br><span class="line">print_r(<span class="variable">$row</span>);</span><br><span class="line"><span class="built_in">echo</span> <span class="string">'&lt;hr color="pink"/&gt;'</span>;</span><br><span class="line">//释放结果集</span><br><span class="line">mysqli_free_result(<span class="variable">$result</span>);</span><br><span class="line">//关闭连接</span><br><span class="line">mysqli_close(<span class="variable">$link</span>);</span><br><span class="line">mysqli_set_charset(<span class="variable">$link</span>,<span class="string">'utf8'</span>);</span><br></pre></td></tr></table></figure>
+<ul>
+<li>mysqli_field</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$sql</span>=<span class="string">"SELECT * FROM user"</span>;</span><br><span class="line"><span class="variable">$result</span>=mysqli_query(<span class="variable">$link</span>, <span class="variable">$sql</span>);</span><br><span class="line"><span class="built_in">echo</span> <span class="string">'结果集中字段数：'</span>.mysqli_num_fields(<span class="variable">$result</span>).<span class="string">'&lt;br/&gt;'</span>;</span><br><span class="line"><span class="built_in">echo</span> mysqli_field_count(<span class="variable">$link</span>).<span class="string">'&lt;br/&gt;'</span>;</span><br><span class="line"><span class="built_in">echo</span> <span class="string">'&lt;hr/&gt;'</span>;</span><br><span class="line"><span class="built_in">echo</span> <span class="string">'&lt;pre&gt;'</span>;</span><br><span class="line">// <span class="variable">$fieldInfo</span>=mysqli_fetch_field(<span class="variable">$result</span>);</span><br><span class="line">// print_r(<span class="variable">$fieldInfo</span>);</span><br><span class="line"></span><br><span class="line">// <span class="variable">$fieldInfo</span>=mysqli_fetch_field(<span class="variable">$result</span>);</span><br><span class="line">// print_r(<span class="variable">$fieldInfo</span>);</span><br><span class="line">// <span class="variable">$fieldsInfo</span>=mysqli_fetch_fields(<span class="variable">$result</span>);</span><br><span class="line">// print_r(<span class="variable">$fieldsInfo</span>);</span><br><span class="line"><span class="built_in">echo</span> <span class="string">'当前指针所在位置：'</span>.mysqli_field_tell(<span class="variable">$result</span>).<span class="string">'&lt;br/&gt;'</span>;</span><br><span class="line">print_r(mysqli_fetch_field_direct(<span class="variable">$result</span>, 0)).<span class="string">'&lt;br/&gt;'</span>;</span><br><span class="line"><span class="built_in">echo</span> <span class="string">'&lt;hr/&gt;'</span>;</span><br><span class="line">mysqli_field_seek(<span class="variable">$result</span>, 3);</span><br><span class="line"><span class="built_in">echo</span> <span class="string">'当前指针所在位置：'</span>.mysqli_field_tell(<span class="variable">$result</span>).<span class="string">'&lt;br/&gt;'</span>;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>mysqli_multi_query</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">//执行多条SQL语句,每条SQL语句一定要以分号结尾，否则就会失败</span><br><span class="line">//如果多条SQL语句中有一条失败了，整个都会失败</span><br><span class="line"><span class="variable">$sql</span>=<span class="string">"DELETE FROM user WHERE id=3;"</span>;</span><br><span class="line"><span class="variable">$sql</span>.=<span class="string">"INSERT user(username,password,age,regTime) VALUES('AAAA1','AAAAA1',99,'1234123');"</span>;</span><br><span class="line"><span class="variable">$sql</span>.=<span class="string">"UPDATE user123 SET age=5 WHERE id=1;"</span>;</span><br><span class="line"><span class="variable">$res</span>=mysqli_multi_query(<span class="variable">$link</span>,<span class="variable">$sql</span>);</span><br><span class="line">var_dump(<span class="variable">$res</span>);</span><br></pre></td></tr></table></figure>
+<ul>
+<li>mysqli_multi_result</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$sql</span> =<span class="string">"SELECT id,username,age,regTime FROM user limit 5;"</span>;</span><br><span class="line"><span class="variable">$sql</span>.=<span class="string">"SELECT VERSION() AS mysql_version;"</span>;</span><br><span class="line"><span class="variable">$sql</span>.=<span class="string">"SELECT NOW() AS time_now;"</span>;</span><br><span class="line"><span class="variable">$sql</span>.=<span class="string">"SELECT * FROM mysql.user;"</span>;</span><br><span class="line"><span class="variable">$res</span>=mysqli_multi_query(<span class="variable">$link</span>, <span class="variable">$sql</span>);</span><br><span class="line">//mysqli_store_result():传输上一次产生的结果集</span><br><span class="line">//mysqli_more_results():判读是否有更多的结果集</span><br><span class="line">//mysqli_next_result():将结果集的指针向下移动一位</span><br><span class="line"><span class="keyword">if</span>(<span class="variable">$res</span>)&#123;</span><br><span class="line">	<span class="keyword">do</span>&#123;</span><br><span class="line">		<span class="keyword">if</span>(<span class="variable">$result</span>=mysqli_store_result(<span class="variable">$link</span>))&#123;</span><br><span class="line">			<span class="variable">$rows</span>[]=mysqli_fetch_all(<span class="variable">$result</span>,MYSQLI_ASSOC);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;<span class="keyword">while</span>(mysqli_more_results(<span class="variable">$link</span>)&amp;&amp;mysqli_next_result(<span class="variable">$link</span>));</span><br><span class="line">&#125;</span><br><span class="line">print_r(<span class="variable">$rows</span>);</span><br></pre></td></tr></table></figure>
+<ul>
+<li>mysqli_prepare</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">require_once <span class="string">'conn.php'</span>;</span><br><span class="line"><span class="variable">$sql</span>=<span class="string">"INSERT user(username,password,age,regTime) VALUES(?,?,?,?)"</span>;</span><br><span class="line"><span class="variable">$stmt</span>=mysqli_prepare(<span class="variable">$link</span>, <span class="variable">$sql</span>);//准备要执行的SQL语句</span><br><span class="line">// print_r(<span class="variable">$stmt</span>);</span><br><span class="line"><span class="variable">$username</span>=<span class="string">'maizi123412'</span>;</span><br><span class="line"><span class="variable">$password</span>=<span class="string">'maizi123412'</span>;</span><br><span class="line"><span class="variable">$age</span>=3;</span><br><span class="line"><span class="variable">$regTime</span>=time();</span><br><span class="line">@mysqli_stmt_bind_param(<span class="variable">$stmt</span>, <span class="string">'ssii'</span>,<span class="variable">$username</span>,<span class="variable">$password</span>,<span class="variable">$age</span>);</span><br><span class="line"><span class="variable">$res</span>=mysqli_stmt_execute(<span class="variable">$stmt</span>);</span><br><span class="line"><span class="keyword">if</span>(!<span class="variable">$res</span>)&#123;</span><br><span class="line">	die (<span class="string">"ERROR "</span>.mysqli_stmt_errno(<span class="variable">$stmt</span>).<span class="string">':'</span>.mysqli_stmt_error(<span class="variable">$stmt</span>));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable">$username</span>=<span class="string">'maizi1234567'</span>;</span><br><span class="line"><span class="variable">$password</span>=<span class="string">'maizi1234567'</span>;</span><br><span class="line"><span class="variable">$age</span>=35;</span><br><span class="line"><span class="variable">$regTime</span>=time();</span><br><span class="line">mysqli_stmt_execute(<span class="variable">$stmt</span>);</span><br><span class="line"></span><br><span class="line"><span class="built_in">echo</span> <span class="string">'受影响的记录条数为：'</span>.mysqli_stmt_affected_rows(<span class="variable">$stmt</span>).<span class="string">'&lt;br/&gt;'</span>;</span><br><span class="line"><span class="built_in">echo</span> <span class="string">'得到AUTO_INCREMENT的之为：'</span>.mysqli_stmt_insert_id(<span class="variable">$stmt</span>).<span class="string">'&lt;br/&gt;'</span>;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">mysqli_stmt_close(<span class="variable">$stmt</span>);</span><br><span class="line">mysqli_close(<span class="variable">$link</span>);</span><br></pre></td></tr></table></figure>
+<ul>
+<li>mysqli_stmt_bind_result</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">require_once <span class="string">'conn.php'</span>;</span><br><span class="line"><span class="variable">$sql</span>=<span class="string">"SELECT id,username,age FROM user WHERE id&lt;=?"</span>;</span><br><span class="line"><span class="keyword">if</span>(<span class="variable">$stmt</span>=mysqli_prepare(<span class="variable">$link</span>, <span class="variable">$sql</span>))&#123;</span><br><span class="line">	<span class="built_in">echo</span> mysqli_stmt_param_count(<span class="variable">$stmt</span>).<span class="string">'个参数&lt;br/&gt;'</span>;</span><br><span class="line">	<span class="variable">$id</span>=143;</span><br><span class="line">	mysqli_stmt_bind_param(<span class="variable">$stmt</span>, <span class="string">'i'</span>,<span class="variable">$id</span>);</span><br><span class="line">	mysqli_stmt_execute(<span class="variable">$stmt</span>);</span><br><span class="line">	mysqli_stmt_bind_result(<span class="variable">$stmt</span>,<span class="variable">$res_id</span>,<span class="variable">$res_username</span>,<span class="variable">$res_age</span>);</span><br><span class="line">// 	mysqli_stmt_fetch(<span class="variable">$stmt</span>);</span><br><span class="line">// 	<span class="built_in">printf</span>(<span class="string">'我的编号为：'</span>.<span class="variable">$res_id</span>.<span class="string">'--我的名字为：'</span>.<span class="variable">$res_username</span>.<span class="string">'--我的年龄为：'</span>.<span class="variable">$res_age</span>);</span><br><span class="line">	<span class="keyword">while</span>(mysqli_stmt_fetch(<span class="variable">$stmt</span>))&#123;</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">'我的编号为：'</span>.<span class="variable">$res_id</span>.<span class="string">'--我的名字为：'</span>.<span class="variable">$res_username</span>.<span class="string">'--我的年龄为：'</span>.<span class="variable">$res_age</span>);</span><br><span class="line">		<span class="built_in">echo</span> <span class="string">'&lt;hr/&gt;'</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="built_in">echo</span> <span class="string">'&lt;hr color="red"/&gt;'</span>;</span><br><span class="line">		</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>mysqli_stmt_data_seek</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">require_once <span class="string">'conn.php'</span>;</span><br><span class="line"><span class="variable">$sql</span>=<span class="string">"SELECT id,username,age FROM user WHERE id&lt;=30"</span>;</span><br><span class="line"><span class="keyword">if</span>(<span class="variable">$stmt</span>=mysqli_prepare(<span class="variable">$link</span>, <span class="variable">$sql</span>))&#123;</span><br><span class="line">	mysqli_execute(<span class="variable">$stmt</span>);</span><br><span class="line">	mysqli_stmt_store_result(<span class="variable">$stmt</span>);</span><br><span class="line">	<span class="built_in">echo</span> <span class="string">'受影响的记录条数为：'</span>.mysqli_stmt_affected_rows(<span class="variable">$stmt</span>).<span class="string">'&lt;br/&gt;'</span>;</span><br><span class="line">	<span class="built_in">echo</span> <span class="string">'结果集中的记录条数为：'</span>.mysqli_stmt_num_rows(<span class="variable">$stmt</span>).<span class="string">'&lt;br/&gt;'</span>;</span><br><span class="line">	mysqli_stmt_bind_result(<span class="variable">$stmt</span>,<span class="variable">$id</span>,<span class="variable">$username</span>,<span class="variable">$age</span>);</span><br><span class="line">	<span class="keyword">while</span>(mysqli_stmt_fetch(<span class="variable">$stmt</span>))&#123;</span><br><span class="line">		<span class="built_in">echo</span> <span class="string">'编号：'</span>.<span class="variable">$id</span>.<span class="string">'--'</span>.<span class="string">'用户名：'</span>.<span class="variable">$username</span>.<span class="string">'--年龄：'</span>.<span class="variable">$age</span>.<span class="string">"&lt;hr/&gt;"</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="built_in">echo</span> <span class="string">'&lt;hr color="red"/&gt;'</span>;</span><br><span class="line">	mysqli_stmt_data_seek(<span class="variable">$stmt</span>, 1);</span><br><span class="line">	mysqli_stmt_bind_result(<span class="variable">$stmt</span>,<span class="variable">$id</span>,<span class="variable">$username</span>,<span class="variable">$age</span>);</span><br><span class="line">	mysqli_stmt_fetch(<span class="variable">$stmt</span>);</span><br><span class="line">	<span class="built_in">echo</span> <span class="string">'编号：'</span>.<span class="variable">$id</span>.<span class="string">'--'</span>.<span class="string">'用户名：'</span>.<span class="variable">$username</span>.<span class="string">'--年龄：'</span>.<span class="variable">$age</span>.<span class="string">"&lt;hr/&gt;"</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>mysqli_commit</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">require_once <span class="string">'conn.php'</span>;</span><br><span class="line">//关闭自动提交</span><br><span class="line">mysqli_autocommit(<span class="variable">$link</span>, FALSE);</span><br><span class="line"><span class="variable">$sql</span>=<span class="string">"UPDATE account SET money=money-2000 WHERE username='maizi'"</span>;</span><br><span class="line"><span class="variable">$res</span>=mysqli_query(<span class="variable">$link</span>, <span class="variable">$sql</span>);</span><br><span class="line"></span><br><span class="line"><span class="variable">$sql</span>=<span class="string">'UPDATE account123 SET money=money+2000 WHERE username="king"'</span>;</span><br><span class="line"><span class="variable">$res1</span>=mysqli_query(<span class="variable">$link</span>,<span class="variable">$sql</span>);</span><br><span class="line"><span class="keyword">if</span>(<span class="variable">$res</span> &amp;&amp; <span class="variable">$res1</span>)&#123;</span><br><span class="line">	mysqli_commit(<span class="variable">$link</span>);//提交</span><br><span class="line">	mysqli_autocommit(<span class="variable">$link</span>, TRUE);</span><br><span class="line">&#125;<span class="keyword">else</span>&#123;</span><br><span class="line">	mysqli_rollback(<span class="variable">$link</span>);//回滚</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>reg</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">&lt;!doctype html&gt;</span><br><span class="line">&lt;html lang=<span class="string">"en"</span>&gt;</span><br><span class="line">&lt;head&gt;</span><br><span class="line">	&lt;meta charset=<span class="string">"UTF-8"</span> /&gt;</span><br><span class="line">	&lt;title&gt;Document&lt;/title&gt;</span><br><span class="line">&lt;/head&gt;</span><br><span class="line">&lt;body&gt;</span><br><span class="line">&lt;h3&gt;注册页面&lt;/h3&gt;</span><br><span class="line">&lt;form action=<span class="string">"doAction.php?act=reg"</span> method=<span class="string">'post'</span>&gt;</span><br><span class="line">&lt;table border=<span class="string">'1'</span> width=<span class="string">'80%'</span> cellpadding=<span class="string">'0'</span> cellspacing=<span class="string">'0'</span> bgcolor=<span class="string">'#ABCDEF'</span> &gt;</span><br><span class="line">	&lt;tr&gt;</span><br><span class="line">		&lt;td&gt;用户名&lt;/td&gt;</span><br><span class="line">		&lt;td&gt;&lt;input <span class="built_in">type</span>=<span class="string">"text"</span> name=<span class="string">"username"</span> id=<span class="string">""</span> placeholder=<span class="string">'请输入合法用户名'</span>/&gt;&lt;/td&gt;</span><br><span class="line">	&lt;/tr&gt;</span><br><span class="line">	&lt;tr&gt;</span><br><span class="line">		&lt;td&gt;密码&lt;/td&gt;</span><br><span class="line">		&lt;td&gt;&lt;input <span class="built_in">type</span>=<span class="string">"password"</span> name=<span class="string">"password"</span> id=<span class="string">""</span> placeholder=<span class="string">'密码不能为空'</span> /&gt;&lt;/td&gt;</span><br><span class="line">	&lt;/tr&gt;</span><br><span class="line">	&lt;tr&gt;</span><br><span class="line">		&lt;td colspan=<span class="string">'2'</span>&gt;</span><br><span class="line">			&lt;input <span class="built_in">type</span>=<span class="string">"submit"</span> value=<span class="string">"注册"</span> /&gt;</span><br><span class="line">		&lt;/td&gt;</span><br><span class="line">	&lt;/tr&gt;</span><br><span class="line">&lt;/table&gt;</span><br><span class="line">&lt;/form&gt;</span><br><span class="line">	</span><br><span class="line">&lt;/body&gt;</span><br><span class="line">&lt;/html&gt;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>testFunction</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line">header(<span class="string">'content-type:text/html;charset=utf-8'</span>);</span><br><span class="line">require_once <span class="string">'functions/mysql.func.php'</span>;</span><br><span class="line">require_once <span class="string">'config/config.php'</span>;</span><br><span class="line">// <span class="variable">$host</span>=<span class="string">'localhost'</span>;</span><br><span class="line">// <span class="variable">$user</span>=<span class="string">'root'</span>;</span><br><span class="line">// <span class="variable">$password</span>=<span class="string">'root'</span>;</span><br><span class="line">// <span class="variable">$charset</span>=<span class="string">'utf8'</span>;</span><br><span class="line">// <span class="variable">$database</span>=<span class="string">'test1'</span>;</span><br><span class="line">// <span class="variable">$link</span>=connect1(<span class="variable">$host</span>, <span class="variable">$user</span>, <span class="variable">$password</span>, <span class="variable">$charset</span>, <span class="variable">$database</span>);</span><br><span class="line">// var_dump(<span class="variable">$link</span>);</span><br><span class="line">// <span class="variable">$link</span>=connect2(<span class="variable">$config</span>);</span><br><span class="line">// var_dump(<span class="variable">$link</span>);</span><br><span class="line"><span class="variable">$link</span>=connect3();</span><br><span class="line">// var_dump(<span class="variable">$link</span>);</span><br><span class="line">// <span class="variable">$array</span>=[</span><br><span class="line">// <span class="string">'username'</span>=&gt;<span class="string">'queen1'</span>,</span><br><span class="line">// <span class="string">'password'</span>=&gt;md5(<span class="string">'queen1'</span>),</span><br><span class="line">// <span class="string">'age'</span>=&gt;22,</span><br><span class="line">// <span class="string">'regTime'</span>=&gt;time()</span><br><span class="line">// ];</span><br><span class="line"><span class="variable">$table</span>=<span class="string">'user'</span>;</span><br><span class="line">// <span class="keyword">if</span>(insert(<span class="variable">$link</span>, <span class="variable">$array</span>, <span class="variable">$table</span>))&#123;</span><br><span class="line">// 	<span class="built_in">echo</span> <span class="string">'注册成功'</span>;</span><br><span class="line">// &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">// 	<span class="built_in">echo</span> <span class="string">'注册失败'</span>;</span><br><span class="line">// &#125;</span><br><span class="line">// <span class="variable">$array</span>=[<span class="string">'age'</span>=&gt;<span class="string">'12'</span>];</span><br><span class="line">// // <span class="variable">$res</span>=update(<span class="variable">$link</span>, <span class="variable">$array</span>, <span class="variable">$table</span>);</span><br><span class="line">// <span class="variable">$res</span>=update(<span class="variable">$link</span>,<span class="variable">$array</span>,<span class="variable">$table</span>,<span class="string">'id=2'</span>);</span><br><span class="line">// <span class="keyword">if</span>(<span class="variable">$res</span>)&#123;</span><br><span class="line">// 	<span class="built_in">echo</span> <span class="string">'更新成功'</span>;</span><br><span class="line">// &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">// 	<span class="built_in">echo</span> <span class="string">'更新失败'</span>;</span><br><span class="line">// &#125;</span><br><span class="line"></span><br><span class="line">// <span class="variable">$res</span>=delete(<span class="variable">$link</span>, <span class="variable">$table</span>,<span class="string">'id=3'</span>);</span><br><span class="line">// <span class="keyword">if</span>(<span class="variable">$res</span>)&#123;</span><br><span class="line">// 	<span class="built_in">echo</span> <span class="string">'删除成功'</span>;</span><br><span class="line">// &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">// 	<span class="built_in">echo</span> <span class="string">'删除失败'</span>;</span><br><span class="line">// &#125;</span><br><span class="line"><span class="variable">$query</span>=<span class="string">"SELECT id,username,age FROM user WHERE id=1"</span>;</span><br><span class="line"><span class="variable">$row</span>=fetchOne(<span class="variable">$link</span>, <span class="variable">$query</span>);</span><br><span class="line">print_r(<span class="variable">$row</span>);</span><br><span class="line"><span class="built_in">echo</span> <span class="string">'&lt;hr/&gt;'</span>;</span><br><span class="line"><span class="variable">$query</span>=<span class="string">"SELECT id,username,age FROM user WHERE id&gt;=1"</span>;</span><br><span class="line"><span class="variable">$rows</span>=fetchAll(<span class="variable">$link</span>, <span class="variable">$query</span>);</span><br><span class="line">print_r(<span class="variable">$rows</span>);</span><br><span class="line"></span><br><span class="line"><span class="built_in">echo</span> <span class="string">'&lt;hr/&gt;'</span>;</span><br><span class="line"><span class="built_in">echo</span> getTotalRows(<span class="variable">$link</span>,<span class="string">'user1'</span>);</span><br></pre></td></tr></table></figure>
+<h5 id="释放结果集"><a href="#释放结果集" class="headerlink" title="释放结果集"></a>释放结果集</h5><h5 id="关闭连接"><a href="#关闭连接" class="headerlink" title="关闭连接"></a>关闭连接</h5><h3 id="MySQLi常见函数"><a href="#MySQLi常见函数" class="headerlink" title="MySQLi常见函数"></a>MySQLi常见函数</h3><h4 id="连接"><a href="#连接" class="headerlink" title="连接"></a>连接</h4><h6 id="连接-1"><a href="#连接-1" class="headerlink" title="连接"></a>连接</h6><ul>
+<li><p>mysqli_connect()</p>
+<ul>
+<li>作用<ul>
+<li>打开一个到MySQL服务器的新的连接</li>
+</ul>
+</li>
+<li>语法<ul>
+<li>mysqli mysqli_connect ([ string $host = ini_get(“mysqli.default_host”) [, string $username = ini_get(“mysqli.default_user”) [, string $passwd = ini_get(“mysqli.default_pw”) [, string $dbname = “” [, int $port = ini_get(“mysqli.default_port”) [, string $socket = ini_get(“mysqli.default_socket”) ]]]]]] )</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>mysqli_real_connect()</p>
+<ul>
+<li>作用<ul>
+<li>建立一个 MySQL 服务器连接</li>
+</ul>
+</li>
+<li>语法<ul>
+<li>bool mysqli_real_connect ( mysqli $link [, string $host [, string $username [, string $passwd [, string $dbname [, int $port [, string $socket [, int $flags ]]]]]]] )</li>
+</ul>
+</li>
+<li>注意<ul>
+<li>mysqli_real_connect() 需要一个有效的对象，这个对象由 mysqli_init() 创建</li>
+<li>可以使用 mysqli_options() 设置各种连接设置</li>
+<li>提供 flags 参数</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>mysqli_init()</p>
+<ul>
+<li>作用<ul>
+<li>初始化mysqli并且返回一个由mysqli_real_connect使用的资源类型。</li>
+</ul>
+</li>
+<li>语法<ul>
+<li>mysqli mysqli_init ( void )</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>mysqli_options()</p>
+<ul>
+<li>作用<ul>
+<li>设置选项</li>
+</ul>
+</li>
+<li>语法<ul>
+<li>bool mysqli_options ( mysqli $link , int $option , mixed $value )</li>
+</ul>
+</li>
+<li>注意<ul>
+<li>常用选项    </li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>mysqli_ping()</p>
+<ul>
+<li>作用<ul>
+<li>ping一个服务器连接，或者如果那个连接断了尝试重连</li>
+</ul>
+</li>
+<li>语法<ul>
+<li>bool mysqli_ping ( mysqli $link )</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h6 id="错误"><a href="#错误" class="headerlink" title="错误"></a>错误</h6><ul>
+<li>mysqli_connect_errno()<ul>
+<li>作用<ul>
+<li>返回最后一次连接调用的错误代码</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>mysqli_connect_error()<ul>
+<li>作用<ul>
+<li>返回一个字符串描述的最后一次连接调用的错误代码</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>mysqli_errno()<ul>
+<li>作用<ul>
+<li>返回最近的函数调用产生的错误代码</li>
+</ul>
+</li>
+<li>语法<ul>
+<li>int mysqli_errno ( mysqli $link )</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>mysqli_error()<ul>
+<li>作用<ul>
+<li>返回字符串描述的最近一次函数调用产生的错误代码</li>
+</ul>
+</li>
+<li>语法<ul>
+<li>string mysqli_error ( mysqli $link )</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h6 id="字符集"><a href="#字符集" class="headerlink" title="字符集"></a>字符集</h6><ul>
+<li>mysqli_character_set_name()<ul>
+<li>作用<ul>
+<li>返回数据库连接的默认字符集</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>mysqli_get_charset()<ul>
+<li>作用<ul>
+<li>返回对象的字符集</li>
+</ul>
+</li>
+<li>语法<ul>
+<li>object mysqli_get_charset ( mysqli $link )</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>mysqli_set_charset()<ul>
+<li>作用<ul>
+<li>设置默认的客户端字符集</li>
+</ul>
+</li>
+<li>语法<ul>
+<li>bool mysqli_set_charset ( mysqli $link , string $charset )</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h6 id="信息相关"><a href="#信息相关" class="headerlink" title="信息相关"></a>信息相关</h6><ul>
+<li>mysqli_get_client_info()<ul>
+<li>作用<ul>
+<li>返回字符串类型的Mysql客户端版本信息</li>
+</ul>
+</li>
+<li>语法<ul>
+<li>string mysqli_get_client_info ( mysqli $link )<br>mysqli_get_client_version()</li>
+</ul>
+</li>
+<li>作用<ul>
+<li>将 MySQL 客户端库版本作为整数返回</li>
+</ul>
+</li>
+<li>语法<ul>
+<li>int mysqli_get_client_version ( mysqli $link )</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>mysqli_get_server_info()<ul>
+<li>作用<ul>
+<li>返回MySQL服务器的版本号</li>
+</ul>
+</li>
+<li>语法<ul>
+<li>string mysqli_get_server_info ( mysqli $link )<br>mysqli_get_server_version()</li>
+</ul>
+</li>
+<li>作用<ul>
+<li>作为一个整数返回MySQL服务器的版本</li>
+</ul>
+</li>
+<li>语法<ul>
+<li>int mysqli_get_server_version ( mysqli $link )</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>mysqli_get_host_info()<ul>
+<li>作用<ul>
+<li>返回 MySQL 服务器主机名和连接类型。</li>
+</ul>
+</li>
+<li>语法<ul>
+<li>string mysqli_get_host_info ( mysqli $link )</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>mysqli_get_proto_info()<ul>
+<li>作用<ul>
+<li>返回使用的Mysql协议的版本信息</li>
+</ul>
+</li>
+<li>语法<ul>
+<li>int mysqli_get_proto_info ( mysqli $link )</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>mysqli_stat()<ul>
+<li>作用<ul>
+<li>获取当前系统状态</li>
+</ul>
+</li>
+<li>语法<ul>
+<li>string mysqli_stat ( mysqli $link )</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>mysqli_thread_id()<ul>
+<li>作用<ul>
+<li>返回当前连接的线程ID</li>
+</ul>
+</li>
+<li>语法<ul>
+<li>int mysqli_thread_id ( mysqli $link )</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>mysqli_thread_safe()<ul>
+<li>作用<ul>
+<li>返回是否设定了线程安全</li>
+</ul>
+</li>
+<li>语法<ul>
+<li>bool mysqli_thread_safe ( void )</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h4 id="数据操作"><a href="#数据操作" class="headerlink" title="数据操作"></a>数据操作</h4><h6 id="数据库-1"><a href="#数据库-1" class="headerlink" title="数据库"></a>数据库</h6><ul>
+<li>mysqli_select_db()<ul>
+<li>作用<ul>
+<li>为数据库查询选择默认数据库</li>
+</ul>
+</li>
+<li>语法<ul>
+<li>bool mysqli_select_db ( mysqli $link , string $dbname )</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h6 id="数据"><a href="#数据" class="headerlink" title="数据"></a>数据</h6><ul>
+<li>mysqli_query()<ul>
+<li>作用<ul>
+<li>执行SQL查询</li>
+</ul>
+</li>
+<li>语法<ul>
+<li>mixed mysqli_query ( mysqli $link , string $query [, int $resultmode = MYSQLI_STORE_RESULT ] )</li>
+</ul>
+</li>
+<li>注意<ul>
+<li>$resultmode值<ul>
+<li>MYSQLI_USE_RESULT,检索大数据量</li>
+<li>MYSQLI_STORE_RESULT,默认值</li>
+</ul>
+</li>
+<li>执行其它查询，成功返回true，失败返回false</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>mysqli_real_query()<ul>
+<li>作用<ul>
+<li>执行一个mysql查询</li>
+</ul>
+</li>
+<li>语法<ul>
+<li>bool mysqli_real_query ( mysqli $link , string $query )</li>
+</ul>
+</li>
+<li>注意<ul>
+<li>执行一个单条数据库查询, 其结果可以使用mysqli_store_result()或mysqli_use_result()检索或存储.</li>
+<li>可以通过mysqli_field_count()得到结果集的数量</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>mysqli_multi_query()<ul>
+<li>作用<ul>
+<li>在数据库上执行一个多语句查询</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>mysqli_affected_rows()<ul>
+<li>作用<ul>
+<li>得到上一次MySQL操作影响的记录数</li>
+</ul>
+</li>
+<li>语法<ul>
+<li>int mysqli_affected_rows ( mysqli $link )</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>mysqli_insert_id()<ul>
+<li>作用<ul>
+<li>返回上一插入操作产生的AUTO_INCREMENT的值</li>
+</ul>
+</li>
+<li>语法<ul>
+<li>mixed mysqli_insert_id ( mysqli $link )</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h4 id="预处理操作"><a href="#预处理操作" class="headerlink" title="预处理操作"></a>预处理操作</h4><ul>
+<li>mysqli_prepare()<ul>
+<li>作用<ul>
+<li>准备一个用于执行的SQL语句</li>
+</ul>
+</li>
+<li>语法<ul>
+<li>mysqli_stmt mysqli_prepare ( mysqli $link , string $query )</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>mysqli_stmt_bind_param()</p>
+<ul>
+<li>作用<ul>
+<li>将一个变量作为参数绑定到prepared语句上</li>
+</ul>
+</li>
+<li>语法<ul>
+<li>bool mysqli_stmt_bind_param ( mysqli_stmt $stmt , string $types , mixed &amp;$var1 [, mixed &amp;$… ] )</li>
+</ul>
+</li>
+<li>注意<ul>
+<li>$types的值</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>mysqli_stmt_bind_result()</p>
+<ul>
+<li>作用<ul>
+<li>将一个变量绑定到一个prepared语句上用于结果存储</li>
+</ul>
+</li>
+<li>语法<ul>
+<li>bool mysqli_stmt_bind_result ( mysqli_stmt $stmt , mixed &amp;$var1 [, mixed &amp;$… ] )<br>mysqli_stmt_execute()</li>
+</ul>
+</li>
+<li>作用<ul>
+<li>执行一个prepared查询</li>
+</ul>
+</li>
+<li>语法<ul>
+<li>bool mysqli_stmt_execute ( mysqli_stmt $stmt )</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>mysqli_stmt_affected_rows()<ul>
+<li>作用<ul>
+<li>返回最后一条倍执行的语句改变，删除或插入的总行数</li>
+</ul>
+</li>
+<li>语法<ul>
+<li>int mysqli_stmt_affected_rows ( mysqli_stmt $stmt )</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>mysqli_stmt_insert_id()<ul>
+<li>作用<ul>
+<li>获取前一个INSERT操作生成的ID</li>
+</ul>
+</li>
+<li>语法<ul>
+<li>mixed mysqli_stmt_insert_id ( mysqli_stmt $stmt )</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>mysqli_stmt_errno()<ul>
+<li>作用<ul>
+<li>返回最近一次语句调用的错误代码</li>
+</ul>
+</li>
+<li>语法<ul>
+<li>int mysqli_stmt_errno ( mysqli_stmt $stmt )</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>mysqli_stmt_error()<ul>
+<li>作用<ul>
+<li>返回最后一条语句错误的字符串描述</li>
+</ul>
+</li>
+<li>语法<ul>
+<li>string mysqli_stmt_error ( mysqli_stmt $stmt )</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>mysqli_stmt_num_rows()<ul>
+<li>作用<ul>
+<li>返回语句结果集中的行数</li>
+</ul>
+</li>
+<li>语法<ul>
+<li>int mysqli_stmt_num_rows ( mysqli_stmt $stmt )</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>mysqli_stmt_param_count()<ul>
+<li>作用<ul>
+<li>返回给定语句中参数数量</li>
+</ul>
+</li>
+<li>语法<ul>
+<li>int mysqli_stmt_param_count ( mysqli_stmt $stmt )</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>mysqli_stmt_data_seek()<ul>
+<li>作用<ul>
+<li>查看语句结果集中的任意行</li>
+</ul>
+</li>
+<li>语法<ul>
+<li>void mysqli_stmt_data_seek ( mysqli_stmt $stmt , int $offset )</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>mysqli_stmt_fetch()<ul>
+<li>作用<ul>
+<li>从一个prepared语句中抓取结果到指定变量中</li>
+</ul>
+</li>
+<li>语法<ul>
+<li>bool mysqli_stmt_fetch ( mysqli_stmt $stmt )</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>mysqli_stmt_free_result()<ul>
+<li>作用<ul>
+<li>释放给定语句处理存储的结果集所占内存</li>
+</ul>
+</li>
+<li>语法<ul>
+<li>void mysqli_stmt_free_result ( mysqli_stmt $stmt )</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>mysqli_stmt_num_rows()<ul>
+<li>作用<ul>
+<li>返回结果集中记录的条数</li>
+</ul>
+</li>
+<li>语法<ul>
+<li>int mysqli_stmt_num_rows ( mysqli_stmt $stmt )</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>mysqli_stmt_store_result()<ul>
+<li>作用<ul>
+<li>从一个prepared语句中传输一个结果集</li>
+</ul>
+</li>
+<li>语法<ul>
+<li>bool mysqli_stmt_store_result ( mysqli_stmt $stmt )</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h4 id="结果集"><a href="#结果集" class="headerlink" title="结果集"></a>结果集</h4><ul>
+<li>mysqli_use_result()<ul>
+<li>作用<ul>
+<li>初始化一个结果集的取回</li>
+</ul>
+</li>
+<li>语法<ul>
+<li>mysqli_result mysqli_use_result ( mysqli $link )</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>mysqli_more_results()<ul>
+<li>作用<ul>
+<li>检查一个多语句查询是否还有其他查询结果集</li>
+</ul>
+</li>
+<li>语法<ul>
+<li>bool mysqli_more_results ( mysqli $link )</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>mysqli_next_result()<ul>
+<li>作用<ul>
+<li>从multi_query中准备下一个结果集</li>
+</ul>
+</li>
+<li>语法<ul>
+<li>bool mysqli_next_result ( mysqli $link )</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>mysqli_num_rows()<ul>
+<li>作用<ul>
+<li>获取结果集中记录条数</li>
+</ul>
+</li>
+<li>语法<ul>
+<li>int mysqli_num_rows ( mysqli_result $result )</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>mysqli_fetch_all()<ul>
+<li>作用<ul>
+<li>抓取所有的结果行并且以关联数据，数值索引数组，或者两者皆有的方式返回结果集。仅可用于 mysqlnd。</li>
+</ul>
+</li>
+<li>语法<ul>
+<li>mixed mysqli_fetch_all ( mysqli_result $result [, int $resulttype = MYSQLI_NUM ] )</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>mysqli_fetch_array()<ul>
+<li>作用<ul>
+<li>以一个关联数组，数值索引数组，或者两者皆有的方式抓取一行结果</li>
+</ul>
+</li>
+<li>语法<ul>
+<li>mixed mysqli_fetch_array ( mysqli_result $result [, int $resulttype = MYSQLI_BOTH ] )</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>mysqli_fetch_assoc()<ul>
+<li>作用<ul>
+<li>以一个关联数组方式抓取一行结果</li>
+</ul>
+</li>
+<li>语法<ul>
+<li>array mysqli_fetch_assoc ( mysqli_result $result )</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>mysqli_fetch_row()<ul>
+<li>作用<ul>
+<li>以索引数组返回结果集中的一行</li>
+</ul>
+</li>
+<li>语法<ul>
+<li>mixed mysqli_fetch_row ( mysqli_result $result )</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>mysqli_fetch_object()<ul>
+<li>作用<ul>
+<li>以一个对象的方式返回一个结果集中的当前行</li>
+</ul>
+</li>
+<li>语法<ul>
+<li>object mysqli_fetch_object ( mysqli_result $result [, string $class_name = “stdClass” [, array $params ]] )</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>mysqli_data_seek()<ul>
+<li>作用<ul>
+<li>将结果中的结果指针调整到任意行</li>
+</ul>
+</li>
+<li>语法<ul>
+<li>将结果中的结果指针调整到任意行</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>mysqli_field_count()<ul>
+<li>作用<ul>
+<li>返回最近一次查询获取到的列的数目</li>
+</ul>
+</li>
+<li>语法<ul>
+<li>int mysqli_field_count ( mysqli $link )</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>mysqli_num_fields()<ul>
+<li>作用<ul>
+<li>获取结果中字段数量</li>
+</ul>
+</li>
+<li>语法<ul>
+<li>int mysqli_num_fields ( mysqli_result $result )</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>mysqli_fetch_field()<ul>
+<li>作用<ul>
+<li>从结果集中取得下一字段（列），并作为对象返回</li>
+</ul>
+</li>
+<li>语法<ul>
+<li>mysqli_fetch_field(result);</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>mysqli_fetch_fields()<ul>
+<li>作用<ul>
+<li>返回一个代表结果集字段的对象数组</li>
+</ul>
+</li>
+<li>语法<ul>
+<li>array mysqli_fetch_fields ( mysqli_result $result )</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>mysqli_field_seek()<ul>
+<li>作用<ul>
+<li>设置结果指针到特定的字段开始位置</li>
+</ul>
+</li>
+<li>语法<ul>
+<li>bool mysqli_field_seek ( mysqli_result $result , int $fieldnr )</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>mysqli_field_tell()<ul>
+<li>作用<ul>
+<li>获取当前字段在结果集指针中的开始位置</li>
+</ul>
+</li>
+<li>语法<ul>
+<li>int mysqli_field_tell ( mysqli_result $result )</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>mysqli_fetch_field_direct()<ul>
+<li>作用<ul>
+<li>抓取一个单字段的元数据</li>
+</ul>
+</li>
+<li>语法<ul>
+<li>object mysqli_fetch_field_direct ( mysqli_result $result , int $fieldnr )</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h4 id="事务"><a href="#事务" class="headerlink" title="事务"></a>事务</h4><ul>
+<li>mysqli_autocommit()<ul>
+<li>作用<ul>
+<li>打开或关闭数据库的自动提交功能</li>
+</ul>
+</li>
+<li>语法<ul>
+<li>bool mysqli_autocommit ( mysqli $link , bool $mode )</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>mysqli_commit()<ul>
+<li>作用<ul>
+<li>提交当前事务</li>
+</ul>
+</li>
+<li>语法<ul>
+<li>bool mysqli_commit ( mysqli $link )</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>mysqli_rollback()<ul>
+<li>作用<ul>
+<li>回滚当前事务</li>
+</ul>
+</li>
+<li>语法<ul>
+<li>bool mysqli_rollback ( mysqli $link )</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="http://pd1l3bbt7.bkt.clouddn.com/img/wechatimg.jpg" alt="曹理鹏@iCocos 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="http://pd1l3bbt7.bkt.clouddn.com/img/alipayimg.jpg" alt="曹理鹏@iCocos 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>曹理鹏@iCocos</li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://icocos.github.io/2018/12/26/PHP基础——MySQLi入门与常用操作总结/" title="PHP基础——MySQLi入门与常用操作总结">https://icocos.github.io/2018/12/26/PHP基础——MySQLi入门与常用操作总结/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明出处！</li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/12/25/PHP——接口设计规范/" rel="next" title="PHP——接口设计规范">
+                <i class="fa fa-chevron-left"></i> PHP——接口设计规范
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/12/28/PHP——数据库相关操作与分页功能封装/" rel="prev" title="PHP——数据库相关操作与分页功能封装">
+                PHP——数据库相关操作与分页功能封装 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="SOHUCS"></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="http://pd1l3bbt7.bkt.clouddn.com/icocos_user_icon.JPG"
+                alt="曹理鹏@iCocos" />
+            
+              <p class="site-author-name" itemprop="name">曹理鹏@iCocos</p>
+              <p class="site-description motion-element" itemprop="description">纯码迷、爱学习、爱交友、喜欢接触新鲜事物、迎接新的挑战，更爱游离于错综复杂的编码与逻辑中！</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives">
+                
+                    <span class="site-state-item-count">127</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">17</span>
+                    <span class="site-state-item-name">分类</span>
+                  
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">188</span>
+                    <span class="site-state-item-name">标签</span>
+                  
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/al1020119" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:al1020119@163.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://stackoverflow.com/users/10186720" target="_blank" title="StackOverflow"><i class="fa fa-fw fa-stack-overflow"></i>StackOverflow</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.icocos.cn/" title="梦工厂" target="_blank">梦工厂</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://al1020119.github.io/" title="iOS梦工厂" target="_blank">iOS梦工厂</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#目录"><span class="nav-number">1.</span> <span class="nav-text">目录</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数据库"><span class="nav-number"></span> <span class="nav-text">数据库</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#DBMS分类"><span class="nav-number">0.1.</span> <span class="nav-text">DBMS分类</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SQL语言"><span class="nav-number"></span> <span class="nav-text">SQL语言</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#相关操作"><span class="nav-number">0.1.</span> <span class="nav-text">相关操作</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MySQLi简介"><span class="nav-number"></span> <span class="nav-text">MySQLi简介</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MySQLi配置"><span class="nav-number"></span> <span class="nav-text">MySQLi配置</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#MySQL相关配置"><span class="nav-number">0.1.</span> <span class="nav-text">MySQL相关配置</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MySQLi检测"><span class="nav-number"></span> <span class="nav-text">MySQLi检测</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MySQLi操作步骤"><span class="nav-number"></span> <span class="nav-text">MySQLi操作步骤</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#PHP打开错误提示和关闭错误提示的方法"><span class="nav-number">0.1.</span> <span class="nav-text">PHP打开错误提示和关闭错误提示的方法</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#一、建立连接"><span class="nav-number">0.2.</span> <span class="nav-text">一、建立连接</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#二、设置字符集"><span class="nav-number">0.3.</span> <span class="nav-text">二、设置字符集</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#三、打开指定数据库"><span class="nav-number">0.4.</span> <span class="nav-text">三、打开指定数据库</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#执行SQL查询"><span class="nav-number">0.5.</span> <span class="nav-text">执行SQL查询</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#查询并显示用户列表数据"><span class="nav-number">0.6.</span> <span class="nav-text">查询并显示用户列表数据</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#释放结果集"><span class="nav-number">0.7.</span> <span class="nav-text">释放结果集</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#关闭连接"><span class="nav-number">0.8.</span> <span class="nav-text">关闭连接</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MySQLi常见函数"><span class="nav-number"></span> <span class="nav-text">MySQLi常见函数</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#连接"><span class="nav-number">1.</span> <span class="nav-text">连接</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#连接-1"><span class="nav-number">1.0.1.</span> <span class="nav-text">连接</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#错误"><span class="nav-number">1.0.2.</span> <span class="nav-text">错误</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#字符集"><span class="nav-number">1.0.3.</span> <span class="nav-text">字符集</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#信息相关"><span class="nav-number">1.0.4.</span> <span class="nav-text">信息相关</span></a></li></ol></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#数据操作"><span class="nav-number">2.</span> <span class="nav-text">数据操作</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#数据库-1"><span class="nav-number">2.0.1.</span> <span class="nav-text">数据库</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#数据"><span class="nav-number">2.0.2.</span> <span class="nav-text">数据</span></a></li></ol></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#预处理操作"><span class="nav-number">3.</span> <span class="nav-text">预处理操作</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#结果集"><span class="nav-number">4.</span> <span class="nav-text">结果集</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#事务"><span class="nav-number">5.</span> <span class="nav-text">事务</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2017 – <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">曹理鹏@iCocos</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">站点总字数：</span>
+    
+    <span title="站点总字数">712k</span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    
+    <span title="站点阅读时长">10:47</span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv" title="总访客量">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="site-pv" title="总访问量">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/reading_progress/reading_progress.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.3.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.3.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.3.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.3.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+  
+    <script type="text/javascript">
+    (function(){
+      var appid = 'cytKHBEtW';
+      var conf = '43989b8e63b25c4e9f1fde821c996a39';
+      var width = window.innerWidth || document.documentElement.clientWidth;
+      if (width < 960) {
+      window.document.write('<script id="changyan_mobile_js" charset="utf-8" type="text/javascript" src="https://changyan.sohu.com/upload/mobile/wap-js/changyan_mobile.js?client_id=' + appid + '&conf=' + conf + '"><\/script>'); } else { var loadJs=function(d,a){var c=document.getElementsByTagName("head")[0]||document.head||document.documentElement;var b=document.createElement("script");b.setAttribute("type","text/javascript");b.setAttribute("charset","UTF-8");b.setAttribute("src",d);if(typeof a==="function"){if(window.attachEvent){b.onreadystatechange=function(){var e=b.readyState;if(e==="loaded"||e==="complete"){b.onreadystatechange=null;a()}}}else{b.onload=a}}c.appendChild(b)};loadJs("https://changyan.sohu.com/upload/changyan.js",function(){
+        window.changyan.api.config({appid:appid,conf:conf})});
+      }
+    })();
+    </script>
+    <script type="text/javascript" src="https://assets.changyan.sohu.com/upload/plugins/plugins.count.js"></script>
+  
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("Tc7k1mbaieCUSgmM8LPk1IBO-gzGzoHsz", "sAb7L2vwENJTteRrvFKQacUU");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            
+              var $element = $(document.getElementById(url));
+              $element.find('.leancloud-visitors-count').text(counter.get('time'));
+            
+            counter.save(null, {
+              success: function(counter) {
+                
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            
+              var $element = $(document.getElementById(url));
+              $element.find('.leancloud-visitors-count').text('Counter not initialized! See more at console err msg.');
+              console.error('ATTENTION! LeanCloud counter has security bug, see here how to solve it: https://github.com/theme-next/hexo-leancloud-counter-security. \n But you also can use LeanCloud without security, by set \'security\' option to \'false\'.');
+            
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #333;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #eee;
+      background-image: linear-gradient(#fcfcfc, #eee);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('复制').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+          if(result)$(this).text('复制成功')
+          else $(this).text('复制失败')
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('复制')
+        }, 300)
+      }).append(e)
+    })
+  </script>
+
+
+  
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("Tc7k1mbaieCUSgmM8LPk1IBO-gzGzoHsz", "sAb7L2vwENJTteRrvFKQacUU");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+  
+</body>
+</html>
