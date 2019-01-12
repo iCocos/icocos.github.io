@@ -120,16 +120,16 @@
 <meta property="og:site_name" content="iCocos">
 <meta property="og:description" content="此篇文章的起源是由最近一次APP被拒引起的，就在上周，我们App因为ipv6的问题被拒了，当时我就纳闷了，前一次都没有被拒，这一次只改功能，逻辑，界面并没有涉及第三方或者网络相关集成，于是不得不整理一番……">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/iCocosImages/IPV6/ipv60001.png">
-<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/iCocosImages/IPV6/ipv60002.png">
-<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/iCocosImages/IPV6/ipv60003.png">
-<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/iCocosImages/IPV6/ipv60004.png">
-<meta property="og:image" content="http://pd1l3bbt7.bkt.clouddn.com/iCocosImages/IPV6/ipv60005.png">
-<meta property="og:updated_time" content="2018-10-31T09:23:14.218Z">
+<meta property="og:image" content="https://raw.githubusercontent.com/iCocos/icocos_hexo_images/master/iCocosImages/IPV6/ipv60001.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/iCocos/icocos_hexo_images/master/iCocosImages/IPV6/ipv60002.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/iCocos/icocos_hexo_images/master/iCocosImages/IPV6/ipv60003.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/iCocos/icocos_hexo_images/master/iCocosImages/IPV6/ipv60004.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/iCocos/icocos_hexo_images/master/iCocosImages/IPV6/ipv60005.png">
+<meta property="og:updated_time" content="2019-01-12T14:52:08.687Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="iOS——ipv6(服务器)">
 <meta name="twitter:description" content="此篇文章的起源是由最近一次APP被拒引起的，就在上周，我们App因为ipv6的问题被拒了，当时我就纳闷了，前一次都没有被拒，这一次只改功能，逻辑，界面并没有涉及第三方或者网络相关集成，于是不得不整理一番……">
-<meta name="twitter:image" content="http://pd1l3bbt7.bkt.clouddn.com/iCocosImages/IPV6/ipv60001.png">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/iCocos/icocos_hexo_images/master/iCocosImages/IPV6/ipv60001.png">
 
 
 
@@ -519,7 +519,7 @@
 <p>好了，废话不多说,本次讲以服务器和客户端讲解ipv6支持的实现，处理，细节。客户端将在下节介绍。</p>
 <h3 id="首先我们来为服务器量身定制的解决方案"><a href="#首先我们来为服务器量身定制的解决方案" class="headerlink" title="首先我们来为服务器量身定制的解决方案"></a>首先我们来为服务器量身定制的解决方案</h3><pre><code>提供最快捷、稳定、高效、安全、可靠的IPv6解决方法.
 </code></pre><p>苹果AppStore审核员在美国的IPv6-Only环境下对APP进行访问（审核），如果APP Server支持IPv6，则可直接访问；如果APP Server不支持IPv6，则通过DNS64 +NAT64进行访问；很明显，大部分开发者的APP服务器都是不支持IPv6直接访问的，所以基本是用NAT64+DNS64进行访问的。那么我们就先了解NAT64+DNS64的访问机制吧，直接看图：</p>
-<p> <img src="http://pd1l3bbt7.bkt.clouddn.com/iCocosImages/IPV6/ipv60001.png" alt="曹理鹏(iCocos)-梦工厂"> </p>
+<p> <img src="https://raw.githubusercontent.com/iCocos/icocos_hexo_images/master/iCocosImages/IPV6/ipv60001.png" alt="曹理鹏(iCocos)-梦工厂"> </p>
 <p>从这里看出审核的关键在于能不能获取一个有效的Server IPv6地址。当苹果公司的APP审核员在进行审核时，由于国内大部分开发者的APPserver没有IPv6地址，只能通过苹果公司自己的NAT64+DNS64服务器进行测试，而最关键的是苹果的服务器不能有效的给APPserver返回一个IPv6地址，这就导致了审核失败，APP被拒。</p>
 <p>就国内目前来说审核被拒的主要原因有第三个：</p>
 <pre><code>1、国内大部分APP服务器没有IPv6地址，导致DNS无法解析；
@@ -530,18 +530,18 @@
 </code></pre><p>那么该如何解决这些问题呢？</p>
 <h2 id="方案一"><a href="#方案一" class="headerlink" title="方案一"></a>方案一</h2><p>就目前国内的现状，能够提供这种服务的当属教育网了，中国教育网坐拥全国几百所高校，拥有真实的IPv6骨干网络，国际出口，IPv6资源丰富，服务质量好。</p>
 <p>因此解决方案就是使用教育网的NAT64+DNS64服务，方案示意图如下：</p>
-<p><img src="http://pd1l3bbt7.bkt.clouddn.com/iCocosImages/IPV6/ipv60002.png" alt="曹理鹏(iCocos)-梦工厂"> </p>
+<p><img src="https://raw.githubusercontent.com/iCocos/icocos_hexo_images/master/iCocosImages/IPV6/ipv60002.png" alt="曹理鹏(iCocos)-梦工厂"> </p>
 <p>具体的操作步骤就是使用教育网的NAT64+DNS64，把您的域名发给我们，帮你解析出IPv6地址（全球可达的地址），您只需在您的域名管理中添加一条4A记录即可，之后就可以提交审核了，一天之后你就会发现审核通过了！</p>
 <h2 id="解决方案二"><a href="#解决方案二" class="headerlink" title="解决方案二"></a>解决方案二</h2><p>既然审核被拒是因为IPV6，那么我们就让服务器支持就可以了，但是很多运营商的服务器不提供IPv6地址，这样的话就要使用IPv6隧道技术,通过建立隧道使自己的服务器通过IPv6隧道来支持IPv6,方案示意图如下：</p>
-<p><img src="http://pd1l3bbt7.bkt.clouddn.com/iCocosImages/IPV6/ipv60003.png" alt="曹理鹏(iCocos)-梦工厂"> </p>
+<p><img src="https://raw.githubusercontent.com/iCocos/icocos_hexo_images/master/iCocosImages/IPV6/ipv60003.png" alt="曹理鹏(iCocos)-梦工厂"> </p>
 <p>使用IPv6隧道服务APP服务器必须满足三个条件：</p>
 <pre><code>① 服务器拥有公网IPv4地址
 ② 服务器支持IPv6协议
 ③ 服务器放行6in4协议
 </code></pre><p>具体的配置如下：（这里只是举个例子）</p>
-<p><img src="http://pd1l3bbt7.bkt.clouddn.com/iCocosImages/IPV6/ipv60004.png" alt="曹理鹏(iCocos)-梦工厂"> </p>
+<p><img src="https://raw.githubusercontent.com/iCocos/icocos_hexo_images/master/iCocosImages/IPV6/ipv60004.png" alt="曹理鹏(iCocos)-梦工厂"> </p>
 <p>确认申请了IPv6隧道服务并按照上述模板进行配置完成后，请检查防火墙（iptables）是否放行了6in4协议，并确认(/etc/sysctl.conf)中IPv6转发已打开。如果上述操作都已正确完成，那么在你的服务器上应该可以看到如下结果：</p>
-<p><img src="http://pd1l3bbt7.bkt.clouddn.com/iCocosImages/IPV6/ipv60005.png" alt="曹理鹏(iCocos)-梦工厂"> </p>
+<p><img src="https://raw.githubusercontent.com/iCocos/icocos_hexo_images/master/iCocosImages/IPV6/ipv60005.png" alt="曹理鹏(iCocos)-梦工厂"> </p>
 <p>至此，IPv6隧道搭建完毕，服务器已经支持IPv6了，赶紧提交审核去吧！</p>
 <p>目前来说，服务器对ipv6支持的的实现，大部分公司或者技术人员都可以做，要求并不高。</p>
 <blockquote>
