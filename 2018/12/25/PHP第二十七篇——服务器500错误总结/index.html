@@ -1,0 +1,2108 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.3.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="http://pd1l3bbt7.bkt.clouddn.com/img/favicon.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="http://pd1l3bbt7.bkt.clouddn.com/img/favicon.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="http://pd1l3bbt7.bkt.clouddn.com/img/favicon.png?v=6.3.0">
+
+
+  <link rel="mask-icon" href="http://pd1l3bbt7.bkt.clouddn.com/img/favicon.png?v=6.3.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="之前做客户端开发的时候，经常出现500错误，当时能做的就是告诉后台：某某api出现了500，然后没有几分钟就好了。而且一个项目下来出现最多次数的也就是500......">
+<meta name="keywords" content="PHP,500错误">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PHP第二十七篇——服务器500错误总结">
+<meta property="og:url" content="https://icocos.github.io/2018/12/25/PHP第二十七篇——服务器500错误总结/index.html">
+<meta property="og:site_name" content="iCocos">
+<meta property="og:description" content="之前做客户端开发的时候，经常出现500错误，当时能做的就是告诉后台：某某api出现了500，然后没有几分钟就好了。而且一个项目下来出现最多次数的也就是500......">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-03-01T10:38:30.056Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="PHP第二十七篇——服务器500错误总结">
+<meta name="twitter:description" content="之前做客户端开发的时候，经常出现500错误，当时能做的就是告诉后台：某某api出现了500，然后没有几分钟就好了。而且一个项目下来出现最多次数的也就是500......">
+
+
+
+  <link rel="alternate" href="/atom.xml" title="iCocos" type="application/atom+xml" />
+
+
+
+
+  <link rel="canonical" href="https://icocos.github.io/2018/12/25/PHP第二十七篇——服务器500错误总结/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>PHP第二十七篇——服务器500错误总结 | iCocos</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">iCocos</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">www.icocos.cn</p>
+      
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-首页">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-归档">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-关于">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-作品">
+    <a href="/works/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-calendar"></i> <br />作品</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-简历">
+    <a href="/resume/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-sitemap"></i> <br />简历</a>
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+    <div class="reading-progress-bar"></div>
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://icocos.github.io/2018/12/25/PHP第二十七篇——服务器500错误总结/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="曹理鹏@iCocos">
+      <meta itemprop="description" content="纯码迷、爱学习、爱交友、喜欢接触新鲜事物、迎接新的挑战，更爱游离于错综复杂的编码与逻辑中！">
+      <meta itemprop="image" content="http://pd1l3bbt7.bkt.clouddn.com/icocos_user_icon.JPG">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="iCocos">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">PHP第二十七篇——服务器500错误总结
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-12-25 21:57:45" itemprop="dateCreated datePublished" datetime="2018-12-25T21:57:45+08:00">2018-12-25</time>
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/PHP/" itemprop="url" rel="index"><span itemprop="name">PHP</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+              <span class="post-meta-divider">|</span>
+              <span class="post-meta-item-icon">
+                <i class="fa fa-comment-o"></i>
+              </span>
+              
+                <a href="/2018/12/25/PHP第二十七篇——服务器500错误总结/#SOHUCS" itemprop="discussionUrl">
+                  <span class="post-meta-item-text">评论数：</span> <span id="changyan_count_unit" class="post-comments-count hc-comment-count" data-xid="2018/12/25/PHP第二十七篇——服务器500错误总结/" itemprop="commentsCount"></span>
+                </a>
+              
+            
+          
+
+          
+          
+             <span id="/2018/12/25/PHP第二十七篇——服务器500错误总结/" class="leancloud_visitors" data-flag-title="PHP第二十七篇——服务器500错误总结">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数：</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon"
+            >
+            <i class="fa fa-eye"></i>
+             阅读次数： 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+            <div class="post-symbolscount">
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">本文字数：</span>
+                
+                <span title="本文字数">4.6k</span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">4 分钟</span>
+              
+            </div>
+          
+
+          
+              <div class="post-description">之前做客户端开发的时候，经常出现500错误，当时能做的就是告诉后台：某某api出现了500，然后没有几分钟就好了。而且一个项目下来出现最多次数的也就是500......</div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>之前做客户端开发的时候，经常出现500错误，当时能做的就是告诉后台：某某api出现了500，然后没有几分钟就好了。而且一个项目下来出现最多次数的也就是500……</p>
+<a id="more"></a>
+<h2 id="500错误"><a href="#500错误" class="headerlink" title="500错误"></a>500错误</h2><p>接触了服务器开发之后，自己在写一些简单接口的时候，也总是发现500，而且几乎所有的500都不是一样原因导致，所以就找了一些教程，并请教了有些大神，自己在接口开发中也掌握了不少相关了技巧。</p>
+<p>如果你在学习或者开发中也遇到了，比较奇葩500错误，可以联系我，我们一起交流讨论，一并整理出来。</p>
+<pre><code>出现500错误的原因是很多的，一般来说，如果程序出错，那么在浏览器内会返回给用户一个友好的错误提示，统一称之为服务器500错误。 解决的方法就是您必须在http中能够正确的获得错误信息，方法为：请打开浏览器，选择工具，internet选项，高级，在高级中的浏览项目里面有一个\&quot;显示http友好错误提示\&quot;的复选框，请取消该复选框，这样您可以获得正确的错误提示。 在获得正确的错误提示之后，您就可以根据该错误提示检查您具体的出错原因了
+</code></pre><p>HTTP 500错误一定是你的PHP代码有错误，PHP解释器执行不了。两个方法找错误</p>
+<pre><code>1) 用有语法检查提示的编辑器，比如Eclipse打开你的文件看看有没有错误提示，注意require里面的文件也要检查
+2) 加error_log(&quot;error_message&quot;, 3, &quot;log.txt&quot;);在你想输出信息的地方，用这种方式找代码哪句有问题。
+</code></pre><p>当我我们一定时常注意log的日志，因为大部分错误或者异常在log都能清楚，或者通过分析找到问题所在并解决</p>
+<pre><code>1 先看nginx error.log 指定的错误日记文件路径 找到这个日记文件看 里面信息
+
+2 再看  php-fpm.conf 里面指定的PHP错误日记的路径
+</code></pre><h3 id="具体如下"><a href="#具体如下" class="headerlink" title="具体如下"></a>具体如下</h3><pre><code>php_flag[display_errors] = off
+php_admin_flag[log_errors] = on
+php_admin_value[error_log] = /data/logs/fpm-php.log
+</code></pre><h3 id="在网上找到一段话，这是在windows上开发的时候出现的问题及解决方案，当然Mac上也差不多"><a href="#在网上找到一段话，这是在windows上开发的时候出现的问题及解决方案，当然Mac上也差不多" class="headerlink" title="在网上找到一段话，这是在windows上开发的时候出现的问题及解决方案，当然Mac上也差不多"></a>在网上找到一段话，这是在windows上开发的时候出现的问题及解决方案，当然Mac上也差不多</h3><pre><code>1、运行的用户数过多，对服务器造成的压力过大，服务器无法响应，则报HTTP500错误。减小用户数或者场景持续时间，问题得到解决。
+2、该做关联的地方没有去做关联，则报HTTP500错误。进行手工或者自动关联，问题得到解决。
+3、录制时请求的页面、图片等，在回放的时候服务器找不到，则报HTTP500错误，若该页面无关紧要，则可以在脚本中注释掉，问题将会得到解决。例如：有验证码的情况下，尽管测试时已经屏蔽了，但是录制的时候提交了请求，但回放的时候不存在响应。
+4、参数化时的取值有问题，则报HTTP500错误。可将参数化列表中的数值，拿到实际应用系统中进行测试，可排除问题。
+5、更换了应用服务器（中间件的更换，如tomcat、websphere、jboss等），还是利用原先录制的脚本去运行，则很可能报HTTP500错误。因为各种应用服务器处理的机制不一样，所录制的脚本也不一样，解决办法只有重新录制脚本。
+6、Windowsxp2 与ISS组件不兼容，则有可能导致HTTP500错误。对ISS组件进行调整后问题解决。
+7、系统开发程序写的有问题，则报HTTP500错误。例如有些指针问题没有处理好的，有空指针情况的存在。修改程序后问题解决。
+8、如果测试中所进行的操作涉及到数据库，如插入数据操作，若大数据量的情况下导致数据库中表空间已满，或者数据库连接池较小无法满足数据的存取等，都有可能导致HTTP500错误。调整数据库、修改连接池大小，问题解决。
+</code></pre><h2 id="下面是某教程网站上在Nginx上出现的一个棘手的500错误。。"><a href="#下面是某教程网站上在Nginx上出现的一个棘手的500错误。。" class="headerlink" title="下面是某教程网站上在Nginx上出现的一个棘手的500错误。。"></a>下面是某教程网站上在Nginx上出现的一个棘手的500错误。。</h2><p>原文地址：<a href="https://www.phpxy.com/article/109.html" target="_blank" rel="noopener">https://www.phpxy.com/article/109.html</a></p>
+<h3 id="产生原因："><a href="#产生原因：" class="headerlink" title="产生原因："></a>产生原因：</h3><pre><code>恢复aliyun阿里云的镜像，发现不论如何访问服务器都提示500
+</code></pre><h3 id="出现了问500错误，第一件事情要处理的是查看日志。"><a href="#出现了问500错误，第一件事情要处理的是查看日志。" class="headerlink" title="出现了问500错误，第一件事情要处理的是查看日志。"></a>出现了问500错误，第一件事情要处理的是查看日志。</h3><pre><code>1. 日志系统是否记录了日志
+
+2. 发现日志系统未记录日志，所以说不好去发现问题。
+
+3. 解决nginx未记录日志的问题，在/usr/local/nginx/conf/vhost/ uluqu.com.conf下增加error_log选项指定至目录
+
+4. 发现nginx无法启动，错误提示 /var/log/nginx 目录未存在
+
+5.使用mkdir 创建/var/log/nginx 目录
+
+6. 重新启动nginx,php-fpm等，发现解决成功
+
+7. 打开错误日志目录，发现日志已生成
+
+8.访问 www.uluqu.com/index.php 和phpinfo.php 页面，查看日志中记录的两项错误
+
+9. 错误提醒分别为php parse error define错误，第二个是发现 memory allowed limit 类的错误。分析原因是内存不足或者未合理管理内存造的。
+
+10. 清理服务器内存 free -m 然后执行echo 1 &gt; /proc/sys/vm/drop_caches
+
+11. 再次判断可能因为php.ini文件出错，解决办法：修改php.ini中的memroy_limit参数
+
+12. 经查发现memroy_limit 这个参数写的是512而不是512M。修改参数，重启相关服务。
+
+13. 访问地址问题解决
+</code></pre><p>在运行PHP程序，通常会遇到“Fatal Error： Allowed memory size of xxxxxx bytes exhausted”的错误， 这个意味着PHP脚本使用了过多的内存，并超出了系统对其设置的允许最大内存。</p>
+<blockquote>
+<p>解决这个问题，首先需要查看你的程序是否分配了过多的内存，在程序没有问题的情况下，你可以通过一下方法来增加PHP的内存限制（memory_limit）。</p>
+</blockquote>
+<h3 id="检查php的内存限制值"><a href="#检查php的内存限制值" class="headerlink" title="检查php的内存限制值"></a>检查php的内存限制值</h3><pre><code>为了查看这个值，你需要建立一个空的php文件，比如view-php-info.php。然后将一下代码贴到里面。
+</code></pre><h3 id="memory-limit应该设为多少？"><a href="#memory-limit应该设为多少？" class="headerlink" title="memory_limit应该设为多少？"></a>memory_limit应该设为多少？</h3><pre><code>这个完全依赖于你的应用的要求。比如Wordpress，运行起核心代码需要32MB。Drupal 6则要求这个值最小为16MB，并推荐设置为32MB。如果你又安装不少的插件（plugins），尤其是那些要进行图像处理的模块，那么你可能需要128MB或更高的内存。
+</code></pre><h2 id="方法1：-php-ini"><a href="#方法1：-php-ini" class="headerlink" title="方法1： php.ini"></a>方法1： php.ini</h2><p>最简单或常用的方法是修改php.ini</p>
+<h3 id="1-首先找到对你的网站生效的php-ini文件-由于有多个地方都可以设置php的参数，找到正确的配置文件，并进行更改是首先要做的一步。"><a href="#1-首先找到对你的网站生效的php-ini文件-由于有多个地方都可以设置php的参数，找到正确的配置文件，并进行更改是首先要做的一步。" class="headerlink" title="1.首先找到对你的网站生效的php.ini文件 由于有多个地方都可以设置php的参数，找到正确的配置文件，并进行更改是首先要做的一步。"></a>1.首先找到对你的网站生效的php.ini文件 由于有多个地方都可以设置php的参数，找到正确的配置文件，并进行更改是首先要做的一步。</h3><pre><code>对于Linux用户，你可以通过执行“php -i | grep Loaded Configuration File”来找到对应的配置文件。而Windows用户，你可以尝试修改你的php安装目录下的php.ini。
+</code></pre><h3 id="2-编辑php-ini-在php-ini中，找到“memory-limit”这一项，如果没有，你可以在文件的尾部自己增加这个参数。以下是一些设置范例"><a href="#2-编辑php-ini-在php-ini中，找到“memory-limit”这一项，如果没有，你可以在文件的尾部自己增加这个参数。以下是一些设置范例" class="headerlink" title="2.编辑php.ini 在php.ini中，找到“memory_limit”这一项，如果没有，你可以在文件的尾部自己增加这个参数。以下是一些设置范例"></a>2.编辑php.ini 在php.ini中，找到“memory_limit”这一项，如果没有，你可以在文件的尾部自己增加这个参数。以下是一些设置范例</h3><pre><code>memory_limit = 128M ; 可以将128M改为任何你想设置的值,保存文件
+</code></pre><h3 id="3-重启web-服务器-如果是web服务器使用Apache，-则执行："><a href="#3-重启web-服务器-如果是web服务器使用Apache，-则执行：" class="headerlink" title="3.重启web 服务器 如果是web服务器使用Apache， 则执行："></a>3.重启web 服务器 如果是web服务器使用Apache， 则执行：</h3><pre><code>httpd restart
+</code></pre><p>有些情况下，你可能不被允许私修改php.ini。比如如果你购买了虚拟主机服务，但是你的服务商确禁止你修改这个文件。那么，你可以需要考虑用其他方法来增加memory_limit的值。</p>
+<h2 id="方法2：-htaccess"><a href="#方法2：-htaccess" class="headerlink" title="方法2： .htaccess"></a>方法2： .htaccess</h2><p>说明： 这种方法只有在php以Apache模块来执行时才生效。 在你的网站的根目录下找到“.htaccess”文件，如果没有，可以自己创建一个。然后把以下配置放入其中</p>
+<pre><code>php_value memory_limit 128M ; 可以将128M改为任何你想设置的值
+</code></pre><h2 id="方法3：-运行时修改php的内存设置"><a href="#方法3：-运行时修改php的内存设置" class="headerlink" title="方法3： 运行时修改php的内存设置"></a>方法3： 运行时修改php的内存设置</h2><h3 id="在你的php代码中增加以下命令行即可。"><a href="#在你的php代码中增加以下命令行即可。" class="headerlink" title="在你的php代码中增加以下命令行即可。"></a>在你的php代码中增加以下命令行即可。</h3><pre><code>ini_set(&apos;memory_limit&apos;,&apos;128M&apos;);
+</code></pre><h3 id="memory-limit修改失败"><a href="#memory-limit修改失败" class="headerlink" title="memory_limit修改失败"></a>memory_limit修改失败</h3><pre><code>如果你使用虚拟主机，有可能会出现memory_limit的值修改失败。这个需要联系你的服务商看怎么处理，通常他们限制了可以设置的最大值或者根本就不允许你修改。如果他们的环境真的无法满足你的要求，那么你可能要考虑换一个主机服务商。
+</code></pre><h2 id="生产环境下故障处理一例"><a href="#生产环境下故障处理一例" class="headerlink" title="生产环境下故障处理一例"></a>生产环境下故障处理一例</h2><h3 id="现象说明："><a href="#现象说明：" class="headerlink" title="现象说明："></a>现象说明：</h3><pre><code>生产环境下，storage服务器上没有安装任何服务（如apache，nginx，IIS等）现在是纯命令行执行PHP跑PHP脚本，在脚本的执行过程中发现（脚本内容含每次取5000个文件然后执行其它操作）速度奇慢，在本地测试时分分钟内搞定的事，在线上要执行2个多小时，经过排查排除掉服务器负载问题、数据库问题、服务器网络问题后，认为可能是php.ini配置文件中的资源限制所引起，于是修改了一下memory_limit将默认值128M修改为1024M后再次执行原脚本，速度得到大幅度提升，现把此参数的含义说明一下。
+</code></pre><h3 id="修改后需不需要重启？"><a href="#修改后需不需要重启？" class="headerlink" title="修改后需不需要重启？"></a>修改后需不需要重启？</h3><pre><code>因为PHP没有守护进程一说，理论上你只要修改过以后，就会立即使用新的配置文件。
+</code></pre><h3 id="此值设置多大为好？"><a href="#此值设置多大为好？" class="headerlink" title="此值设置多大为好？"></a>此值设置多大为好？</h3><pre><code>建议根据应用需求来设置。物理服务器，如果内存够大的话建议限制内存较大一些如512M，1024M都可，如果是VPS之类的可能限制在128（默认）64M或者以下是比较合适的，特别是有web服务器的时候，一旦开启多个php的fast-cgi，估计服务器都卡的不动了。
+</code></pre><h3 id="参数语法"><a href="#参数语法" class="headerlink" title="参数语法"></a>参数语法</h3><pre><code>memory_limit integer
+</code></pre><p>本指令设定了一个脚本所能够申请到的最大内存字节数。</p>
+<h3 id="指令作用"><a href="#指令作用" class="headerlink" title="指令作用"></a>指令作用</h3><pre><code>这有助于防止写得不好的脚本消耗光服务器上的可用内存。
+</code></pre><h3 id="在phpchina的论坛上，有人这样说："><a href="#在phpchina的论坛上，有人这样说：" class="headerlink" title="在phpchina的论坛上，有人这样说："></a>在phpchina的论坛上，有人这样说：</h3><pre><code>memory_limit是设置PHP使用内存时空间，一般设置为内存的四分之一，应该就差不多了。如512M内存设置128M,1G内存设置256M。
+</code></pre><p>设置太大会影响系统速度，因为系统和数据库及其他程序同样需要内存空间，一般系统和数据库内存空间是自己分配的。</p>
+<h2 id="附三种修改方法"><a href="#附三种修改方法" class="headerlink" title="附三种修改方法"></a>附三种修改方法</h2><p>可能是分词程序的问题。只要搜索的字段达到十个汉字以上，就会出现诸如以下的错误</p>
+<pre><code>Fatal error: Allowed memory size of 2345643 bytes exhausted
+</code></pre><p>上网找了方法。有3种办法。</p>
+<h3 id="1-直接修改PHP-INI"><a href="#1-直接修改PHP-INI" class="headerlink" title="1.直接修改PHP.INI"></a>1.直接修改PHP.INI</h3><pre><code>memory_limit = 16M  ;
+</code></pre><p>但是我修改了没有用。据说是要重启服务器的。但是很显然。我的 是虚拟主机。所以有独立主机的可以这样修改。</p>
+<h3 id="2-修改-htaccess"><a href="#2-修改-htaccess" class="headerlink" title="2.修改.htaccess"></a>2.修改.htaccess</h3><pre><code>php_value memory_limit 16M
+</code></pre><p>修改后直接出现500错误。可能是主机商限制</p>
+<h3 id="3-直接在程序页面上修改。"><a href="#3-直接在程序页面上修改。" class="headerlink" title="3.直接在程序页面上修改。"></a>3.直接在程序页面上修改。</h3><pre><code>ini_set(’memory_limit’, ‘16M‘);
+</code></pre>
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="http://pd1l3bbt7.bkt.clouddn.com/img/wechatimg.jpg" alt="曹理鹏@iCocos 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="http://pd1l3bbt7.bkt.clouddn.com/img/alipayimg.jpg" alt="曹理鹏@iCocos 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>曹理鹏@iCocos</li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://icocos.github.io/2018/12/25/PHP第二十七篇——服务器500错误总结/" title="PHP第二十七篇——服务器500错误总结">https://icocos.github.io/2018/12/25/PHP第二十七篇——服务器500错误总结/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明出处！</li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/PHP/" rel="tag"># PHP</a>
+          
+            <a href="/tags/500错误/" rel="tag"># 500错误</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/12/23/PHP第二十六篇——APP接口是怎么来的？/" rel="next" title="PHP第二十六篇——APP接口是怎么来的？">
+                <i class="fa fa-chevron-left"></i> PHP第二十六篇——APP接口是怎么来的？
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/12/25/PHP第二十八篇——接口设计规范/" rel="prev" title="PHP第二十八篇——接口设计规范">
+                PHP第二十八篇——接口设计规范 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="SOHUCS"></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="http://pd1l3bbt7.bkt.clouddn.com/icocos_user_icon.JPG"
+                alt="曹理鹏@iCocos" />
+            
+              <p class="site-author-name" itemprop="name">曹理鹏@iCocos</p>
+              <p class="site-description motion-element" itemprop="description">纯码迷、爱学习、爱交友、喜欢接触新鲜事物、迎接新的挑战，更爱游离于错综复杂的编码与逻辑中！</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives">
+                
+                    <span class="site-state-item-count">127</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">17</span>
+                    <span class="site-state-item-name">分类</span>
+                  
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">188</span>
+                    <span class="site-state-item-name">标签</span>
+                  
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/al1020119" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:al1020119@163.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://stackoverflow.com/users/10186720" target="_blank" title="StackOverflow"><i class="fa fa-fw fa-stack-overflow"></i>StackOverflow</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.icocos.cn/" title="梦工厂" target="_blank">梦工厂</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://al1020119.github.io/" title="iOS梦工厂" target="_blank">iOS梦工厂</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#500错误"><span class="nav-number">1.</span> <span class="nav-text">500错误</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#具体如下"><span class="nav-number">1.1.</span> <span class="nav-text">具体如下</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#在网上找到一段话，这是在windows上开发的时候出现的问题及解决方案，当然Mac上也差不多"><span class="nav-number">1.2.</span> <span class="nav-text">在网上找到一段话，这是在windows上开发的时候出现的问题及解决方案，当然Mac上也差不多</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#下面是某教程网站上在Nginx上出现的一个棘手的500错误。。"><span class="nav-number">2.</span> <span class="nav-text">下面是某教程网站上在Nginx上出现的一个棘手的500错误。。</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#产生原因："><span class="nav-number">2.1.</span> <span class="nav-text">产生原因：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#出现了问500错误，第一件事情要处理的是查看日志。"><span class="nav-number">2.2.</span> <span class="nav-text">出现了问500错误，第一件事情要处理的是查看日志。</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#检查php的内存限制值"><span class="nav-number">2.3.</span> <span class="nav-text">检查php的内存限制值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#memory-limit应该设为多少？"><span class="nav-number">2.4.</span> <span class="nav-text">memory_limit应该设为多少？</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#方法1：-php-ini"><span class="nav-number">3.</span> <span class="nav-text">方法1： php.ini</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-首先找到对你的网站生效的php-ini文件-由于有多个地方都可以设置php的参数，找到正确的配置文件，并进行更改是首先要做的一步。"><span class="nav-number">3.1.</span> <span class="nav-text">1.首先找到对你的网站生效的php.ini文件 由于有多个地方都可以设置php的参数，找到正确的配置文件，并进行更改是首先要做的一步。</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-编辑php-ini-在php-ini中，找到“memory-limit”这一项，如果没有，你可以在文件的尾部自己增加这个参数。以下是一些设置范例"><span class="nav-number">3.2.</span> <span class="nav-text">2.编辑php.ini 在php.ini中，找到“memory_limit”这一项，如果没有，你可以在文件的尾部自己增加这个参数。以下是一些设置范例</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-重启web-服务器-如果是web服务器使用Apache，-则执行："><span class="nav-number">3.3.</span> <span class="nav-text">3.重启web 服务器 如果是web服务器使用Apache， 则执行：</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#方法2：-htaccess"><span class="nav-number">4.</span> <span class="nav-text">方法2： .htaccess</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#方法3：-运行时修改php的内存设置"><span class="nav-number">5.</span> <span class="nav-text">方法3： 运行时修改php的内存设置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#在你的php代码中增加以下命令行即可。"><span class="nav-number">5.1.</span> <span class="nav-text">在你的php代码中增加以下命令行即可。</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#memory-limit修改失败"><span class="nav-number">5.2.</span> <span class="nav-text">memory_limit修改失败</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#生产环境下故障处理一例"><span class="nav-number">6.</span> <span class="nav-text">生产环境下故障处理一例</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#现象说明："><span class="nav-number">6.1.</span> <span class="nav-text">现象说明：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#修改后需不需要重启？"><span class="nav-number">6.2.</span> <span class="nav-text">修改后需不需要重启？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#此值设置多大为好？"><span class="nav-number">6.3.</span> <span class="nav-text">此值设置多大为好？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参数语法"><span class="nav-number">6.4.</span> <span class="nav-text">参数语法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#指令作用"><span class="nav-number">6.5.</span> <span class="nav-text">指令作用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#在phpchina的论坛上，有人这样说："><span class="nav-number">6.6.</span> <span class="nav-text">在phpchina的论坛上，有人这样说：</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#附三种修改方法"><span class="nav-number">7.</span> <span class="nav-text">附三种修改方法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-直接修改PHP-INI"><span class="nav-number">7.1.</span> <span class="nav-text">1.直接修改PHP.INI</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-修改-htaccess"><span class="nav-number">7.2.</span> <span class="nav-text">2.修改.htaccess</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-直接在程序页面上修改。"><span class="nav-number">7.3.</span> <span class="nav-text">3.直接在程序页面上修改。</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2017 – <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">曹理鹏@iCocos</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">站点总字数：</span>
+    
+    <span title="站点总字数">713k</span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    
+    <span title="站点阅读时长">10:48</span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv" title="总访客量">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="site-pv" title="总访问量">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/reading_progress/reading_progress.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.3.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.3.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.3.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.3.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+  
+    <script type="text/javascript">
+    (function(){
+      var appid = 'cytKHBEtW';
+      var conf = '43989b8e63b25c4e9f1fde821c996a39';
+      var width = window.innerWidth || document.documentElement.clientWidth;
+      if (width < 960) {
+      window.document.write('<script id="changyan_mobile_js" charset="utf-8" type="text/javascript" src="https://changyan.sohu.com/upload/mobile/wap-js/changyan_mobile.js?client_id=' + appid + '&conf=' + conf + '"><\/script>'); } else { var loadJs=function(d,a){var c=document.getElementsByTagName("head")[0]||document.head||document.documentElement;var b=document.createElement("script");b.setAttribute("type","text/javascript");b.setAttribute("charset","UTF-8");b.setAttribute("src",d);if(typeof a==="function"){if(window.attachEvent){b.onreadystatechange=function(){var e=b.readyState;if(e==="loaded"||e==="complete"){b.onreadystatechange=null;a()}}}else{b.onload=a}}c.appendChild(b)};loadJs("https://changyan.sohu.com/upload/changyan.js",function(){
+        window.changyan.api.config({appid:appid,conf:conf})});
+      }
+    })();
+    </script>
+    <script type="text/javascript" src="https://assets.changyan.sohu.com/upload/plugins/plugins.count.js"></script>
+  
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("Tc7k1mbaieCUSgmM8LPk1IBO-gzGzoHsz", "sAb7L2vwENJTteRrvFKQacUU");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            
+              var $element = $(document.getElementById(url));
+              $element.find('.leancloud-visitors-count').text(counter.get('time'));
+            
+            counter.save(null, {
+              success: function(counter) {
+                
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            
+              var $element = $(document.getElementById(url));
+              $element.find('.leancloud-visitors-count').text('Counter not initialized! See more at console err msg.');
+              console.error('ATTENTION! LeanCloud counter has security bug, see here how to solve it: https://github.com/theme-next/hexo-leancloud-counter-security. \n But you also can use LeanCloud without security, by set \'security\' option to \'false\'.');
+            
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #333;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #eee;
+      background-image: linear-gradient(#fcfcfc, #eee);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('复制').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+          if(result)$(this).text('复制成功')
+          else $(this).text('复制失败')
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('复制')
+        }, 300)
+      }).append(e)
+    })
+  </script>
+
+
+  
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("Tc7k1mbaieCUSgmM8LPk1IBO-gzGzoHsz", "sAb7L2vwENJTteRrvFKQacUU");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+  
+</body>
+</html>
