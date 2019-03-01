@@ -1,0 +1,2356 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.3.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="http://pd1l3bbt7.bkt.clouddn.com/img/favicon.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="http://pd1l3bbt7.bkt.clouddn.com/img/favicon.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="http://pd1l3bbt7.bkt.clouddn.com/img/favicon.png?v=6.3.0">
+
+
+  <link rel="mask-icon" href="http://pd1l3bbt7.bkt.clouddn.com/img/favicon.png?v=6.3.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="完整实战，验证通过，可用….. 此文章看着好长，或者逼格好高的样子。其实很简单，只是因为这些是后端开发或者公司负责项目和内部服务器搭建人员必会的！  适合人群： PHP后端开发 小团队或部门组负责人 服务器或相关运营负责人 想要学习PHP或者转型后端开发 业务学习，纯属搞着玩    这里就不对每一个模块和内容做解释了，只用实战记录，方便后期查阅也希望能得到更多前辈的点评和指点！ 首先分享一份教程，">
+<meta name="keywords" content="曹理鹏, iCocos, 梦工厂, iOS, IT, 技术, 程序猿, 码农">
+<meta property="og:type" content="article">
+<meta property="og:title" content="服务器配置——内网CentOS7&#x2F;PHP&#x2F;Apache&#x2F;Nginx&#x2F;SVN&#x2F;Git&#x2F;GitLab服务器实战">
+<meta property="og:url" content="https://icocos.github.io/2018/11/18/服务器配置——内网CentOS7:PHP:Apache:Nginx:SVN:Git:GitLab服务器实战/index.html">
+<meta property="og:site_name" content="iCocos">
+<meta property="og:description" content="完整实战，验证通过，可用….. 此文章看着好长，或者逼格好高的样子。其实很简单，只是因为这些是后端开发或者公司负责项目和内部服务器搭建人员必会的！  适合人群： PHP后端开发 小团队或部门组负责人 服务器或相关运营负责人 想要学习PHP或者转型后端开发 业务学习，纯属搞着玩    这里就不对每一个模块和内容做解释了，只用实战记录，方便后期查阅也希望能得到更多前辈的点评和指点！ 首先分享一份教程，">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/iCocos/icocos_hexo_images/master/centos/config/install0001.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/iCocos/icocos_hexo_images/master/centos/config/testip0001.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/iCocos/icocos_hexo_images/master/centos/config/infophp.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/iCocos/icocos_hexo_images/master/centos/config/gitconfig.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/iCocos/icocos_hexo_images/master/centos/config/svnconfig.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/iCocos/icocos_hexo_images/master/centos/config/gitlabcreate.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/iCocos/icocos_hexo_images/master/centos/config/gitlabcreate1.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/iCocos/icocos_hexo_images/master/centos/config/gitlabcreate2.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/iCocos/icocos_hexo_images/master/centos/config/gitlabcreate3.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/iCocos/icocos_hexo_images/master/centos/config/gitlabcreate4.png">
+<meta property="og:updated_time" content="2019-03-01T10:51:13.909Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="服务器配置——内网CentOS7&#x2F;PHP&#x2F;Apache&#x2F;Nginx&#x2F;SVN&#x2F;Git&#x2F;GitLab服务器实战">
+<meta name="twitter:description" content="完整实战，验证通过，可用….. 此文章看着好长，或者逼格好高的样子。其实很简单，只是因为这些是后端开发或者公司负责项目和内部服务器搭建人员必会的！  适合人群： PHP后端开发 小团队或部门组负责人 服务器或相关运营负责人 想要学习PHP或者转型后端开发 业务学习，纯属搞着玩    这里就不对每一个模块和内容做解释了，只用实战记录，方便后期查阅也希望能得到更多前辈的点评和指点！ 首先分享一份教程，">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/iCocos/icocos_hexo_images/master/centos/config/install0001.png">
+
+
+
+  <link rel="alternate" href="/atom.xml" title="iCocos" type="application/atom+xml" />
+
+
+
+
+  <link rel="canonical" href="https://icocos.github.io/2018/11/18/服务器配置——内网CentOS7:PHP:Apache:Nginx:SVN:Git:GitLab服务器实战/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>服务器配置——内网CentOS7/PHP/Apache/Nginx/SVN/Git/GitLab服务器实战 | iCocos</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">iCocos</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">www.icocos.cn</p>
+      
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-首页">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-归档">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-关于">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-作品">
+    <a href="/works/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-calendar"></i> <br />作品</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-简历">
+    <a href="/resume/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-sitemap"></i> <br />简历</a>
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+    <div class="reading-progress-bar"></div>
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://icocos.github.io/2018/11/18/服务器配置——内网CentOS7:PHP:Apache:Nginx:SVN:Git:GitLab服务器实战/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="曹理鹏@iCocos">
+      <meta itemprop="description" content="纯码迷、爱学习、爱交友、喜欢接触新鲜事物、迎接新的挑战，更爱游离于错综复杂的编码与逻辑中！">
+      <meta itemprop="image" content="http://pd1l3bbt7.bkt.clouddn.com/icocos_user_icon.JPG">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="iCocos">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">服务器配置——内网CentOS7/PHP/Apache/Nginx/SVN/Git/GitLab服务器实战
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-11-18 19:26:00" itemprop="dateCreated datePublished" datetime="2018-11-18T19:26:00+08:00">2018-11-18</time>
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+              <span class="post-meta-divider">|</span>
+              <span class="post-meta-item-icon">
+                <i class="fa fa-comment-o"></i>
+              </span>
+              
+                <a href="/2018/11/18/服务器配置——内网CentOS7:PHP:Apache:Nginx:SVN:Git:GitLab服务器实战/#SOHUCS" itemprop="discussionUrl">
+                  <span class="post-meta-item-text">评论数：</span> <span id="changyan_count_unit" class="post-comments-count hc-comment-count" data-xid="2018/11/18/服务器配置——内网CentOS7:PHP:Apache:Nginx:SVN:Git:GitLab服务器实战/" itemprop="commentsCount"></span>
+                </a>
+              
+            
+          
+
+          
+          
+             <span id="/2018/11/18/服务器配置——内网CentOS7:PHP:Apache:Nginx:SVN:Git:GitLab服务器实战/" class="leancloud_visitors" data-flag-title="服务器配置——内网CentOS7/PHP/Apache/Nginx/SVN/Git/GitLab服务器实战">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数：</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon"
+            >
+            <i class="fa fa-eye"></i>
+             阅读次数： 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+            <div class="post-symbolscount">
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">本文字数：</span>
+                
+                <span title="本文字数">18k</span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">16 分钟</span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>完整实战，验证通过，可用…..</p>
+<p>此文章看着好长，或者逼格好高的样子。其实很简单，只是因为这些是后端开发或者公司负责项目和内部服务器搭建人员必会的！</p>
+<ul>
+<li>适合人群：<ul>
+<li>PHP后端开发</li>
+<li>小团队或部门组负责人</li>
+<li>服务器或相关运营负责人</li>
+<li>想要学习PHP或者转型后端开发</li>
+<li>业务学习，纯属搞着玩</li>
+</ul>
+</li>
+</ul>
+<p>这里就不对每一个模块和内容做解释了，只用实战记录，方便后期查阅也希望能得到更多前辈的点评和指点！</p>
+<p>首先分享一份教程，这是慕课网实战阿里云主机(ECS)与CentOS7教程！</p>
+<ul>
+<li><a href="https://pan.baidu.com/s/1u3BPzu2dGXlXYhWpofjsbA" target="_blank" rel="noopener">阿里云主机(ECS)与CentOS7实战</a></li>
+<li>提取码：389j</li>
+</ul>
+<blockquote>
+<p>注：本文部分外部操作基于Mac系统</p>
+</blockquote>
+<a id="more"></a>
+<h2 id="1-U盘制作Centos系统盘"><a href="#1-U盘制作Centos系统盘" class="headerlink" title="1.U盘制作Centos系统盘"></a>1.U盘制作Centos系统盘</h2><h5 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h5><ul>
+<li>U盘或者硬盘一个，需要大于8G</li>
+<li>iso系统:(本文基础1708)<ul>
+<li><a href="https://pan.baidu.com/s/1sC8JSuCzPk6BGbfof7vouQ" target="_blank" rel="noopener">https://pan.baidu.com/s/1sC8JSuCzPk6BGbfof7vouQ</a></li>
+<li>提取码: 4df8</li>
+</ul>
+</li>
+<li>HFSExplorer：方面Windows系统访问Mac盘(U/硬盘)</li>
+<li>UltraISO：光盘映像文件制作</li>
+</ul>
+<p>具体制作安装U盘的步骤由于过于简单，这里就过多说明，不知道的请出门左转找度娘。</p>
+<h2 id="2-Centos安装"><a href="#2-Centos安装" class="headerlink" title="2.Centos安装"></a>2.Centos安装</h2><p>只要U盘正确制作，关于网上教程非常多，也是非常简单的！</p>
+<ul>
+<li>这里推荐被参考的比较多的教程：<ul>
+<li><a href="https://www.osyunwei.com/archives/7829.html" target="_blank" rel="noopener">https://www.osyunwei.com/archives/7829.html</a></li>
+</ul>
+</li>
+</ul>
+<p>有些地方需要注意的：</p>
+<ul>
+<li><ol>
+<li>可以的话，最好在安装信息摘要的时候连上网，方便一些相关的更新和下载。</li>
+</ol>
+</li>
+<li><ol start="2">
+<li>出入学习推荐使用桌面版，当然如果比较喜欢专业或者非入门级的那就使用最小安装，最小安装是基本上很多东西都没有，连网络和相关需求都不支持。</li>
+</ol>
+</li>
+<li><ol start="3">
+<li>关于分区可以使用自动分区，或者根据教程做相应的分配，建议不要自己随意配，不然后面难免出现问题。</li>
+</ol>
+</li>
+</ul>
+<p>期间遇到了一个问题</p>
+<blockquote>
+<p>/dev/root does not exist, could not boot</p>
+</blockquote>
+<p>网上都说直接修改</p>
+<blockquote>
+<p>vmlinuz initrd=initrd.imginst.stage2=hd:LABEL=CentOS\x207\x20x86_64 rd.live.check quiet </p>
+</blockquote>
+<ul>
+<li>改为：</li>
+</ul>
+<blockquote>
+<p>vmlinuz initrd=initrd.img inst.stage2=hd:/dev/sda4 quite</p>
+</blockquote>
+<p>试了好几次都不行,最后发现是空格的问题，因为我格式化U盘之后直接命名为了Centos 7，导致产生了空格，而无法读取到U盘</p>
+<h5 id="解决方法："><a href="#解决方法：" class="headerlink" title="解决方法："></a>解决方法：</h5><ol>
+<li>到windows里面修改U盘名称（例如 ‘Centos7’）</li>
+<li>进入U盘目录 进入 EFI/boot<ul>
+<li>修改grub.cfg文件，CENTOS\x207 全部修改为U盘名称（CENTOS7）</li>
+</ul>
+</li>
+<li>重启安装</li>
+<li>正常安装并显示交互界面</li>
+</ol>
+<blockquote>
+<p>总结：名称强烈不建议出现中文空格,容易出bug</p>
+</blockquote>
+<p>安装完成之后，进入Centos命令行查看IP地址，然后在ssh连接工具上尝试连接，并且进行一些操作</p>
+<ul>
+<li>CentOS7查看ip地址的方式为：<ul>
+<li>ip addr</li>
+</ul>
+</li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/iCocos/icocos_hexo_images/master/centos/config/install0001.png" alt="曹理鹏(iCocos)-梦工厂"> </p>
+<p>这里有一点需要知道的是，阿里云或腾讯云或者其他说明鬼云，都是提供的最新的相关Linux系统，所以一般系统安装是不需要我们来做的，除非有一些特殊的情况。</p>
+<blockquote>
+<p>Ip地址也是直接对外提供，不需要我们去查的，所以就XXX云来说，我们做的事情就是从这里往后操作的流程。甚至有些会给你一些更完整或者更多的功能支持。</p>
+</blockquote>
+<p>如果有需要需要额外配置其他相关功能和服务，推荐看这里：</p>
+<ul>
+<li><a href="https://blog.csdn.net/myf12/article/details/78086189" target="_blank" rel="noopener">centos7 装机后的基本配置</a></li>
+</ul>
+<h2 id="3-Centos系统配置PHP服务器"><a href="#3-Centos系统配置PHP服务器" class="headerlink" title="3.Centos系统配置PHP服务器"></a>3.Centos系统配置PHP服务器</h2><blockquote>
+<p>注意：以下安装，我都是用的root权限。</p>
+</blockquote>
+<h4 id="一、关闭防火墙"><a href="#一、关闭防火墙" class="headerlink" title="一、关闭防火墙"></a>一、关闭防火墙</h4><p>查了资料，说法是，CentOS7用的是Firewall-cmd，CentOS7之前用的是iptables防火墙；要想让外网能访问到apache主目录，就需要做以下的操作：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">停止firewall </span><br><span class="line">	systemctl stop firewalld.service</span><br><span class="line">禁止firewall开机启动 </span><br><span class="line">	systemctl <span class="built_in">disable</span> firewalld.service</span><br><span class="line">	/**</span><br><span class="line">	Removed symlink /etc/systemd/system/multi-user.target.wants/firewalld.service.                                             </span><br><span class="line">Removed symlink /etc/systemd/system/dbus-org.fedoraproject.FirewallD1.service. </span><br><span class="line">	*/</span><br><span class="line">查看默认防火墙的状态 </span><br><span class="line">	firewall-cmd --state</span><br><span class="line">	/**</span><br><span class="line">	not running </span><br><span class="line">	*/</span><br></pre></td></tr></table></figure>
+<p>或者可以这么做：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --permanent --zone=public --add-service=http</span><br><span class="line">firewall-cmd --permanent --zone=public --add-service=https</span><br><span class="line">firewall-cmd --reload</span><br></pre></td></tr></table></figure>
+<h4 id="二、安装Apache"><a href="#二、安装Apache" class="headerlink" title="二、安装Apache"></a>二、安装Apache</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">安装Apache</span><br><span class="line">	yum install httpd -y</span><br><span class="line">--- 一下httpd可以直接使用httpd.service --- </span><br><span class="line">启动Apache</span><br><span class="line">	systemctl start httpd</span><br><span class="line">停止Apache</span><br><span class="line">	systemctl stop httpd</span><br><span class="line">重启Apache</span><br><span class="line">	systemctl restart httpd</span><br><span class="line">Apache开机自启 </span><br><span class="line">	systemctl <span class="built_in">enable</span> httpd</span><br><span class="line">	/**</span><br><span class="line">	Created symlink from /etc/systemd/system/multi-user.target.wants/httpd.service to /usr/lib/systemd</span><br><span class="line">/system/httpd.service.</span><br><span class="line">	*/</span><br></pre></td></tr></table></figure>
+<p>在本机浏览器中前面ip addr查到的ip地址，如果看到apache默认的页面–有Testing 123…字样，便是成功安装了apache服务</p>
+<p><img src="https://raw.githubusercontent.com/iCocos/icocos_hexo_images/master/centos/config/testip0001.png" alt="曹理鹏(iCocos)-梦工厂"> </p>
+<h4 id="三、安装php"><a href="#三、安装php" class="headerlink" title="三、安装php"></a>三、安装php</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">安装php</span><br><span class="line">	yum install php php-devel或者yum -y install php</span><br><span class="line">安装Php扩展</span><br><span class="line">	yum install php-mysql php-gd php-imap php-ldap php-odbc php-pear php-xml php-xmlrpc</span><br><span class="line">重启Apache: </span><br><span class="line">	systemctl restart httpd或者systemctl restart httpd.service</span><br></pre></td></tr></table></figure>
+<p>然后，你可以写一个php文件在浏览器中运行一下了;</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">vi /var/www/html/info.php</span><br><span class="line">&lt;?php phpinfo(); ?&gt;</span><br></pre></td></tr></table></figure>
+<p>然后，在自己电脑浏览器输入 <a href="http://172.20.10.2/info.php" target="_blank" rel="noopener">http://172.20.10.2/info.php</a><br>运行，会出现php的一些信息,如果出现如下界面，说明已经成功了</p>
+<p><img src="https://raw.githubusercontent.com/iCocos/icocos_hexo_images/master/centos/config/infophp.png" alt="曹理鹏(iCocos)-梦工厂"> </p>
+<h4 id="四、安装mysql"><a href="#四、安装mysql" class="headerlink" title="四、安装mysql"></a>四、安装mysql</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">安装MySQL</span><br><span class="line">	yum install mariadb mariadb-server -y</span><br><span class="line">启动MariaDB </span><br><span class="line">	systemctl start mariadb  </span><br><span class="line">停止MariaDB </span><br><span class="line">	systemctl stop mariadb  </span><br><span class="line">重启MariaDB </span><br><span class="line">	systemctl restart mariadb</span><br><span class="line">设置开机启动 </span><br><span class="line">	systemctl <span class="built_in">enable</span> mariadb</span><br><span class="line">/**</span><br><span class="line">Created symlink from /etc/systemd/system/multi-user.target.wants/mariadb.service to /usr/lib/syste</span><br><span class="line">md/system/mariadb.service.</span><br><span class="line">*/</span><br></pre></td></tr></table></figure>
+<p>设置root帐户的密码</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql_secure_installation</span><br></pre></td></tr></table></figure>
+<p>然后会出现一串东西，可以仔细读一下，如果你懒得读，就在提示出来的时候，按Enter就好了，让你设置密码的时候，你就输入你想要的密码就行，然后继续在让你选择y/n是，Enter就好了；当一切结束的时候，你可以输入<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql -u root</span><br></pre></td></tr></table></figure></p>
+<p>验证一下,输入密码，正常连接并可进行mysql操作</p>
+<p>有时候由于安装命令的问题，会出现下面的报错，建议重现使用上面的操作一遍</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ERROR 2002 (HY000): Can<span class="string">'t connect to local MySQL server through socket '</span>/var/run/mysqld/mysqld.sock</span><br><span class="line"><span class="string">' (2)</span></span><br></pre></td></tr></table></figure>
+<h4 id="五、配置Mysql，设置MySQL密码"><a href="#五、配置Mysql，设置MySQL密码" class="headerlink" title="五、配置Mysql，设置MySQL密码"></a>五、配置Mysql，设置MySQL密码</h4><h6 id="1-连接MySQL"><a href="#1-连接MySQL" class="headerlink" title="1.连接MySQL"></a>1.连接MySQL</h6><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql -u root</span><br></pre></td></tr></table></figure>
+<h6 id="2-设置密码"><a href="#2-设置密码" class="headerlink" title="2.设置密码"></a>2.设置密码</h6><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; <span class="built_in">set</span> password <span class="keyword">for</span> <span class="string">'root'</span>@<span class="string">'localhost'</span> = password(<span class="string">'root'</span>);</span><br><span class="line">mysql&gt; <span class="built_in">exit</span></span><br></pre></td></tr></table></figure>
+<h6 id="3-远程授权连接mysql"><a href="#3-远程授权连接mysql" class="headerlink" title="3.远程授权连接mysql"></a>3.远程授权连接mysql</h6><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; GRANT ALL PRIVILEGES ON *.* TO <span class="string">'root'</span>@<span class="string">'%'</span> IDENTIFIED BY <span class="string">'root'</span> WITH GRANT OPTION;</span><br><span class="line">配置生效：FLUSH   PRIVILEGES;</span><br></pre></td></tr></table></figure>
+<h6 id="再次连接线使用："><a href="#再次连接线使用：" class="headerlink" title="再次连接线使用："></a>再次连接线使用：</h6><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql -u root -p</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>然后输入上面的root密码</p>
+</blockquote>
+<h4 id="六、将PHP和MySQL关联起来"><a href="#六、将PHP和MySQL关联起来" class="headerlink" title="六、将PHP和MySQL关联起来"></a>六、将PHP和MySQL关联起来</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum search php</span><br></pre></td></tr></table></figure>
+<p>选择你需要的安装：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum -y install php-mysql</span><br></pre></td></tr></table></figure>
+<h4 id="七、安装常用的PHP模块"><a href="#七、安装常用的PHP模块" class="headerlink" title="七、安装常用的PHP模块"></a>七、安装常用的PHP模块</h4><p>例如，GD库，curl，mbstring,…</p>
+<h6 id="1-安装："><a href="#1-安装：" class="headerlink" title="1.安装："></a>1.安装：</h6><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum -y install php-gd php-ldap php-odbc php-pear php-xml php-xmlrpc php-mbstring php-snmp php-soap curl curl-devel</span><br></pre></td></tr></table></figure>
+<h6 id="2-重启apache服务"><a href="#2-重启apache服务" class="headerlink" title="2.重启apache服务"></a>2.重启apache服务</h6><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl restart httpd.service</span><br></pre></td></tr></table></figure>
+<p>然后，再次在浏览器中运行info.php，你会看到安装的模块的信息；</p>
+<p>至此，LAMP环境就搭建好了……</p>
+<h2 id="4-nginx安装与配置"><a href="#4-nginx安装与配置" class="headerlink" title="4. nginx安装与配置"></a>4. nginx安装与配置</h2><ul>
+<li><a href="https://www.jianshu.com/p/d55aa0bdb280" target="_blank" rel="noopener">Nginx从安装到入门，基础篇</a></li>
+</ul>
+<p>Nginx有三种安装方式</p>
+<ol>
+<li>安装包编译安装(相对麻烦)</li>
+<li>yum源安装</li>
+<li>使用docker安装</li>
+</ol>
+<p>需确认80端口是否开放，如果是阿里云，得在控制台那边设置端口组开放</p>
+<pre><code>#确保防火墙是否开放80端口 如果没有
+firewall-cmd --permanent --zone=public --add-port=80/tcp 
+#重新加载
+firewall-cmd --reload
+#查看列表
+firewall-cmd --list-all
+</code></pre><p>这里推荐直接使用yum源安装，因为比较快捷，方便</p>
+<pre><code>#yum安装nginx
+sudo yum install -y nginx
+
+#启动nginx
+sudo systemctl start nginx.service
+
+#设置开机自启动
+sudo systemctl enable nginx.service
+
+#yum安装的nginx配置文件默认存放在 /etc/nginx/nginx.conf 查看
+vi /etc/nginx/nginx.conf 
+
+#卸载
+yum remove nginx
+</code></pre><p>如果可以你也可以直接使用安装包编译安装</p>
+<pre><code># 下载源码
+$ wget http://nginx.org/download/nginx-1.13.0.tar.gz
+
+# 解压源码
+$ tar xvf nginx-1.13.0.tar.gz
+
+# 进入源码目录
+$ cd nginx-1.13.0
+# 配置、编译、安装
+$ ./configure
+$ make
+$ make install
+</code></pre><p>有时候回遇到，输入网址之后不是官方默认界面，可能是因为</p>
+<blockquote>
+<p>有epel源的时候并且用yum install nginx 安装就会显示Welcome to nginx on Fedora!，因为epel源就是Fedora维护的</p>
+</blockquote>
+<h2 id="5-Centos配置Git服务器"><a href="#5-Centos配置Git服务器" class="headerlink" title="5.Centos配置Git服务器"></a>5.Centos配置Git服务器</h2><h4 id="1、安装Git"><a href="#1、安装Git" class="headerlink" title="1、安装Git"></a>1、安装Git</h4><p>首先需要安装Git，可以使用yum源在线安装：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install -y git</span><br></pre></td></tr></table></figure>
+<h4 id="2、用户操作"><a href="#2、用户操作" class="headerlink" title="2、用户操作"></a>2、用户操作</h4><p>创建一个git用户，用来运行git服务</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">adduser git</span><br><span class="line">passwd git</span><br><span class="line">/*输入git用户密码*/</span><br></pre></td></tr></table></figure>
+<h4 id="3、git初始化"><a href="#3、git初始化" class="headerlink" title="3、git初始化"></a>3、git初始化</h4><p>初始化git仓库：这里我们选择/git/icocos.git来作为我们的git仓库</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mkdir /git -p</span><br><span class="line"><span class="built_in">cd</span> /git</span><br><span class="line">git init --bare icocos.git  <span class="comment">#初始化仓库</span></span><br></pre></td></tr></table></figure>
+<p>执行以上命令，会创建一个裸仓库，裸仓库没有工作区，因为服务器上的Git仓库纯粹是为了共享，所以不让用户直接登录到服务器上去改工作区，并且服务器上的Git仓库通常都以.git结尾。</p>
+<h4 id="4、然后，把owner改为git"><a href="#4、然后，把owner改为git" class="headerlink" title="4、然后，把owner改为git"></a>4、然后，把owner改为git</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chown git:git icocos.git  -R</span><br></pre></td></tr></table></figure>
+<h4 id="5、clone远程仓库"><a href="#5、clone远程仓库" class="headerlink" title="5、clone远程仓库"></a>5、clone远程仓库</h4><p>在这里，Git服务器就已经搭得差不多了。下面我们在客户端clone一下远程仓库。</p>
+<blockquote>
+<p>Mysql可以直接使用命令行，或者使用Tower</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> git@172.20.10.2:/git/icocos.git</span><br><span class="line">Cloning into <span class="string">'icocos'</span>...</span><br><span class="line">git@172.20.10.2<span class="string">'s password: </span></span><br><span class="line"><span class="string">remote: Counting objects: 6, done.</span></span><br><span class="line"><span class="string">remote: Compressing objects: 100% (6/6), done.</span></span><br><span class="line"><span class="string">remote: Total 6 (delta 0), reused 0 (delta 0)</span></span><br><span class="line"><span class="string">Receiving objects: 100% (6/6), 2.63 MiB | 1.63 MiB/s, done.</span></span><br></pre></td></tr></table></figure>
+<p>输入git账户对应的密码<br><img src="https://raw.githubusercontent.com/iCocos/icocos_hexo_images/master/centos/config/gitconfig.png" alt="曹理鹏(iCocos)-梦工厂"> </p>
+<p>然后就可以根据公司或者具体项目做相应拓展和配置</p>
+<h4 id="Git实战记录总结"><a href="#Git实战记录总结" class="headerlink" title="Git实战记录总结"></a>Git实战记录总结</h4><h6 id="配置与初始化实战流程"><a href="#配置与初始化实战流程" class="headerlink" title="配置与初始化实战流程"></a>配置与初始化实战流程</h6><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">[root@centos /]<span class="comment"># yum install -y git                                                                                                    </span></span><br><span class="line">已加载插件：fastestmirror, langpacks                                                                                                   </span><br><span class="line">Loading mirror speeds from cached hostfile                                                                                             </span><br><span class="line"> * base: mirror.jdcloud.com                                                                                                            </span><br><span class="line"> * extras: mirrors.163.com                                                                                                             </span><br><span class="line"> * updates: mirrors.163.com                                                                                                            </span><br><span class="line">软件包 git-1.8.3.1-20.el7.x86_64 已安装并且是最新版本                                                                                  </span><br><span class="line">无须任何处理                                                                                                                           </span><br><span class="line">[root@centos /]<span class="comment"># adduser git                                                                                                                                                                                                                        </span></span><br><span class="line">[root@centos /]<span class="comment"># passwd git                                                                                                            </span></span><br><span class="line">更改用户 git 的密码 。                                                                                                                 </span><br><span class="line">新的 密码：                                                                                                                            </span><br><span class="line">重新输入新的 密码：                                                                                                                    </span><br><span class="line">passwd：所有的身份验证令牌已经成功更新。                                                                                                </span><br><span class="line">[root@centos /]<span class="comment"># mkdir git                                                                                                    </span></span><br><span class="line">[root@centos /]<span class="comment"># cd git                                                                                                                </span></span><br><span class="line">[root@centos git]<span class="comment"># ls                                                                                                                                                                                                                     </span></span><br><span class="line">[root@centos git]<span class="comment"># mkdir SwiftProject                                                                                                  </span></span><br><span class="line">[root@centos git]<span class="comment"># cd SwiftProject/                                                                                                    </span></span><br><span class="line">[root@centos SwiftProject]<span class="comment"># ls                                                                                                         </span></span><br><span class="line">[root@centos SwiftProject]<span class="comment"># git init --bare SwiftProject.git  #初始化仓库                                                              </span></span><br><span class="line">初始化空的 Git 版本库于 /git/SwiftProject/SwiftProject.git/                                                                            </span><br><span class="line">[root@centos SwiftProject]<span class="comment"># chown git:git SwiftProject.git  -R</span></span><br></pre></td></tr></table></figure>
+<h6 id="内外网访问和Clone"><a href="#内外网访问和Clone" class="headerlink" title="内外网访问和Clone"></a>内外网访问和Clone</h6><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git@172.20.10.2:/git/SwiftProject/SwiftProject.git</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>然后就是根据需求创建项目提交或拉去代码</p>
+</blockquote>
+<h2 id="6-Centos配置SVN服务器"><a href="#6-Centos配置SVN服务器" class="headerlink" title="6.Centos配置SVN服务器"></a>6.Centos配置SVN服务器</h2><h4 id="1、subversion安装"><a href="#1、subversion安装" class="headerlink" title="1、subversion安装"></a>1、subversion安装</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@centos /]<span class="comment"># yum install subversion</span></span><br></pre></td></tr></table></figure>
+<h4 id="2、新建一个目录用于存储SVN目录"><a href="#2、新建一个目录用于存储SVN目录" class="headerlink" title="2、新建一个目录用于存储SVN目录"></a>2、新建一个目录用于存储SVN目录</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@centos /]mkdir /svn</span><br></pre></td></tr></table></figure>
+<h4 id="3、SVN方式创建SVN项目目录"><a href="#3、SVN方式创建SVN项目目录" class="headerlink" title="3、SVN方式创建SVN项目目录"></a>3、SVN方式创建SVN项目目录</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@centos svn]<span class="comment"># svnadmin create /svn/SwiftProject/</span></span><br></pre></td></tr></table></figure>
+<h4 id="4、SVN项目目录查看内容"><a href="#4、SVN项目目录查看内容" class="headerlink" title="4、SVN项目目录查看内容"></a>4、SVN项目目录查看内容</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[root@centos svn]<span class="comment"># ll SwiftProject</span></span><br><span class="line">总用量 8</span><br><span class="line">drwxr-xr-x. 2 root root  54 1月  12 01:09 conf</span><br><span class="line">drwxr-sr-x. 6 root root 233 1月  12 01:09 db</span><br><span class="line">-r--r--r--. 1 root root   2 1月  12 01:09 format</span><br><span class="line">drwxr-xr-x. 2 root root 231 1月  12 01:09 hooks</span><br><span class="line">drwxr-xr-x. 2 root root  41 1月  12 01:09 locks</span><br><span class="line">-rw-r--r--. 1 root root 229 1月  12 01:09 README.txt</span><br></pre></td></tr></table></figure>
+<ul>
+<li>以下关于目录的说明：<ul>
+<li>hooks目录：放置hook脚步文件的目录</li>
+<li>locks目录：用来放置subversion的db锁文件和db_logs锁文件的目录，用来追踪存取文件库的客户端</li>
+<li>format目录：是一个文本文件，里边只放了一个整数，表示当前文件库配置的版本号</li>
+<li>conf目录：是这个仓库配置文件（仓库用户访问账户，权限）</li>
+</ul>
+</li>
+</ul>
+<h4 id="5、SVN配置文件"><a href="#5、SVN配置文件" class="headerlink" title="5、SVN配置文件"></a>5、SVN配置文件</h4><p>cd conf/进入conf目录（该svn版本库配置文件），一共有三个文件</p>
+<ul>
+<li>authz文件是权限控制文件</li>
+<li>passwd是帐号密码文件</li>
+<li>svnserve.conf SVN服务配置文件</li>
+</ul>
+<h6 id="a、编辑用户文件passwd，新增两个用户：svn。"><a href="#a、编辑用户文件passwd，新增两个用户：svn。" class="headerlink" title="a、编辑用户文件passwd，新增两个用户：svn。"></a>a、编辑用户文件passwd，新增两个用户：svn。</h6><blockquote>
+<p>vim conf/passwd</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[users]</span><br><span class="line">svn = svn</span><br></pre></td></tr></table></figure>
+<h6 id="b、编辑权限文件authz，用户admin设置可读写权限，guest设置只读权限。"><a href="#b、编辑权限文件authz，用户admin设置可读写权限，guest设置只读权限。" class="headerlink" title="b、编辑权限文件authz，用户admin设置可读写权限，guest设置只读权限。"></a>b、编辑权限文件authz，用户admin设置可读写权限，guest设置只读权限。</h6><blockquote>
+<p>vim conf/authz</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[/]</span><br><span class="line">svn = rw</span><br></pre></td></tr></table></figure>
+<h6 id="c-进入所建立仓库的配置目录-svn-project-conf修改文件svnserve-conf"><a href="#c-进入所建立仓库的配置目录-svn-project-conf修改文件svnserve-conf" class="headerlink" title="c,进入所建立仓库的配置目录/svn/project/conf修改文件svnserve.conf"></a>c,进入所建立仓库的配置目录/svn/project/conf修改文件svnserve.conf</h6><blockquote>
+<p>vim conf/svnserve.conf</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">anon-access = none     //匿名访问权限</span><br><span class="line">auth-access = write    //认证用户权限</span><br><span class="line">password-db = passwd   //密码配置文件路径，默认为同目录的passwd文件</span><br><span class="line">realm = My First Repository //认证标记而已</span><br></pre></td></tr></table></figure>
+<h4 id="6、启动SVN服务器"><a href="#6、启动SVN服务器" class="headerlink" title="6、启动SVN服务器"></a>6、启动SVN服务器</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">svnserve -d -r /svn --listen-host 172.20.10.2</span><br></pre></td></tr></table></figure>
+<p>-d表示在后台运行，-r指定了服务器的根目录，这样在SVN客户端就可以用svn://172.20.10.2/SwiftProject来访问SVN服务器</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">svn co svn://172.20.10.2/SwiftProject</span><br><span class="line">Checked out revision 0.</span><br><span class="line">ls</span><br><span class="line">SwiftProject</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/iCocos/icocos_hexo_images/master/centos/config/svnconfig.png" alt="曹理鹏(iCocos)-梦工厂"> </p>
+<blockquote>
+<p>注意</p>
+<blockquote>
+<p>使用以下命令可以查看正在运行的SVN进程<br>ps -ef | grep svn<br>使用命令 killall svnserve 来停止SVN服务器。</p>
+</blockquote>
+</blockquote>
+<h4 id="SVN实战记录总结"><a href="#SVN实战记录总结" class="headerlink" title="SVN实战记录总结"></a>SVN实战记录总结</h4><h6 id="配置与初始化实战流程-1"><a href="#配置与初始化实战流程-1" class="headerlink" title="配置与初始化实战流程"></a>配置与初始化实战流程</h6><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">[root@centos /]<span class="comment"># yum install subversion                                                                                                </span></span><br><span class="line">已加载插件：fastestmirror, langpacks                                                                                                   </span><br><span class="line">Loading mirror speeds from cached hostfile                                                                                             </span><br><span class="line"> * base: mirror.jdcloud.com                                                                                                            </span><br><span class="line"> * extras: mirrors.163.com                                                                                                             </span><br><span class="line"> * updates: mirrors.163.com                                                                                                            </span><br><span class="line">软件包 subversion-1.7.14-14.el7.x86_64 已安装并且是最新版本                                                                            </span><br><span class="line">无须任何处理                                                                                                                           </span><br><span class="line">[root@centos /]<span class="comment"># svnadmin create /svn/project</span></span><br><span class="line">[root@centos /]<span class="comment"># cd /svn/SwiftProject      </span></span><br><span class="line">[root@centos SwiftProject]<span class="comment"># pwd                                                                                                        </span></span><br><span class="line">/svn/SwiftProject                                                                                                                      </span><br><span class="line">[root@centos SwiftProject]<span class="comment"># ls                                                                                                         </span></span><br><span class="line">conf  db  format  hooks  locks  README.txt                                                                                             </span><br><span class="line">[root@centos SwiftProject]<span class="comment"># cd conf/                                                                                                   </span></span><br><span class="line">[root@centos conf]<span class="comment"># ls                                                                                                                 </span></span><br><span class="line">authz  passwd  svnserve.conf                                                                                                           </span><br><span class="line">[root@centos conf]<span class="comment"># vi svnserve.conf                                                                                                   </span></span><br><span class="line">[root@centos conf]<span class="comment"># vim authz                                                                                                          </span></span><br><span class="line">[root@centos conf]<span class="comment"># vim passwd                                                                                                    </span></span><br><span class="line">[root@centos conf]<span class="comment"># cd /                                                                                                    </span></span><br><span class="line">[root@centos /]<span class="comment"># svnserve -d -r /svn --listen-host 172.20.10.2</span></span><br></pre></td></tr></table></figure>
+<h6 id="内外网访问和Co"><a href="#内外网访问和Co" class="headerlink" title="内外网访问和Co"></a>内外网访问和Co</h6><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">svn co svn://172.20.10.2/SwiftProject</span><br></pre></td></tr></table></figure>
+<p>然后就是根据需求创建项目提交或拉去代码</p>
+<h2 id="7-Centos配置GitLab服务器"><a href="#7-Centos配置GitLab服务器" class="headerlink" title="7.Centos配置GitLab服务器"></a>7.Centos配置GitLab服务器</h2><ul>
+<li><ol>
+<li>安装依赖软件</li>
+</ol>
+</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum -y install policycoreutils openssh-server openssh-clients postfix</span><br></pre></td></tr></table></figure>
+<ul>
+<li>2.设置postfix开机自启，并启动，postfix支持gitlab发信功能</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl <span class="built_in">enable</span> postfix &amp;&amp; systemctl start postfix</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>3.下载gitlab安装包，然后安装</p>
+<ul>
+<li><a href="https://mirrors.tuna.tsinghua.edu.cn/gitlab-ce/yum/el6" target="_blank" rel="noopener">centos 6系统的下载地址</a></li>
+<li><a href="https://mirrors.tuna.tsinghua.edu.cn/gitlab-ce/yum/el7" target="_blank" rel="noopener">centos 7系统的下载地址</a></li>
+</ul>
+</li>
+</ul>
+<p>我的是centos7,所以我在<a href="https://mirrors.tuna.tsinghua.edu.cn/gitlab-ce/yum/el7中找了个gitlab8.0.0版本,建议下载一个比较新的版本,我这里选了一个比较旧的版本仅仅是实验" target="_blank" rel="noopener">https://mirrors.tuna.tsinghua.edu.cn/gitlab-ce/yum/el7中找了个gitlab8.0.0版本,建议下载一个比较新的版本,我这里选了一个比较旧的版本仅仅是实验</a></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">下载rpm包并安装:</span><br><span class="line">wget https://mirrors.tuna.tsinghua.edu.cn/gitlab-ce/yum/el7/gitlab-ce-8.0.0-ce.0.el7.x86_64.rpm</span><br><span class="line">rpm -i gitlab-ce-8.0.0-ce.0.el7.x86_64.rpm</span><br></pre></td></tr></table></figure>
+<ul>
+<li>4.修改gitlab配置文件指定服务器ip和自定义端口：</li>
+</ul>
+<blockquote>
+<p>vim  /etc/gitlab/gitlab.rb</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">## Url on which GitLab will be reachable.                                  </span></span><br><span class="line"><span class="comment">## For more details on configuring external_url see:                       </span></span><br><span class="line"><span class="comment">## https://gitlab.com/gitlab-org/omnibus-gitlab/blob/629def0a7a26e7c2326566</span></span><br><span class="line">f0758d4a27857b52a3/README.md<span class="comment">#configuring-the-external-url-for-gitlab       </span></span><br><span class="line">external_url <span class="string">'http://172.20.10.2:8081'</span></span><br></pre></td></tr></table></figure>
+<p>最后，退出并保存</p>
+<blockquote>
+<p>注: 这里设置的端口不能被占用，默认是8080端口，如果8080已经使用，请自定义其它端口，并在防火墙设置开放相对应得端口</p>
+</blockquote>
+<ul>
+<li>5.重置并启动GitLab</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">gitlab-ctl reconfigure</span><br><span class="line">gitlab-ctl restart</span><br></pre></td></tr></table></figure>
+<p>提示“ok: run:”表示启动成功</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">ok: run: gitlab-git-http-server: (pid 3922) 1s</span><br><span class="line">ok: run: logrotate: (pid 3929) 0s</span><br><span class="line">ok: run: nginx: (pid 3936) 1s</span><br><span class="line">ok: run: postgresql: (pid 3941) 0s</span><br><span class="line">ok: run: redis: (pid 3950) 0s</span><br><span class="line">ok: run: sidekiq: (pid 3955) 0s</span><br><span class="line">ok: run: unicorn: (pid 3961) 1s</span><br></pre></td></tr></table></figure>
+<ul>
+<li>6.访问 GitLab页面</li>
+</ul>
+<p>如果没有域名，直接输入服务器ip和指定端口进行访问,会出现如下页面并提示：You need to sign in before continuing. </p>
+<p><img src="https://raw.githubusercontent.com/iCocos/icocos_hexo_images/master/centos/config/gitlabcreate.png" alt="曹理鹏(iCocos)-梦工厂"> </p>
+<h5 id="初始账户-root-密码-5iveL-fe"><a href="#初始账户-root-密码-5iveL-fe" class="headerlink" title="初始账户: root 密码: 5iveL!fe"></a>初始账户: root 密码: 5iveL!fe</h5><p>注意，第一次登录最好修改密码</p>
+<p><img src="https://raw.githubusercontent.com/iCocos/icocos_hexo_images/master/centos/config/gitlabcreate1.png" alt="曹理鹏(iCocos)-梦工厂"> </p>
+<p>修改完成之后，就可以创建项目或者根据具体需求创建分组</p>
+<p><img src="https://raw.githubusercontent.com/iCocos/icocos_hexo_images/master/centos/config/gitlabcreate2.png" alt="曹理鹏(iCocos)-梦工厂"> </p>
+<ul>
+<li>7.设置gitlab发信功能，需要注意一点：</li>
+</ul>
+<blockquote>
+<p>发信系统用的默认的postfix，smtp是默认开启的，两个都启用了，两个都不会工作。</p>
+</blockquote>
+<p>我这里设置关闭smtp，开启postfix</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">关闭smtp方法：vim /etc/gitlab/gitlab.rb</span><br><span class="line">找到<span class="comment">#gitlab_rails['smtp_enable'] = true 改为 gitlab_rails['smtp_enable'] = false</span></span><br></pre></td></tr></table></figure>
+<h5 id="修改后执行gitlab-ctl-reconfigure"><a href="#修改后执行gitlab-ctl-reconfigure" class="headerlink" title="修改后执行gitlab-ctl reconfigure"></a>修改后执行gitlab-ctl reconfigure</h5><p>另一种是关闭postfix，设置开启smtp</p>
+<pre><code>+ 相关教程请参考[官网](https://doc.gitlab.cc/omnibus/settings/smtp.html)
+</code></pre><h4 id="测试是否可以邮件通知："><a href="#测试是否可以邮件通知：" class="headerlink" title="测试是否可以邮件通知："></a>测试是否可以邮件通知：</h4><p>登录并添加一个用户，我这里使用qq邮箱添加一个用户</p>
+<p><img src="https://raw.githubusercontent.com/iCocos/icocos_hexo_images/master/centos/config/gitlabcreate3.png" alt="曹理鹏(iCocos)-梦工厂"> </p>
+<p>创建成功后，就可以去对应的邮箱查看邮件并设置密码</p>
+<p><img src="https://raw.githubusercontent.com/iCocos/icocos_hexo_images/master/centos/config/gitlabcreate4.png" alt="曹理鹏(iCocos)-梦工厂"> </p>
+<p>登录qq邮箱，可以收到邮件通知（如果收不到，请查看垃圾邮箱或者检查邮件是否被拦截并删除，如果有请添加到白名单并删除用户再重新添加用户就可以收到了，否则请检查邮件日志并做好相关设置）</p>
+<blockquote>
+<p>到此，GitLab就基本配置完毕，如果有需要和可以结合GitLab，Jenkins，Fastlane实现CI和CD，当然这些一般的小公司不太会用到……</p>
+</blockquote>
+<h5 id="错误一：报错502"><a href="#错误一：报错502" class="headerlink" title="错误一：报错502"></a>错误一：报错502</h5><blockquote>
+<p>gitlab报502 Whoops, GitLab is taking too much time to respond</p>
+</blockquote>
+<p>配置启动后，访问gitlab，出现：502 ，Whoops, GitLab is taking too much time to respond. 出现这个问题，一般都是你本机的8080端口已经被其他的应用程序占用。</p>
+<ul>
+<li>方法一：</li>
+</ul>
+<blockquote>
+<p>GitLab在使用的过程中，会开启8080端口，但是如果8080端口被其他的应用程序占用，则GitLab的该项服务不能使用，所以访问GitLab会失败。</p>
+</blockquote>
+<ul>
+<li>方法二：</li>
+</ul>
+<blockquote>
+<p>一般是权限问题，解决方法：chmod -R 755 /var/log/gitlab</p>
+</blockquote>
+<p>如果还不行，请检查你的内存，安装使用GitLab需要至少4GB可用内存(RAM + Swap)! 由于操作系统和其他正在运行的应用也会使用内存, 所以安装GitLab前一定要注意当前服务器至少有4GB的可用内存. 少于4GB内存会出现各种诡异的问题, 而且在使用过程中也经常会出现500错误.</p>
+<h5 id="错误二：gitlab-ctl-reconfigure"><a href="#错误二：gitlab-ctl-reconfigure" class="headerlink" title="错误二：gitlab-ctl reconfigure"></a>错误二：gitlab-ctl reconfigure</h5><p> 报错n itdb: could not obtain information about current user: Permission denied</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Error executing action `run` on resource <span class="string">'execute[/opt/gitlab/embedded/bin/initdb -D /var/opt/gitlab/postgresql/data -E UTF8]'</span></span><br></pre></td></tr></table></figure>
+<p>根据报错信息大概锁定用户的权限问题,安装gitlab-ce会自动添加用户四个用户:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">gitlab-www:x:497:498::/var/opt/gitlab/nginx:/bin/<span class="literal">false</span></span><br><span class="line">git:x:496:497::/var/opt/gitlab:/bin/sh</span><br><span class="line">gitlab-redis:x:495:496::/var/opt/gitlab/redis:/bin/nologin</span><br><span class="line">gitlab-psql:x:494:495::/var/opt/gitlab/postgresql:/bin/sh</span><br></pre></td></tr></table></figure>
+<p>google和百度都搜索不到解决方法,既然出错提示到权限问题，那么按照这个方向去查就不会有问题，后来查了文件/etc/passwd的权限是600,给予644权限后,成功解决报错问题</p>
+<h6 id="改成8081"><a href="#改成8081" class="headerlink" title="改成8081"></a>改成8081</h6><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># gitlab-ctl stop </span></span><br><span class="line"><span class="comment"># vi /etc/gitlab/gitlab.rb   (取消注释并修改端口) unicorn['port'] = 8801 </span></span><br><span class="line"><span class="comment"># gitlab-ctl reconfigure  (重新生成配置) </span></span><br><span class="line"><span class="comment"># gitlab-ctl restart </span></span><br><span class="line"><span class="comment"># lsof -i:8081(check whether unicorn has started properly)</span></span><br></pre></td></tr></table></figure>
+<h2 id="8-Centos配置PHP各种拓展-Composer"><a href="#8-Centos配置PHP各种拓展-Composer" class="headerlink" title="8.Centos配置PHP各种拓展: Composer"></a>8.Centos配置PHP各种拓展: Composer</h2><p>推荐composer官方更多教程与配置：<a href="https://www.phpcomposer.com/" target="_blank" rel="noopener">https://www.phpcomposer.com/</a></p>
+<p>需要使用到curl，如果没有的话需要 </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum  -y install curl     <span class="comment">###安装</span></span><br></pre></td></tr></table></figure>
+<h5 id="下载composer-phar"><a href="#下载composer-phar" class="headerlink" title="下载composer.phar"></a>下载composer.phar</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -sS https://getcomposer.org/installer | php</span><br></pre></td></tr></table></figure>
+<h5 id="把composer-phar移动到环境下让其变成可执行"><a href="#把composer-phar移动到环境下让其变成可执行" class="headerlink" title="把composer.phar移动到环境下让其变成可执行"></a>把composer.phar移动到环境下让其变成可执行</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mv composer.phar /usr/<span class="built_in">local</span>/bin/composer</span><br></pre></td></tr></table></figure>
+<h5 id="测试composer"><a href="#测试composer" class="headerlink" title="测试composer"></a>测试composer</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">composer -V </span><br><span class="line">/** 输出：Composer version 1.0-dev (e64470c987fdd6bff03b85eed823eb4b865a4152) 2015-05-28 14:52:12 */</span><br></pre></td></tr></table></figure>
+<h5 id="实战操作"><a href="#实战操作" class="headerlink" title="实战操作"></a>实战操作</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">[root@centos /]<span class="comment"># curl -sS https://getcomposer.org/installer | php</span></span><br><span class="line">All settings correct <span class="keyword">for</span> using Composer                                    </span><br><span class="line">Downloading...</span><br><span class="line"></span><br><span class="line">Composer (version 1.8.0) successfully installed to: //composer.phar</span><br><span class="line">Use it: php composer.phar</span><br><span class="line"></span><br><span class="line">[root@centos /]<span class="comment"># mv composer.phar /usr/local/bin/composer</span></span><br><span class="line">[root@centos ~]<span class="comment"># composer -V </span></span><br><span class="line">Do not run Composer as root/super user! See https://getcomposer.org/root <span class="keyword">for</span> details</span><br><span class="line">Composer version 1.8.0 2018-12-03 10:31:16</span><br></pre></td></tr></table></figure>
+<h2 id="推荐"><a href="#推荐" class="headerlink" title="推荐"></a>推荐</h2><ul>
+<li><a href="http://blog.51cto.com/ixdba/806622" target="_blank" rel="noopener">实战Nginx与PHP（FastCGI）的安装、配置与优化</a></li>
+<li><a href="https://www.cnblogs.com/chensiqiqi/p/9162958.html" target="_blank" rel="noopener">Nginx站点目录及文件URL访问控制</a></li>
+</ul>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="http://pd1l3bbt7.bkt.clouddn.com/img/wechatimg.jpg" alt="曹理鹏@iCocos 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="http://pd1l3bbt7.bkt.clouddn.com/img/alipayimg.jpg" alt="曹理鹏@iCocos 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>曹理鹏@iCocos</li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://icocos.github.io/2018/11/18/服务器配置——内网CentOS7:PHP:Apache:Nginx:SVN:Git:GitLab服务器实战/" title="服务器配置——内网CentOS7/PHP/Apache/Nginx/SVN/Git/GitLab服务器实战">https://icocos.github.io/2018/11/18/服务器配置——内网CentOS7:PHP:Apache:Nginx:SVN:Git:GitLab服务器实战/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明出处！</li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/11/15/服务器配置——实战验证与补充/" rel="next" title="服务器配置——实战验证与补充">
+                <i class="fa fa-chevron-left"></i> 服务器配置——实战验证与补充
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/11/20/PHP第一篇——工具集选/" rel="prev" title="PHP第一篇——工具集选">
+                PHP第一篇——工具集选 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="SOHUCS"></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="http://pd1l3bbt7.bkt.clouddn.com/icocos_user_icon.JPG"
+                alt="曹理鹏@iCocos" />
+            
+              <p class="site-author-name" itemprop="name">曹理鹏@iCocos</p>
+              <p class="site-description motion-element" itemprop="description">纯码迷、爱学习、爱交友、喜欢接触新鲜事物、迎接新的挑战，更爱游离于错综复杂的编码与逻辑中！</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives">
+                
+                    <span class="site-state-item-count">127</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">17</span>
+                    <span class="site-state-item-name">分类</span>
+                  
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">188</span>
+                    <span class="site-state-item-name">标签</span>
+                  
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/al1020119" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:al1020119@163.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://stackoverflow.com/users/10186720" target="_blank" title="StackOverflow"><i class="fa fa-fw fa-stack-overflow"></i>StackOverflow</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.icocos.cn/" title="梦工厂" target="_blank">梦工厂</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://al1020119.github.io/" title="iOS梦工厂" target="_blank">iOS梦工厂</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-U盘制作Centos系统盘"><span class="nav-number">1.</span> <span class="nav-text">1.U盘制作Centos系统盘</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#准备"><span class="nav-number">1.0.0.1.</span> <span class="nav-text">准备</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-Centos安装"><span class="nav-number">2.</span> <span class="nav-text">2.Centos安装</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#解决方法："><span class="nav-number">2.0.0.1.</span> <span class="nav-text">解决方法：</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-Centos系统配置PHP服务器"><span class="nav-number">3.</span> <span class="nav-text">3.Centos系统配置PHP服务器</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#一、关闭防火墙"><span class="nav-number">3.0.1.</span> <span class="nav-text">一、关闭防火墙</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#二、安装Apache"><span class="nav-number">3.0.2.</span> <span class="nav-text">二、安装Apache</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#三、安装php"><span class="nav-number">3.0.3.</span> <span class="nav-text">三、安装php</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#四、安装mysql"><span class="nav-number">3.0.4.</span> <span class="nav-text">四、安装mysql</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#五、配置Mysql，设置MySQL密码"><span class="nav-number">3.0.5.</span> <span class="nav-text">五、配置Mysql，设置MySQL密码</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#1-连接MySQL"><span class="nav-number">3.0.5.0.1.</span> <span class="nav-text">1.连接MySQL</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#2-设置密码"><span class="nav-number">3.0.5.0.2.</span> <span class="nav-text">2.设置密码</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#3-远程授权连接mysql"><span class="nav-number">3.0.5.0.3.</span> <span class="nav-text">3.远程授权连接mysql</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#再次连接线使用："><span class="nav-number">3.0.5.0.4.</span> <span class="nav-text">再次连接线使用：</span></a></li></ol></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#六、将PHP和MySQL关联起来"><span class="nav-number">3.0.6.</span> <span class="nav-text">六、将PHP和MySQL关联起来</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#七、安装常用的PHP模块"><span class="nav-number">3.0.7.</span> <span class="nav-text">七、安装常用的PHP模块</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#1-安装："><span class="nav-number">3.0.7.0.1.</span> <span class="nav-text">1.安装：</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#2-重启apache服务"><span class="nav-number">3.0.7.0.2.</span> <span class="nav-text">2.重启apache服务</span></a></li></ol></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-nginx安装与配置"><span class="nav-number">4.</span> <span class="nav-text">4. nginx安装与配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-Centos配置Git服务器"><span class="nav-number">5.</span> <span class="nav-text">5.Centos配置Git服务器</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1、安装Git"><span class="nav-number">5.0.1.</span> <span class="nav-text">1、安装Git</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2、用户操作"><span class="nav-number">5.0.2.</span> <span class="nav-text">2、用户操作</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3、git初始化"><span class="nav-number">5.0.3.</span> <span class="nav-text">3、git初始化</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4、然后，把owner改为git"><span class="nav-number">5.0.4.</span> <span class="nav-text">4、然后，把owner改为git</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5、clone远程仓库"><span class="nav-number">5.0.5.</span> <span class="nav-text">5、clone远程仓库</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Git实战记录总结"><span class="nav-number">5.0.6.</span> <span class="nav-text">Git实战记录总结</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#配置与初始化实战流程"><span class="nav-number">5.0.6.0.1.</span> <span class="nav-text">配置与初始化实战流程</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#内外网访问和Clone"><span class="nav-number">5.0.6.0.2.</span> <span class="nav-text">内外网访问和Clone</span></a></li></ol></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-Centos配置SVN服务器"><span class="nav-number">6.</span> <span class="nav-text">6.Centos配置SVN服务器</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1、subversion安装"><span class="nav-number">6.0.1.</span> <span class="nav-text">1、subversion安装</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2、新建一个目录用于存储SVN目录"><span class="nav-number">6.0.2.</span> <span class="nav-text">2、新建一个目录用于存储SVN目录</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3、SVN方式创建SVN项目目录"><span class="nav-number">6.0.3.</span> <span class="nav-text">3、SVN方式创建SVN项目目录</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4、SVN项目目录查看内容"><span class="nav-number">6.0.4.</span> <span class="nav-text">4、SVN项目目录查看内容</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5、SVN配置文件"><span class="nav-number">6.0.5.</span> <span class="nav-text">5、SVN配置文件</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#a、编辑用户文件passwd，新增两个用户：svn。"><span class="nav-number">6.0.5.0.1.</span> <span class="nav-text">a、编辑用户文件passwd，新增两个用户：svn。</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#b、编辑权限文件authz，用户admin设置可读写权限，guest设置只读权限。"><span class="nav-number">6.0.5.0.2.</span> <span class="nav-text">b、编辑权限文件authz，用户admin设置可读写权限，guest设置只读权限。</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#c-进入所建立仓库的配置目录-svn-project-conf修改文件svnserve-conf"><span class="nav-number">6.0.5.0.3.</span> <span class="nav-text">c,进入所建立仓库的配置目录/svn/project/conf修改文件svnserve.conf</span></a></li></ol></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#6、启动SVN服务器"><span class="nav-number">6.0.6.</span> <span class="nav-text">6、启动SVN服务器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#SVN实战记录总结"><span class="nav-number">6.0.7.</span> <span class="nav-text">SVN实战记录总结</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#配置与初始化实战流程-1"><span class="nav-number">6.0.7.0.1.</span> <span class="nav-text">配置与初始化实战流程</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#内外网访问和Co"><span class="nav-number">6.0.7.0.2.</span> <span class="nav-text">内外网访问和Co</span></a></li></ol></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-Centos配置GitLab服务器"><span class="nav-number">7.</span> <span class="nav-text">7.Centos配置GitLab服务器</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#初始账户-root-密码-5iveL-fe"><span class="nav-number">7.0.0.1.</span> <span class="nav-text">初始账户: root 密码: 5iveL!fe</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#修改后执行gitlab-ctl-reconfigure"><span class="nav-number">7.0.0.2.</span> <span class="nav-text">修改后执行gitlab-ctl reconfigure</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#测试是否可以邮件通知："><span class="nav-number">7.0.1.</span> <span class="nav-text">测试是否可以邮件通知：</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#错误一：报错502"><span class="nav-number">7.0.1.1.</span> <span class="nav-text">错误一：报错502</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#错误二：gitlab-ctl-reconfigure"><span class="nav-number">7.0.1.2.</span> <span class="nav-text">错误二：gitlab-ctl reconfigure</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#改成8081"><span class="nav-number">7.0.1.2.1.</span> <span class="nav-text">改成8081</span></a></li></ol></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#8-Centos配置PHP各种拓展-Composer"><span class="nav-number">8.</span> <span class="nav-text">8.Centos配置PHP各种拓展: Composer</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#下载composer-phar"><span class="nav-number">8.0.0.1.</span> <span class="nav-text">下载composer.phar</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#把composer-phar移动到环境下让其变成可执行"><span class="nav-number">8.0.0.2.</span> <span class="nav-text">把composer.phar移动到环境下让其变成可执行</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#测试composer"><span class="nav-number">8.0.0.3.</span> <span class="nav-text">测试composer</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#实战操作"><span class="nav-number">8.0.0.4.</span> <span class="nav-text">实战操作</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#推荐"><span class="nav-number">9.</span> <span class="nav-text">推荐</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2017 – <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">曹理鹏@iCocos</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">站点总字数：</span>
+    
+    <span title="站点总字数">713k</span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    
+    <span title="站点阅读时长">10:48</span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv" title="总访客量">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="site-pv" title="总访问量">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/reading_progress/reading_progress.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.3.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.3.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.3.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.3.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+  
+    <script type="text/javascript">
+    (function(){
+      var appid = 'cytKHBEtW';
+      var conf = '43989b8e63b25c4e9f1fde821c996a39';
+      var width = window.innerWidth || document.documentElement.clientWidth;
+      if (width < 960) {
+      window.document.write('<script id="changyan_mobile_js" charset="utf-8" type="text/javascript" src="https://changyan.sohu.com/upload/mobile/wap-js/changyan_mobile.js?client_id=' + appid + '&conf=' + conf + '"><\/script>'); } else { var loadJs=function(d,a){var c=document.getElementsByTagName("head")[0]||document.head||document.documentElement;var b=document.createElement("script");b.setAttribute("type","text/javascript");b.setAttribute("charset","UTF-8");b.setAttribute("src",d);if(typeof a==="function"){if(window.attachEvent){b.onreadystatechange=function(){var e=b.readyState;if(e==="loaded"||e==="complete"){b.onreadystatechange=null;a()}}}else{b.onload=a}}c.appendChild(b)};loadJs("https://changyan.sohu.com/upload/changyan.js",function(){
+        window.changyan.api.config({appid:appid,conf:conf})});
+      }
+    })();
+    </script>
+    <script type="text/javascript" src="https://assets.changyan.sohu.com/upload/plugins/plugins.count.js"></script>
+  
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("Tc7k1mbaieCUSgmM8LPk1IBO-gzGzoHsz", "sAb7L2vwENJTteRrvFKQacUU");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            
+              var $element = $(document.getElementById(url));
+              $element.find('.leancloud-visitors-count').text(counter.get('time'));
+            
+            counter.save(null, {
+              success: function(counter) {
+                
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            
+              var $element = $(document.getElementById(url));
+              $element.find('.leancloud-visitors-count').text('Counter not initialized! See more at console err msg.');
+              console.error('ATTENTION! LeanCloud counter has security bug, see here how to solve it: https://github.com/theme-next/hexo-leancloud-counter-security. \n But you also can use LeanCloud without security, by set \'security\' option to \'false\'.');
+            
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #333;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #eee;
+      background-image: linear-gradient(#fcfcfc, #eee);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('复制').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+          if(result)$(this).text('复制成功')
+          else $(this).text('复制失败')
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('复制')
+        }, 300)
+      }).append(e)
+    })
+  </script>
+
+
+  
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("Tc7k1mbaieCUSgmM8LPk1IBO-gzGzoHsz", "sAb7L2vwENJTteRrvFKQacUU");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+  
+</body>
+</html>
