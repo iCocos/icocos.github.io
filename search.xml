@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[PHP彩蛋篇——意想不到的惊喜]]></title>
+    <url>%2F2019%2F04%2F09%2FPHP%E5%BD%A9%E8%9B%8B%E7%AF%87%E2%80%94%E2%80%94%E6%84%8F%E6%83%B3%E4%B8%8D%E5%88%B0%E7%9A%84%E6%83%8A%E5%96%9C%2F</url>
+    <content type="text"><![CDATA[前几天，听一个前辈说到，关于PHP中彩蛋的概念，顿时不知所云。作为漫威终极粉的我，彩蛋的概念，深深的植入已经在我脑子里。 但是PHP彩蛋我也是第一次听说，也问了几个近几年刚做PHP的朋友，都没有听过，估计只有老一辈的程序员们都知道。 彩蛋指电影中不仔细寻觅，会被忽略的有趣细节；还有就是影片剧情结束后，在演职员表滚屏时或之后出现的电影片段（通常是一些幽默场景或是跟续集有关的情节线索）。 在PHP中彩蛋，我们把它认为是：惊喜。就是只要在运行PHP的服务器上，在域名后面输入下面的字符参数，就能返回一些意想不到的信息(有些服务器屏蔽)。 PHP中4个彩蛋 ?=PHPB8B5F2A0-3C92-11d3-A3A9-4C7B08C10000 (PHP信息/贡献者列表) ?=PHPE9568F34-D428-11d2-A769-00AA001ACF42 (PHP的LOGO) ?=PHPE9568F35-D428-11d2-A769-00AA001ACF42 (Zend LOGO) ?=PHPE9568F36-D428-11d2-A769-00AA001ACF42 (PHP LOGO 蓝色大象) 配置好PHP解析服务器之后，写一个PHP程序如下： 123&lt;?phpinfo();?&gt; 访问的时候index.php，然后拼接上面的参数，如下 www.icocos.cn/index.php?=PHPB8B5F2A0-3C92-11d3-A3A9-4C7B08C10000 www.icocos.cn/index.php?=PHPE9568F34-D428-11d2-A769-00AA001ACF42 www.icocos.cn/index.php?=PHPE9568F35-D428-11d2-A769-00AA001ACF42 www.icocos.cn/index.php?=PHPE9568F36-D428-11d2-A769-00AA001ACF42 就可以看到，如下参数的信息了。 如果你在博客或者网站上也发现了这个问题，不用马上去解决他。这不算是漏洞。只是开源团队开的一个玩笑，全世界的人都认可了的玩笑，所以他并不是PHP的漏洞。 当然，也有部分奇葩的人，会借助这个彩蛋去做一些事情，比如： 有些网站采用动态脚本生成纯静态HTML页或者是采用URL重写实现伪静态页面，如果网站使用的是PHP开发的话，可以尝试使用彩蛋的探测法，然后根据特有的技术，去做一些破坏或者攻击！ 解决办法可以通过apache或者nginx的配置文件去屏蔽。 默认情况下彩蛋的功能在php.ini中是开启的 12345678910;;;;;;;;;;;;;;;;;; Miscellaneous ;;;;;;;;;;;;;;;;;;; Decides whether PHP may expose the fact that it is installed on the server; (e.g. by adding its signature to the Web server header). It is no security; threat in any way, but it makes it possible to determine whether you use PHP; on your server or not.; http://php.net/expose-phpexpose_php = On //暴露 只要将expose_php设置为Off即可！ expose_php = Off 也可以通过设置.htaccess来进行屏蔽。 1RewriteCond %&#123;QUERY_STRING&#125; \=PHP[0-9a-f]&#123;8&#125;-[0-9a-f]&#123;4&#125;-[0-9a-f]&#123;4&#125;-[0-9a-f]&#123;4&#125;-[0-9a-f]&#123;12&#125; [NC] RewriteRule .* - [F]]]></content>
+      <categories>
+        <category>PHP</category>
+      </categories>
+      <tags>
+        <tag>PHP</tag>
+        <tag>彩蛋</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[PHP拓展篇——Composer实战操作指南]]></title>
     <url>%2F2019%2F03%2F02%2FPHP%E6%8B%93%E5%B1%95%E7%AF%87%E2%80%94%E2%80%94Composer%E5%AE%9E%E6%88%98%E6%93%8D%E4%BD%9C%E6%8C%87%E5%8D%97%2F</url>
     <content type="text"><![CDATA[Composer是什么玩过Linux或者玩过编程的应该都知道，yum、apt-get、npm、bower等命令，composer其实和上面是一样的，只是composer专门给PHP用。 就像iOS中的Pods，Carthage，Android中的gradle pod = cocoapods 编译成静态链接库或者动态框架文件，会修改Xcode项目属性配置依赖关系 Carthage 去中心化(无中心库), 非侵入性：动态框架，不会修改Xcode项目属性配置依赖关系 gradle(JCenter，mavenCenter，JitPack)。Gradle是一个基于Apache Ant和Apache Maven概念的项目自动化构建开源工具。它使用一种基于Groovy的特定领域语言(DSL)来声明项目设置，抛弃了基于XML的各种繁琐配置。面向Java应用为主。 而Composer 是 PHP5.3以上 的一个依赖管理工具。它允许你声明项目所依赖的代码库，它会在你的项目中为你快速安装他们。涉及 “packages” 和 “libraries”。平时我们安装一个PHP类库，需要搜索-&gt;下载；使用composer，我们只要知道包名，直接composer insatll就可以了。 Composer 也只是一段 PHP 脚本，用官方的话说就是： 是 PHP 用来管理依赖（dependency）关系的工具。你可以在自己的项目中声明所依赖的外部工具库（libraries），Composer 会帮你安装这些依赖的库文件。 Composer用途 安装PHP包、依赖库。 通过过composer，我们可以使用大量的第三方库，而无需自己造轮子 比如 monolog $ composer require monolog/monolog laravel $ composer create-project laravel/laravel learnlaravel5 5.0.22 thinkphp5：然后在命令行下面，切换到你的web根目录下面并执行下面的命令： $ composer create-project topthink/think=5.0.* tp5 –prefer-dist 你可以在 https://packagist.org/ 找到你需要的库。甚至你可以提交自己写的优秀的库到该平台里供大家使用。 安装废话不多说，直接上代码 安装 curl -sS https://getcomposer.org/installer | php 全局 mv composer.phar /usr/local/bin/composer 之后，就可以直接使用composer install安装包了。不过通常情况下只需将composer.phar的位置加入到PATH就可以，不一定要全局安装。 镜像 composer config -g repo.packagist composer https://packagist.phpcomposer.com 常见镜像地址： https://packagist.org 国外的 http://packagist.phpcomposer.com 中国全量镜像 https://pkg.phpcomposer.com/ https://www.phpcomposer.com/ 更新 composer self-update 操作执行结束，会在当前目录下生成composer.phar文件，在Linux里，composer.phar是可执行程序。 例如，我们可以使用php composer.phar update执行更新操作。 全局安装： mv composer.phar /usr/local/bin/composer 验证composer[parallels@centos-7 html]$ composer ______ / ____/___ ____ ___ ____ ____ ________ _____ / / / __ \/ __ `__ \/ __ \/ __ \/ ___/ _ \/ ___/ / /___/ /_/ / / / / / / /_/ / /_/ (__ ) __/ / \____/\____/_/ /_/ /_/ .___/\____/____/\___/_/ /_/ Composer version 1.8.4 2019-02-11 10:52:10 Usage: command [options] [arguments] Options: ... version[parallels@centos-7 html]$ composer -V Composer version 1.8.4 2019-02-11 10:52:10 使用初始化在自己想要创建项目的地方新建一个文件夹，命名为 ComposerP1，在文件夹下新建文件 composer.json： { &quot;require&quot;: { } } 命令行切换到 ComposerP1 目录下，运行： composer update 就会在该目录下生成一个vendor文件夹。以后所有的第三扩展包都会安装在这里。 安装扩展包在项目目录下创建一个composer.json文件，指明依赖，比如，你的项目依赖 monolog： { &quot;require&quot;: { &quot;monolog/monolog&quot;: &quot;1.2.*&quot; }, &quot;config&quot;: { // 解决有时候因为https造成的问题 &quot;secure-http&quot;: false } } 安装依赖安装依赖非常简单，只需在项目目录下运行： composer install 如果没有全局安装的话，则运行： php composer.phar install 更新全部的包（谨慎使用）： composer update 注意：使用composer install或者composer update命令将会更新所有的扩展包，项目中使用需谨慎！！！若只安装指定的包推荐在命令行使用一下命名进行安装。 composer require monolog/monolog 如果需要指定版本： composer require “monolog/monolog:1.2.*” 更新某个包： composer update monolog/monolog 移除某个包： composer remove monolog/monolog 如果手动更新了composer.json需要更新autoload： composer dump-autoload 命令汇总 composer list 列出所有可用的命令 composer init 初始化composer.json文件(就不劳我们自己费力创建啦)，会要求输入一些信息来描述我们当前的项目，还会要求输入依赖包 composer install 读取composer.json内容，解析依赖关系，安装依赖包到vendor目录下 composer update 更新最新的依赖关系到compsoer.lock文件，解析最新的依赖关系并且写入* composer.lock文件 composer search packagename 搜索包，packagename替换为你想查找的包名称 composer require packagename 添加对packagename的依赖，packagename可修改为你想要的包名称 composer show packagename composer self-update 更新 composer.phar文件自身 composer dump-autoload –optimize 优化一下自动加载 composer command –help 以上所有命令都可以添加 –help选项查看帮助信息]]></content>
@@ -1134,8 +1146,8 @@
         <category>Swift</category>
       </categories>
       <tags>
-        <tag>Swift</tag>
         <tag>OC&amp;&amp;Swift——方法调用技巧</tag>
+        <tag>Swift</tag>
         <tag>方法调用技巧</tag>
       </tags>
   </entry>
@@ -1303,8 +1315,8 @@
         <category>Swift3</category>
       </categories>
       <tags>
-        <tag>Swift3——Swift3中的Runtime</tag>
         <tag>Swift3</tag>
+        <tag>Swift3——Swift3中的Runtime</tag>
         <tag>Swift3中的Runtime</tag>
       </tags>
   </entry>
@@ -1329,8 +1341,8 @@
         <category>Swift3</category>
       </categories>
       <tags>
-        <tag>Swift3</tag>
         <tag>Swift3——Swift从入门到入门</tag>
+        <tag>Swift3</tag>
         <tag>Swift从入门到入门</tag>
       </tags>
   </entry>
@@ -1368,8 +1380,8 @@
         <category>2017@Swift</category>
       </categories>
       <tags>
-        <tag>2017@Swift——后感</tag>
         <tag>Swift</tag>
+        <tag>2017@Swift——后感</tag>
         <tag>大会后感</tag>
       </tags>
   </entry>
