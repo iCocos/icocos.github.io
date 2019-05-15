@@ -777,6 +777,14 @@
       </tags>
   </entry>
   <entry>
+    <title><![CDATA[iOS——HTTPS接入与配置实战]]></title>
+    <url>%2F2018%2F04%2F28%2FiOS%E2%80%94%E2%80%94HTTPS%E6%8E%A5%E5%85%A5%E4%B8%8E%E9%85%8D%E7%BD%AE%E5%AE%9E%E6%88%98%2F</url>
+    <content type="text"><![CDATA[这里粗略的说一下关于HTTPShttps简单说明HTTPS（全称：Hyper Text Transfer Protocol over Secure Socket Layer），是以安全为目标的HTTP通道，简单讲是HTTP的安全版。 即HTTP下加入SSL层，HTTPS的安全基础是SSL，因此加密的详细内容就需要SSL。 它是一个URI scheme（抽象标识符体系），句法类同http:体系。用于安全的HTTP数据传输。 https:URL表明它使用了HTTP，但HTTPS存在不同于HTTP的默认端口及一个加密/身份验证层（在HTTP与TCP之间）。 HTTPS和HTTP的区别主要为以下四点： 一、https协议需要到ca申请证书，一般免费证书很少，需要交费。 二、http是超文本传输协议，信息是明文传输，https 则是具有安全性的ssl加密传输协议。 三、http和https使用的是完全不同的连接方式，用的端口也不一样，前者是80，后者是443。 四、http的连接很简单，是无状态的；HTTPS协议是由SSL+HTTP协议构建的可进行加密传输、身份认证的网络协议，比http协议安全。 关于更多HTTPS可以看看这篇文章： HTTPS原理和CA证书申请（满满的干货） 具体流程就是当客户端给服务器发送请求时, 服务器中有一对钥匙(公钥,私钥). 服务器会返回给客户端一个公钥,并把两者的传输通道变为受保护空间(安全证书). 此时 客户端拥有公钥,服务器拥有私钥. 当服务器返回数据给客户端时,数据是使用私钥加密过的. 客户端需要使用 公钥解密. 客户端发请求也是通过公钥加密. 服务器使用私钥来解密.(从某种意义上来说. 安全证书 就是公钥) 关于如下类型错误请自行百度： App Transport Security has blocked a cleartext HTTP (http://) resource load since it is insecure. Temporary exceptions can be configured via your app’s Info.plist file. 接下来就开始进行实战处理 准备iOS做https适配时对服务器是有一定要求的，服务端必须要是一个符合ATS（App Transport Security）要求的HTTPS。简单说要满足以下几个要求： 1.Transport Layer Security协议版本要求TLS1.2以上 2.服务的Ciphers配置要求支持Forward Secrecy等 3.证书签名算法符合ATS要求等 Swift关于Swif目前要么使用Alamofire，要么使用Moya，这里只接受Moya，关于Alamofire可以看这篇文章，相对Moya会复杂一点点，但是原理其实差不多是一样的 Alamofire https自签名证书验证 Moya对应版本 Moya版本号：Moya (12.0.1) Alamofire版本号：Alamofire (4.8.1) 实现方法1、默认非HTTPS实现方法：默认情况下定义Manager： 1MoyaProvider&lt;MultiTarget&gt;.defaultAlamofireManager() 该方法不需要做任何处理，Moya默认已经实现 2、HTTPS免证书实现方法（校验证书，可以抓包）： 12345let manager: Manager = MoyaProvider&lt;MultiTarget&gt;.defaultAlamofireManager()manager.delegate.sessionDidReceiveChallenge = &#123; session,challenge in return (URLSession.AuthChallengeDisposition.useCredential,URLCredential(trust:challenge.protectionSpace.serverTrust!))&#125; 注：需要导入：import Alamofire 3、HTTPS+证书实现方法（校验证书，不可以抓包）在实现本方法前，首先需要服务器端提供“*.crt”证书,然后进入证书所在的路径，控制台执行以下命令： 1openssl x509 -in *.crt -out *.cer -outform der 得到cer类型证书后，双击，导入电脑或者直接让服务器提供.cer，然后把cer文件拖动到工程中。 1234567891011let configuration = URLSessionConfiguration.defaultconfiguration.httpAdditionalHeaders = Manager.defaultHTTPHeaderslet path: String = Bundle.main.path(forResource: "xxx", ofType: "cer") ?? ""let certificationData = try? Data(contentsOf: URL(fileURLWithPath: path)) as CFData let certificate = SecCertificateCreateWithData(nil, certificationData!)let certificates: [SecCertificate] = [certificate!] let policies: [String: ServerTrustPolicy] = ["domain": ServerTrustPolicy.pinCertificates(certificates: certificates, validateCertificateChain: true, validateHost: true)] let manager = Manager(configuration: configuration, serverTrustPolicyManager: ServerTrustPolicyManager(policies: policies)) 最后把manager当参数传递给MoyaProvider 1MoyaProvider&lt;MultiTarget&gt;(endpointClosure: endpoint, requestClosure: requestEndpoint, stubClosure: stubClosure, manager: manager, plugins: plugins) Objective-C以上主要是Swift实现Https请求和验证支持下面看看OC的实现，OC的实现其实，由于现在OC几乎都是利用AFN或者AFN的衍生库实现网络请求，老项目的ASI这里就不提了，所以这里只是简单介绍AFN支持 1. 首先定义一个安全协议，和帧数相关验证支持 12345678910111213141516171819202122- (AFSecurityPolicy*)customSecurityPolicy &#123; // /先导入证书 NSString *cerPath = [[NSBundle mainBundle] pathForResource:@"jmt" ofType:@"cer"];//证书的路径 NSData *certData = [NSData dataWithContentsOfFile:cerPath]; // AFSSLPinningModeCertificate 使用证书验证模式 AFSecurityPolicy *securityPolicy = [AFSecurityPolicy policyWithPinningMode:AFSSLPinningModeCertificate]; // allowInvalidCertificates 是否允许无效证书（也就是自建的证书），默认为NO // 如果是需要验证自建证书，需要设置为YES securityPolicy.allowInvalidCertificates = YES; //validatesDomainName 是否需要验证域名，默认为YES； //假如证书的域名与你请求的域名不一致，需把该项设置为NO；如设成NO的话，即服务器使用其他可信任机构颁发的证书，也可以建立连接，这个非常危险，建议打开。 //置为NO，主要用于这种情况：客户端请求的是子域名，而证书上的是另外一个域名。因为SSL证书上的域名是独立的，假如证书上注册的域名是www.google.com，那么mail.google.com是无法验证通过的；当然，有钱可以注册通配符的域名*.google.com，但这个还是比较贵的。 //如置为NO，建议自己添加对应域名的校验逻辑。 securityPolicy.validatesDomainName = NO; securityPolicy.pinnedCertificates = [NSSet setWithObject:certData]; return securityPolicy;&#125; 然后在网络请求，初始化Manager的时候，根据配置HTTPS支持 12345if (!isDeveloperEnvironment) &#123; //配置https manager.securityPolicy = [self customSecurityPolicy]; manager.securityPolicy.allowInvalidCertificates = YES;&#125; 总结 1）HTTPS的主要思想是在不安全的网络上创建一安全信道，并可在使用适当的加密包和服务器证书可被验证且可被信任时，对窃听和中间人攻击提供合理的保护。 2）HTTPS的信任继承基于预先安装在浏览器中的证书颁发机构（如VeriSign、Microsoft等）（意即“我信任证书颁发机构告诉我应该信任的”）。 3）因此，一个到某网站的HTTPS连接可被信任，如果服务器搭建自己的https 也就是说采用自认证的方式来建立https信道，这样一般在客户端是不被信任的。 4）所以我们一般在浏览器访问一些https站点的时候会有一个提示，问你是否继续。 到此，拜了个拜…… 推荐：关于https的简介和说明我都是参考下面的文章：(谢谢文章作者) http://my.oschina.net/vimfung/blog/494687 http://oncenote.com/2014/10/21/Security-1-HTTPS/ http://blog.csdn.net/dachao_me/article/details/48624685?ref=myread]]></content>
+      <tags>
+        <tag>HTTPS（全称：Hyper Text Transfer Protocol over Secure Socket Layer），是以安全为目标的HTTP通道，简单讲是HTTP的安全版。</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[iOS——开发者中心更新手机号码]]></title>
     <url>%2F2018%2F04%2F26%2FiOS%E2%80%94%E2%80%94%E5%BC%80%E5%8F%91%E8%80%85%E4%B8%AD%E5%BF%83%E6%9B%B4%E6%96%B0%E6%89%8B%E6%9C%BA%E5%8F%B7%E7%A0%81%2F</url>
     <content type="text"><![CDATA[The Apple Developer 开发者中心更新手机号码 Program License Agreement has been updated……. The Apple Developer 开发者中心更新手机号码 Program License Agreement has been updated. 从而导致：1. 无法提交新APP 2. 无法编辑证书 从而造成无法继续做任何App更新，与证书相关的操作。 于是开始联系苹果技术客服（400 670 1855），但是在天朝开发者的数量你懂的，于是，不管三七二十几，拨通了放一边不管，因为我打过不下5次客服，排队时间从来没有少于半个小时了。 …… 等了近两个小时候，既然通了，叙事描述了一番，让我根据他们的说明提交对应的信息和问题的描述，然后让我们等2-3个工作日，当时我就闹过了，但是也没有办法，谁让人家是爸爸呢！ 于是在等待苹果消息的时候，不定时的进入后台刷新查看状态，同事在寻求各种大神和好友的帮助。 最后在一个群里看到了一个比较直接的解决方案，当然也比较变态，这一切都都应该是苹果的锅。具体方案是这样的：1、在修改手机号的页面，将COUNTRY / REGION一栏的国家从中国改成香港（Hong Kong） 2、修改地区会提示你修改付款信息（随便瞎填一下就行了，修改后记得点保存） 3、和原来的步骤一样，在REACHABLE AT（改手机号旁）处，点击Add More..添加手机号（如果之前添加了，建议删除重新添加） 这个时候，就可以去登录开发者中心了，如果前面几步操作无误，就不会再提示让修改手机号了，然后点击同意协议就行了！ 最后别忘了把地区改回中国！ 网上有小伙伴给出了具体原因： 因为中国的iCloud数据转到中国,更新后数据在中国保存,开发中心获取不到导致的。 当然，还有一些小伙伴也有其他的方案，由于我们已经搞定了，所以就没有尝试，如果感兴趣可以试试！ 期间如果具体遇到了问题，我相信作为一个合格的开发的，难不到你，哈哈！ 好了，今天，我们就到这里 拜了个拜……]]></content>
@@ -1146,8 +1154,8 @@
         <category>Swift</category>
       </categories>
       <tags>
-        <tag>OC&amp;&amp;Swift——方法调用技巧</tag>
         <tag>Swift</tag>
+        <tag>OC&amp;&amp;Swift——方法调用技巧</tag>
         <tag>方法调用技巧</tag>
       </tags>
   </entry>
@@ -1315,8 +1323,8 @@
         <category>Swift3</category>
       </categories>
       <tags>
-        <tag>Swift3</tag>
         <tag>Swift3——Swift3中的Runtime</tag>
+        <tag>Swift3</tag>
         <tag>Swift3中的Runtime</tag>
       </tags>
   </entry>
@@ -1341,8 +1349,8 @@
         <category>Swift3</category>
       </categories>
       <tags>
-        <tag>Swift3——Swift从入门到入门</tag>
         <tag>Swift3</tag>
+        <tag>Swift3——Swift从入门到入门</tag>
         <tag>Swift从入门到入门</tag>
       </tags>
   </entry>
@@ -1380,8 +1388,8 @@
         <category>2017@Swift</category>
       </categories>
       <tags>
-        <tag>Swift</tag>
         <tag>2017@Swift——后感</tag>
+        <tag>Swift</tag>
         <tag>大会后感</tag>
       </tags>
   </entry>
@@ -1394,8 +1402,8 @@
       </categories>
       <tags>
         <tag>Swift</tag>
-        <tag>大会</tag>
         <tag>2017@Swift——中国开发者大会（第二天）</tag>
+        <tag>大会</tag>
       </tags>
   </entry>
   <entry>
@@ -1407,8 +1415,8 @@
       </categories>
       <tags>
         <tag>Swift</tag>
-        <tag>2017@Swift——中国开发者大会（第一天）</tag>
         <tag>大会</tag>
+        <tag>2017@Swift——中国开发者大会（第一天）</tag>
       </tags>
   </entry>
   <entry>
