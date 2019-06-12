@@ -120,7 +120,7 @@
 <meta property="og:site_name" content="iCocos">
 <meta property="og:description" content="Lua表关于Lua表的介绍，这里有一段出自网络的介绍：  Lua的表本质其实是个类似HashMap的东西，其元素是很多的Key-Value对.如果尝试访问了一个表中并不存在的元素时，就会触发Lua的一套查找机制，也是凭借这个机制，才能够实现“面向对象”的。">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2018-10-31T09:34:08.921Z">
+<meta property="og:updated_time" content="2019-05-20T09:57:14.061Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="cocos2d-x lua —— 元表metatable">
 <meta name="twitter:description" content="Lua表关于Lua表的介绍，这里有一段出自网络的介绍：  Lua的表本质其实是个类似HashMap的东西，其元素是很多的Key-Value对.如果尝试访问了一个表中并不存在的元素时，就会触发Lua的一套查找机制，也是凭借这个机制，才能够实现“面向对象”的。">
@@ -458,7 +458,7 @@
                 
                   <span class="post-meta-item-text">本文字数：</span>
                 
-                <span title="本文字数">2.2k</span>
+                <span title="本文字数">2.3k</span>
               
 
               
@@ -528,7 +528,11 @@ print(myTable.A) --这里试图打印myTable并不存在的成员A
 <li>__index: 定义当table中不存在的key值被试图获取时的行为</li>
 <li>__newindex: 定义在table中产生新key值时的行为</li>
 </ul>
-<h5 id="这里主要说一下-index"><a href="#这里主要说一下-index" class="headerlink" title="这里主要说一下_index"></a>这里主要说一下_index</h5><h2 id="index："><a href="#index：" class="headerlink" title="__index："></a>__index：</h2><p>如果A的元表是B，那么如果访问了一个A中不存在的成员，就会访问查找B中有没有这个成员。这个过程大体是这样，但却不完全是这样，实际上，即使将A的元表设置为B，而且B中也确实有这个成员，返回结果仍然会是nil，原因就是B的<strong>index元方法没有赋值。按照我的理解，</strong>index方法是用来确定一个表在被作为元表时的查找方法</p>
+<h5 id="这里主要说一下-index"><a href="#这里主要说一下-index" class="headerlink" title="这里主要说一下_index"></a>这里主要说一下_index</h5><h2 id="index："><a href="#index：" class="headerlink" title="__index："></a>__index：</h2><p>如果A的元表是B，那么如果访问了一个A中不存在的成员，就会访问查找B中有没有这个成员。</p>
+<p>这个过程大体是这样，但却不完全是这样，实际上，即使将A的元表设置为B，而且B中也确实有这个成员，返回结果仍然会是nil</p>
+<h5 id="原因就是"><a href="#原因就是" class="headerlink" title="原因就是"></a>原因就是</h5><blockquote>
+<p>B的<strong>index元方法没有赋值。按照我的理解，</strong>index方法是用来确定一个表在被作为元表时的查找方法</p>
+</blockquote>
 <pre><code>father = {  
     house=1  
 }  
@@ -548,7 +552,8 @@ son = {
 setmetatable(son, father)  
 print(son.house) 
 </code></pre><p>输出的结果为1，符合预期。</p>
-<p>在上述例子中，访问son.house时，son中没有house这个成员，但Lua接着发现son有元表father，于是此时father被当做元表来查找，此时，Lua并不是直接在father中找名为house的成员，而是调用father的<strong>index方法，如果</strong>index方法为nil，则返回nil，如果是一个表（上例中father的<strong>index方法等于自己，就是这种情况），那么就到</strong>index方法所指的这个表中查找名为house的成员，于是，最终找到了house成员。</p>
+<p>在上述例子中，访问son.house时，son中没有house这个成员，但Lua接着发现son有元表father，于是此时father被当做元表来查找.</p>
+<p>此时，Lua并不是直接在father中找名为house的成员，而是调用father的<strong>index方法，如果</strong>index方法为nil，则返回nil，如果是一个表（上例中father的<strong>index方法等于自己，就是这种情况），那么就到</strong>index方法所指的这个表中查找名为house的成员，于是，最终找到了house成员。</p>
 <blockquote>
 <p>注：<strong>index方法除了可以是一个表，还可以是一个函数，如果是一个函数，</strong>index方法被调用时将返回该函数的返回值。</p>
 </blockquote>
@@ -734,7 +739,7 @@ print(son.house)
                 
                   <a href="/archives">
                 
-                    <span class="site-state-item-count">130</span>
+                    <span class="site-state-item-count">182</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -769,19 +774,7 @@ print(son.house)
                     
                       
                     
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                    <span class="site-state-item-count">17</span>
+                    <span class="site-state-item-count">11</span>
                     <span class="site-state-item-name">分类</span>
                   
                 </div>
@@ -1016,169 +1009,7 @@ print(son.house)
                     
                       
                     
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                    <span class="site-state-item-count">192</span>
+                    <span class="site-state-item-count">111</span>
                     <span class="site-state-item-name">标签</span>
                   
                 </div>
@@ -1258,7 +1089,7 @@ print(son.house)
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Lua表"><span class="nav-number">1.</span> <span class="nav-text">Lua表</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Lua元表"><span class="nav-number">2.</span> <span class="nav-text">Lua元表</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#这里主要说一下-index"><span class="nav-number">2.0.0.1.</span> <span class="nav-text">这里主要说一下_index</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#index："><span class="nav-number">3.</span> <span class="nav-text">__index：</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#总结一句就是：index是-当我们访问一个表中的元素不存在时，则会触发去寻找index元方法，如果不存在，则返回nil，如果存在，则返回结果。"><span class="nav-number">3.0.0.1.</span> <span class="nav-text">总结一句就是：index是:当我们访问一个表中的元素不存在时，则会触发去寻找index元方法，如果不存在，则返回nil，如果存在，则返回结果。</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#补充"><span class="nav-number">3.1.</span> <span class="nav-text">补充</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Lua查找一个表元素时的规则（出自网络）"><span class="nav-number">3.1.1.</span> <span class="nav-text">Lua查找一个表元素时的规则（出自网络）</span></a></li></ol></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Lua表"><span class="nav-number">1.</span> <span class="nav-text">Lua表</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Lua元表"><span class="nav-number">2.</span> <span class="nav-text">Lua元表</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#这里主要说一下-index"><span class="nav-number">2.0.0.1.</span> <span class="nav-text">这里主要说一下_index</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#index："><span class="nav-number">3.</span> <span class="nav-text">__index：</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#原因就是"><span class="nav-number">3.0.0.1.</span> <span class="nav-text">原因就是</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#总结一句就是：index是-当我们访问一个表中的元素不存在时，则会触发去寻找index元方法，如果不存在，则返回nil，如果存在，则返回结果。"><span class="nav-number">3.0.0.2.</span> <span class="nav-text">总结一句就是：index是:当我们访问一个表中的元素不存在时，则会触发去寻找index元方法，如果不存在，则返回nil，如果存在，则返回结果。</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#补充"><span class="nav-number">3.1.</span> <span class="nav-text">补充</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Lua查找一个表元素时的规则（出自网络）"><span class="nav-number">3.1.1.</span> <span class="nav-text">Lua查找一个表元素时的规则（出自网络）</span></a></li></ol></li></ol></li></ol></div>
             
 
           </div>
@@ -1292,7 +1123,7 @@ print(son.house)
     
       <span class="post-meta-item-text">站点总字数：</span>
     
-    <span title="站点总字数">725k</span>
+    <span title="站点总字数">1.1m</span>
   
 
   
@@ -1303,7 +1134,7 @@ print(son.house)
     
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
     
-    <span title="站点阅读时长">10:59</span>
+    <span title="站点阅读时长">16:05</span>
   
 </div>
 

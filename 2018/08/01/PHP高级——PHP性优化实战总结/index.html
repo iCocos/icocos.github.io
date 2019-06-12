@@ -1,0 +1,2187 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.3.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="http://pd1l3bbt7.bkt.clouddn.com/img/favicon.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="http://pd1l3bbt7.bkt.clouddn.com/img/favicon.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="http://pd1l3bbt7.bkt.clouddn.com/img/favicon.png?v=6.3.0">
+
+
+  <link rel="mask-icon" href="http://pd1l3bbt7.bkt.clouddn.com/img/favicon.png?v=6.3.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="PHP性能问题，占整个项目性能问题一般占30%，不会超过50%。要从全局去考虑全局的性能问题 源自慕课网视频教程整理：https://www.imooc.com/learn/205 什么情况下遇到PHP性能问题  1 ：PHP语法使用不恰当 2 ：使用了PHP语言他不擅长做的事情 3 ：用PHP语言连接的服务不给力 4 ：PHP自身的短板 5 ：未知的问题">
+<meta name="keywords" content="PHP,实战">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PHP高级——PHP性优化实战总结">
+<meta property="og:url" content="https://icocos.github.io/2018/08/01/PHP高级——PHP性优化实战总结/index.html">
+<meta property="og:site_name" content="iCocos">
+<meta property="og:description" content="PHP性能问题，占整个项目性能问题一般占30%，不会超过50%。要从全局去考虑全局的性能问题 源自慕课网视频教程整理：https://www.imooc.com/learn/205 什么情况下遇到PHP性能问题  1 ：PHP语法使用不恰当 2 ：使用了PHP语言他不擅长做的事情 3 ：用PHP语言连接的服务不给力 4 ：PHP自身的短板 5 ：未知的问题">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-05-22T09:17:17.086Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="PHP高级——PHP性优化实战总结">
+<meta name="twitter:description" content="PHP性能问题，占整个项目性能问题一般占30%，不会超过50%。要从全局去考虑全局的性能问题 源自慕课网视频教程整理：https://www.imooc.com/learn/205 什么情况下遇到PHP性能问题  1 ：PHP语法使用不恰当 2 ：使用了PHP语言他不擅长做的事情 3 ：用PHP语言连接的服务不给力 4 ：PHP自身的短板 5 ：未知的问题">
+
+
+
+  <link rel="alternate" href="/atom.xml" title="iCocos" type="application/atom+xml" />
+
+
+
+
+  <link rel="canonical" href="https://icocos.github.io/2018/08/01/PHP高级——PHP性优化实战总结/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>PHP高级——PHP性优化实战总结 | iCocos</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">iCocos</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">www.icocos.cn</p>
+      
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-首页">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-归档">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-关于">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-作品">
+    <a href="/works/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-calendar"></i> <br />作品</a>
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+    <div class="reading-progress-bar"></div>
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://icocos.github.io/2018/08/01/PHP高级——PHP性优化实战总结/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="曹理鹏@iCocos">
+      <meta itemprop="description" content="纯码迷、爱学习、爱交友、喜欢接触新鲜事物、迎接新的挑战，更爱游离于错综复杂的编码与逻辑中！">
+      <meta itemprop="image" content="http://pd1l3bbt7.bkt.clouddn.com/icocos_user_icon.JPG">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="iCocos">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">PHP高级——PHP性优化实战总结
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-08-01 22:21:05" itemprop="dateCreated datePublished" datetime="2018-08-01T22:21:05+08:00">2018-08-01</time>
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/PHP/" itemprop="url" rel="index"><span itemprop="name">PHP</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+              <span class="post-meta-divider">|</span>
+              <span class="post-meta-item-icon">
+                <i class="fa fa-comment-o"></i>
+              </span>
+              
+                <a href="/2018/08/01/PHP高级——PHP性优化实战总结/#SOHUCS" itemprop="discussionUrl">
+                  <span class="post-meta-item-text">评论数：</span> <span id="changyan_count_unit" class="post-comments-count hc-comment-count" data-xid="2018/08/01/PHP高级——PHP性优化实战总结/" itemprop="commentsCount"></span>
+                </a>
+              
+            
+          
+
+          
+          
+             <span id="/2018/08/01/PHP高级——PHP性优化实战总结/" class="leancloud_visitors" data-flag-title="PHP高级——PHP性优化实战总结">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数：</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon"
+            >
+            <i class="fa fa-eye"></i>
+             阅读次数： 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+            <div class="post-symbolscount">
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">本文字数：</span>
+                
+                <span title="本文字数">8k</span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">7 分钟</span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>PHP性能问题，占整个项目性能问题一般占30%，不会超过50%。<br>要从全局去考虑全局的性能问题</p>
+<p>源自慕课网视频教程整理：<a href="https://www.imooc.com/learn/205" target="_blank" rel="noopener">https://www.imooc.com/learn/205</a></p>
+<p>什么情况下遇到PHP性能问题</p>
+<ul>
+<li>1 ：PHP语法使用不恰当</li>
+<li>2 ：使用了PHP语言他不擅长做的事情</li>
+<li>3 ：用PHP语言连接的服务不给力</li>
+<li>4 ：PHP自身的短板</li>
+<li>5 ：未知的问题</li>
+</ul>
+<a id="more"></a>
+<p>PHP性能问题解决方向 （从1~3的顺序，操作简单，见效快排序）</p>
+<ul>
+<li>A . PHP语言级的性能优化 ：日常语法方法的优化 特点：简单高效很快见到效果</li>
+<li>B . PHP周边问题的性能优化 ：网络环境，前面webserver，后面mysql</li>
+<li>C . PHP语言自身的分析和优化 ：PHP底层C语言逻辑的优化</li>
+</ul>
+<h3 id="压力测试"><a href="#压力测试" class="headerlink" title="压力测试"></a>压力测试</h3><p>作为一个PHP程序员必须要知道并且会使用常用的压力测试工具，对接口做压力测试</p>
+<h5 id="Apache-Benchmark-简称ab"><a href="#Apache-Benchmark-简称ab" class="headerlink" title="Apache Benchmark 简称ab"></a>Apache Benchmark 简称ab</h5><blockquote>
+<p>ab是由Apache提供的压力测试软件。安装apache服务器时会自带压测软件</p>
+</blockquote>
+<p>使用 ./ab -n1000 -c100 <a href="http://www.baidu.com" target="_blank" rel="noopener">http://www.baidu.com</a></p>
+<pre><code>+ -n请求数 -c并发数 url目标
+</code></pre><ul>
+<li>ab 返回结果的参数<ul>
+<li>1&gt; Requests per second 每秒请求数 （优化目标 每秒的请求数尽可能多）</li>
+<li>2&gt; Time per request 响应一个请求耗时 （优化目标 响应一个请求尽可能少）</li>
+</ul>
+</li>
+</ul>
+<h5 id="webbench"><a href="#webbench" class="headerlink" title="webbench"></a>webbench</h5><blockquote>
+<p>webbench -c 50 -t 30 <a href="http://127.0.0.1:6969/shenghuojiaofei/test" target="_blank" rel="noopener">http://127.0.0.1:6969/shenghuojiaofei/test</a></p>
+</blockquote>
+<ul>
+<li><a href="https://www.jianshu.com/p/efdaa2064513" target="_blank" rel="noopener">https://www.jianshu.com/p/efdaa2064513</a></li>
+</ul>
+<h5 id="siege"><a href="#siege" class="headerlink" title="siege"></a>siege</h5><ul>
+<li>siege -c 并发数 -t 运行测试时间 URL</li>
+</ul>
+<p>这里要注意的是-t后面的时间要带单位，s表示秒，如果不带，就是分钟。</p>
+<ul>
+<li><a href="http://download.joedog.org/siege/siege-latest.tar.gz" target="_blank" rel="noopener">http://download.joedog.org/siege/siege-latest.tar.gz</a></li>
+</ul>
+<h3 id="Opcode"><a href="#Opcode" class="headerlink" title="Opcode"></a>Opcode</h3><p>我们知道，拿到一段代码后，经过词法解析、语法解析等阶段后，源程序会被翻译成一个个指令(opcodes)，然后ZEND虚拟机顺次执行这些指令完成操作。PHP本身是用C实现的，因此最终调用的也都是C的函数，实际上，我们可以把PHP看做是一个C开发的软件。</p>
+<ul>
+<li>PHP的执行的核心是翻译出来的一条一条指令，也即opcode，我们平时所说的缓存，一般也是缓存Opcode(APC,mecache,yac)。</li>
+</ul>
+<p>Opcode是PHP程序执行的最基本单位。一个opcode由两个参数(op1,op2)、返回值和处理函数组成。PHP程序最终被翻译为一组opcode处理函数的顺序执行。</p>
+<p>所以我们可以通过vld查看和分析Opcode，具体问题具体分析</p>
+<ul>
+<li><a href="https://segmentfault.com/a/1190000005937076" target="_blank" rel="noopener">https://segmentfault.com/a/1190000005937076</a></li>
+</ul>
+<hr>
+<hr>
+<h2 id="PHP语言级性能优化"><a href="#PHP语言级性能优化" class="headerlink" title="PHP语言级性能优化"></a>PHP语言级性能优化</h2><ul>
+<li><p>优化点：少些php代码，多用PHP自身能力，多用PHP自身的</p>
+</li>
+<li><p>性能问题：自写代码冗余较多，可读性不佳，并且性能低</p>
+<p>  php代码写的越长长执行效果就会越差，多用php自身的函数等</p>
+</li>
+</ul>
+<h6 id="为什么性能低"><a href="#为什么性能低" class="headerlink" title="为什么性能低? :"></a>为什么性能低? :</h6><ul>
+<li><p>PHP 代码需要编译为C语言，C语言又会编译成汇编语言（机器语言），这里每一个过程都会请求一遍，开销很大。尤其是访问量大的时候，每次都会编译一遍。所以要尽量减少代码</p>
+</li>
+<li><p>好的方法：多使用PHP内置的变量、常量、函数</p>
+</li>
+</ul>
+<p>原生PHP 和 自己写一段实现一个同样的功能，性能差异。有的可能会提高好几倍。</p>
+<blockquote>
+<p>为什么自己实现的会慢呢? PHP代码如何再linux上执行？</p>
+<blockquote>
+<p>*.php 通过zend引擎逐行扫描分析(Scanner)，</p>
+<p>保存成zend引擎自己能识别的语法(Exprs),</p>
+<p>这些zend引擎能识别的语法，再解析(Parser)成Opcodes。</p>
+<p>Opcodes是最终要拿去执行的机器代码 。执行，然后输出。</p>
+</blockquote>
+</blockquote>
+<ul>
+<li>逐行扫描，转码，解析成Opcodes，然后输出, 扫描时间少了，zend转码时间会更快，解析Opcodes也会更快。</li>
+</ul>
+<p>缓存服务都是缓存的Opcodes，就不用扫描和解析了，当然就更更快了。</p>
+<p>###【PHP内置函数的性能优劣】</p>
+<ul>
+<li><p>情况描述: PHP内置函数，之间依然存在快慢差异。使用快的函数。</p>
+<ul>
+<li>数组，文件，日期的操作</li>
+<li>多了解注释时间复杂度，大部分性能问题，都会涉及时间和控件的转换</li>
+</ul>
+</li>
+</ul>
+<p>###【尽量少用魔法函数】</p>
+<p>为什么魔法函数性能低：</p>
+<ul>
+<li><p>为了给程序员省事，php语言为你做了很多</p>
+<pre><code>+ linux time函数 可以直接测试程序的耗时情况 魔法函数举例：__get();
++ 可以不用尽量不用，如果必须要用的时候再用。
+</code></pre></li>
+</ul>
+<p>###【不使用@ 错误抑制符】</p>
+<h5 id="错误抑制符原理：在代码开始前、结束后，增加Opcode"><a href="#错误抑制符原理：在代码开始前、结束后，增加Opcode" class="headerlink" title="@ 错误抑制符原理：在代码开始前、结束后，增加Opcode"></a>@ 错误抑制符原理：在代码开始前、结束后，增加Opcode</h5><p>前面提到了vld工具，我们这里可以在代码开始前、结束后，增加Opcode。查看一下Opcode执行码。</p>
+<ul>
+<li><p>工具：</p>
+<ul>
+<li>vld PHP扩展 主要作用就是把opcode 演示出来。</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">php -dvld.active=1 -dvld.execute=0 at.php</span><br></pre></td></tr></table></figure>
+<p>回打印出opcode，结果用@ 会多2行代码，多操作逻辑，有多些开销。 可以用 try throw 这种。</p>
+<p>###【合理使用内存】</p>
+<ul>
+<li><p>情况描述：php有内存回收机制保底，但也要小心使用内存</p>
+</li>
+<li><p>建议：利用unset()及时释放不使用的内存（注：unset出现注销不掉的情况，自己查资料）</p>
+</li>
+</ul>
+<p>###【尽量少的使用正则表达式】</p>
+<ul>
+<li><p>情况描述：正则表达式性能低，因为正则表达式回溯开销较大</p>
+</li>
+<li><p>好的建议：利用字符串处理函数，实现相同的逻辑</p>
+</li>
+</ul>
+<p>###【避免循环内做运算】</p>
+<ul>
+<li>情况描述：循环内的计算式会被重复计算</li>
+</ul>
+<h6 id="例如"><a href="#例如" class="headerlink" title="例如"></a>例如</h6><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span>(<span class="variable">$i</span>=0;<span class="variable">$i</span>&lt;strlen(<span class="variable">$str</span>);<span class="variable">$i</span>++)</span><br></pre></td></tr></table></figure>
+<p>每一次for循环都会进行计算strlen</p>
+<p>###【减少计算密集型业务】</p>
+<ul>
+<li>情况描述：PHP不适合密集型运算场景,在处理大数据量的时候性能比较差</li>
+</ul>
+<h6 id="为什么："><a href="#为什么：" class="headerlink" title="为什么："></a>为什么：</h6><pre><code>+ 比如不适合大批量日志分析，或者大批量数据处理。
++ php语言特性决定了PHP不适合做大数据运算
++ php所有处理都需要转换成C语言，与C相比，C更好。
++ php还有环境问题，还有语言特性。额外开销比C大很多。变量寄存等。。
+</code></pre><ul>
+<li>PHP适合什么？</li>
+</ul>
+<p>以下是PHP官方手册提供的PHP支持</p>
+<p>PHP 脚本主要用于以下三个领域：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">服务端脚本。</span><br><span class="line">	这是 PHP 最传统，也是最主要的目标领域。</span><br><span class="line">	开展这项工作需要具备以下三点：PHP 解析器（CGI 或者服务器模块）、web 服务器和 web 浏览器。需要在运行 web 服务器时，安装并配置 PHP，然后，可以用 web 浏览器来访问 PHP 程序的输出，即浏览服务端的 PHP 页面。</span><br><span class="line">	如果只是实验 PHP 编程，所有的这些都可以运行在自己家里的电脑中。</span><br><span class="line"></span><br><span class="line">命令行脚本。</span><br><span class="line">	可以编写一段 PHP 脚本，并且不需要任何服务器或者浏览器来运行它。通过这种方式，仅仅只需要 PHP 解析器来执行。</span><br><span class="line">	这种用法对于依赖 cron（Unix 或者 Linux 环境）或者 Task Scheduler（Windows 环境）的日常运行的脚本来说是理想的选择。这些脚本也可以用来处理简单的文本。</span><br><span class="line"></span><br><span class="line">编写桌面应用程序。</span><br><span class="line">	对于有着图形界面的桌面应用程序来说，PHP 或许不是一种最好的语言，但是如果用户非常精通 PHP，并且希望在客户端应用程序中使用 PHP 的一些高级特性，可以利用 PHP-GTK 来编写这些程序。</span><br><span class="line">	用这种方法，还可以编写跨平台的应用程序。PHP-GTK 是 PHP 的一个扩展，在通常发布的 PHP 包中并不包含它。</span><br></pre></td></tr></table></figure>
+<h5 id="所以总结来说：PHP适合衔接webserver与后端服务、UI呈现。（就是接口，简单数据处理，和套页面）"><a href="#所以总结来说：PHP适合衔接webserver与后端服务、UI呈现。（就是接口，简单数据处理，和套页面）" class="headerlink" title="所以总结来说：PHP适合衔接webserver与后端服务、UI呈现。（就是接口，简单数据处理，和套页面）"></a>所以总结来说：PHP适合衔接webserver与后端服务、UI呈现。（就是接口，简单数据处理，和套页面）</h5><p>###【务必使用带引号字符串做键值】</p>
+<ul>
+<li><p>情况描述：php会将没有引号的键值检查一遍是不是常量，产生查询常量的开销</p>
+<h5 id="产生多余的查找工作，所以尽量带引号-双、单-书写，作为键值对"><a href="#产生多余的查找工作，所以尽量带引号-双、单-书写，作为键值对" class="headerlink" title="产生多余的查找工作，所以尽量带引号(双、单)书写，作为键值对"></a>产生多余的查找工作，所以尽量带引号(双、单)书写，作为键值对</h5></li>
+</ul>
+<hr>
+<hr>
+<h2 id="PHP周边问题的性能优化"><a href="#PHP周边问题的性能优化" class="headerlink" title="PHP周边问题的性能优化"></a>PHP周边问题的性能优化</h2><ul>
+<li>PHP周边都有什么<ul>
+<li>1.linux环境</li>
+<li>2.硬盘，文件存储，php读写</li>
+<li>3.数据库，表设计</li>
+<li>4.缓存 缓存是基于内存的</li>
+<li>5.网络，带宽</li>
+</ul>
+</li>
+</ul>
+<p>抓大头去优化，就是先从大的方向去做优化 </p>
+<p>###【减少文件类操作】</p>
+<ul>
+<li>常见PHP场景的开销次序：<ul>
+<li>读写磁盘、</li>
+<li>读写数据库、</li>
+<li>读写内存、</li>
+<li>读写网络数据</li>
+</ul>
+</li>
+</ul>
+<p>读写内存 &lt;&lt;&lt; 读写数据库 &lt; 读写磁盘 &lt; 读写网络数据: socket操作文件句柄</p>
+<p>###【减少php发起网络请求】</p>
+<ul>
+<li><p>优化网络请求</p>
+<ul>
+<li>网络请求的坑：1. 对方接口的不确定因素 2. 网络稳定性</li>
+</ul>
+</li>
+<li><p>如何优化网络请求</p>
+</li>
+</ul>
+<p>######1设置超时时间 ： 建议值</p>
+<pre><code>a）连接超时 200ms 这是上限，最多也不能超过这个时间
+b）读超时 800ms 这个看具体情况
+c）写超时 500ms 建议不要超过500ms
+</code></pre><p>######2、将串行请求并行化</p>
+<pre><code>a）使用curl_multi_*（） 返回时间是看用时最长的那个请求
+b）使用swoole扩展 通过C来进行并行化。推荐使用
+</code></pre><p>###【压缩PHP接口输出】</p>
+<ul>
+<li><p>如果用php做接口如何更高效的输出</p>
+</li>
+<li><p>如何压缩 ： 使用Gzip</p>
+</li>
+<li><p>压缩输出的利弊：</p>
+<ul>
+<li>利：利于数据输出，client能更快获取数据</li>
+<li>弊：额外的CPU开销。如果请求大，肯能会有问题</li>
+</ul>
+</li>
+</ul>
+<p>gzip如果数据量小于几十K的时候效果并不理想。如果大于100k，压缩就有效果。</p>
+<p>###【缓存重复计算内容】</p>
+<pre><code>什么情况下做输出内容缓存 ： 固定重复请求的数据做缓存。
+</code></pre><p>###【重叠时间窗口思想】 串行变并行</p>
+<pre><code>如果后一个请求不强依赖于前一个返回值。就可以变成并行，降低总体时间消耗
+</code></pre><ul>
+<li>条件：后一个任务不强依赖于前一个任务</li>
+</ul>
+<p>###【旁路方案】 也是重叠时间窗口思想</p>
+<ul>
+<li>条件：后一个任务不强依赖于前一个任务</li>
+</ul>
+<h5 id="其他高级优化"><a href="#其他高级优化" class="headerlink" title="其他高级优化"></a>其他高级优化</h5><ul>
+<li>读写分离</li>
+<li>分布式</li>
+<li>集群</li>
+<li>CDN</li>
+<li>服务器架构</li>
+</ul>
+<p>后期会有相应的文章具体学习与实战</p>
+<hr>
+<hr>
+<h2 id="PHP性能问题的具体分析"><a href="#PHP性能问题的具体分析" class="headerlink" title="PHP性能问题的具体分析"></a>PHP性能问题的具体分析</h2><ul>
+<li><p>工具： XHPorf（源自fackbook的PHP性能分析工具）</p>
+</li>
+<li><p>实践：通过分析wordpress程序，做优化。</p>
+<ul>
+<li>php –ri 扩展名 查看php是否支持某个扩展</li>
+<li>linux 下搜索文件中具体代码在哪个文件</li>
+<li>grep ‘xxx’ ./ -r</li>
+</ul>
+</li>
+</ul>
+<h5 id="其他工具"><a href="#其他工具" class="headerlink" title="其他工具"></a>其他工具</h5><ul>
+<li>ab,webbench,siege - 压力测试</li>
+<li>vld - opcode代码分析</li>
+</ul>
+<hr>
+<hr>
+<h2 id="PHP性能瓶颈解决方法"><a href="#PHP性能瓶颈解决方法" class="headerlink" title="PHP性能瓶颈解决方法"></a>PHP性能瓶颈解决方法</h2><ul>
+<li><p>Opcode Cache ：PHP扩展APC就是做Opcode缓存用的</p>
+<ul>
+<li>Apc 可能不常用了，可以再pecl点caching。查看php缓存的扩展</li>
+<li>pecl 是官方经过验证的PHP扩展</li>
+</ul>
+</li>
+<li><p>扩展实现：通过PHP扩展代替原PHP代码中高频的逻辑,开销比较大的</p>
+<ul>
+<li>Runtime优化：HHVM （phpng也许更优于HHVM）</li>
+</ul>
+</li>
+</ul>
+<hr>
+<hr>
+<h3 id="实战总结整理"><a href="#实战总结整理" class="headerlink" title="实战总结整理"></a>实战总结整理</h3><ul>
+<li>1、 用单引号代替双引号来包含字符串，这样做会更快一些。因为 PHP 会在双引号包围的 字符串中搜寻变量，单引号则不会，<ul>
+<li>注意：只有 echo 能这么做，它是一种可以把多个字符 串当作参数的“函数”(译注：PHP 手册中说 echo 是语言结构，不是真正的函数，故把函数 加上了双引号)。</li>
+</ul>
+</li>
+<li>2、如果能将类的方法定义成 static，就尽量定义成 static，它的速度会提升将近 4 倍。</li>
+<li>3、$row[‘id’] 的速度是$row[id]的 7 倍。</li>
+<li>4、echo 比 print 快，并且使用 echo 的多重参数(译注：指用逗号而不是句点)代替字符串 连接，比如 echo $str1,$str2。</li>
+<li>5、在执行 for 循环之前确定最大循环数，不要每循环一次都计算最大值，最好运用 foreach 代替。</li>
+<li>6、注销那些不用的变量尤其是大数组，以便释放内存。</li>
+<li>7、尽量避免使用<strong>get，</strong>set，__autoload。</li>
+<li>8、require_once()代价昂贵。</li>
+<li>9、include 文件时尽量使用绝对路径，因为它避免了 PHP 去 include_path 里查找文件的速 度，解析操作系统路径所需的时间会更少。</li>
+<li>10、如果你想知道脚本开始执行(译注：即服务器端收到客户端请求)的时刻，使用 $_SERVER[‘REQUEST_TIME’] 要好于 time()</li>
+<li>11、函数代替正则表达式完成相同功能。</li>
+<li>12、str_replace 函数比 preg_replace 函数快，但 strtr 函数的效率是 str_replace 函数的四倍。</li>
+<li>13、如果一个字符串替换函数，可接受数组或字符作为参数，并且参数长度不太长，那么 可以考虑额外写一段替换代码， 使得每次传递参数是一个字符， 而不是只写一行代码接受数 组作为查询和替换的参数。</li>
+<li>14、使用选择分支语句(译注：即 switch case)好于使用多个 if，else if 语句。</li>
+<li>15、用@屏蔽错误消息的做法非常低效，极其低效。</li>
+<li>16、打开 apache 的 mod_deflate 模块，可以提高网页的浏览速度。</li>
+<li>17、数据库连接当使用完毕时应关掉，不要用长连接。</li>
+<li>18、错误消息代价昂贵。</li>
+<li>19、在方法中递增局部变量，速度是最快的。几乎与在函数中调用局部变量的速度相当。</li>
+<li>20、递增一个全局变量要比递增一个局部变量慢 2 倍。</li>
+<li>21、递增一个对象属性(如：$this-&gt;prop++)要比递增一个局部变量慢 3 倍。</li>
+<li>22、递增一个未预定义的局部变量要比递增一个预定义的局部变量慢 9 至 10 倍。</li>
+<li>23、仅定义一个局部变量而没在函数中调用它，同样会减慢速度(其程度相当于递增一个局 部变量)。PHP 大概会检查看是否存在全局变量。</li>
+<li>24、方法调用看来与类中定义的方法的数量无关，因为我(在测试方法之前和之后都)添加了 10 个方法，但性能上没有变化。</li>
+<li>25、派生类中的方法运行起来要快于在基类中定义的同样的方法。</li>
+<li>26、调用带有一个参数的空函数，其花费的时间相当于执行 7 至 8 次的局部变量递增操作。 类似的方法调用所花费的时间接近于 15 次的局部变量递增操作。</li>
+<li>27、Apache 解析一个 PHP 脚本的时间要比解析一个静态 HTML 页面慢 2 至 10 倍。尽量 多用静态 HTML 页面，少用脚本。</li>
+<li>28、除非脚本可以缓存，否则每次调用时都会重新编译一次。引入一套 PHP 缓存机制通常 可以提升 25%至 100%的性能，以免除编译开销。</li>
+<li>29、尽量做缓存，可使用 memcached。memcached 是一款高性能的内存对象缓存系统， 可用来加速动态 Web 应用程序，减轻数据库负载。对运算码 (OP code)的缓存很有用，使 得脚本不必为每个请求做重新编译。</li>
+<li><p>30、 当操作字符串并需要检验其长度是否满足某种要求时， 你想当然地会使用 strlen()函数。 </p>
+<ul>
+<li>此函数执行起来相当快，因为它不做任何计算，只返回在 zval 结构(C 的内置数据结构，用 于存储 PHP 变量)中存储的已知字符串长度。</li>
+<li>但是，由于 strlen()是函数，多多少少会有些 慢，因为函数调用会经过诸多步骤，如字母小写化(译注：指函数名小写化，PHP 不区分函 数名大小写)、哈希查找，会跟随被调用的函数一起执行。</li>
+<li><p>在某些情况下，你可以使用 isset() 技巧加速执行你的代码。 </p>
+<p>(举例如下)</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (strlen(<span class="variable">$foo</span>) &lt; 5) &#123; </span><br><span class="line">	<span class="built_in">echo</span> “Foo is too short”$$ </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+<pre><code>(与下面的技巧做比较) 
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (!isset(<span class="variable">$foo</span>&#123;5&#125;)) &#123; </span><br><span class="line">	<span class="built_in">echo</span> “Foo is too short”$$ </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+调用 isset()恰巧比 strlen()快，因为与后者不同的是，isset()作为一种语言结构，意味着它 的执行不需要函数查找和字母小写化。 
+&gt; 也就是说， 实际上在检验字符串长度的顶层代码中你 没有花太多开销。
+</code></pre><ul>
+<li>31、当执行变量$i 的递增或递减时，$i++会比++$i 慢一些。这种差异是 PHP 特有的，并不 适用于其他语言， 所以请不要修改你的 C 或 Java 代码并指望它们能立即变快， 没用的。 <ul>
+<li>++$i 更快是因为它只需要 3 条指令(opcodes)，$i++则需要 4 条指令。</li>
+<li>后置递增实际上会产生一 个临时变量，这个临时变量随后被递增。</li>
+<li>而前置递增直接在原值上递增。这是最优化处理的 一种，正如 Zend 的 PHP 优化器所作的那样。</li>
+<li>牢记这个优化处理不失为一个好主意，因为 并不是所有的指令优化器都会做同样的优化处理， 并且存在大量没有装配指令优化器的互联 网服务提供商(ISPs)和服务器。</li>
+</ul>
+</li>
+<li>32、并不是事必面向对象(OOP)，面向对象往往开销很大，每个方法和对象调用都会消耗很 多内存。</li>
+<li>33、并非要用类实现所有的数据结构，数组也很有用。</li>
+<li>34、不要把方法细分得过多，仔细想想你真正打算重用的是哪些代码?</li>
+<li>35、当你需要时，你总能把代码分解成方法。</li>
+<li>36、尽量采用大量的 PHP 内置函数。</li>
+<li>37、如果在代码中存在大量耗时的函数，你可以考虑用 C 扩展的方式实现它们。</li>
+<li>38、 评估检验(profile)你的代码。 检验器会告诉你， 代码的哪些部分消耗了多少时间。 Xdebug 调试器包含了检验程序，评估检验总体上可以显示出代码的瓶颈。</li>
+<li>39、mod_zip 可作为 Apache 模块，用来即时压缩你的数据，并可让数据传输量降低 80%。</li>
+<li>40、在可以用 file_get_contents 替代 file、fopen、feof、fgets 等系列方法的情况下，尽量 用 file_get_contents，因为他的效率高得多!但是要注意 file_get_contents 在打开一个 URL 文件时候的 PHP 版本问题;</li>
+<li>41、尽量的少进行文件操作，虽然 PHP 的文件操作效率也不低的;</li>
+<li>42、优化 Select SQL 语句，在可能的情况下尽量少的进行 Insert、Update 操作(在 update 上，我被恶批过);</li>
+<li>43、尽可能的使用 PHP 内部函数(但是我却为了找个 PHP 里面不存在的函数，浪费了本可 以写出一个自定义函数的时间，经验问题啊!);</li>
+<li>44、 循环内部不要声明变量， 尤其是大变量： 对象(这好像不只是 PHP 里面要注意的问题吧?);</li>
+<li>45、多维数组尽量不要循环嵌套赋值;</li>
+<li>46、在可以用 PHP 内部字符串操作函数的情况下，不要用正则表达式;</li>
+<li>47、foreach 效率更高，尽量用 foreach 代替 while 和 for 循环;</li>
+<li>48、用单引号替代双引号引用字符串;</li>
+<li>49、“用 i+=1 代替 i=i+1。符合 c/c++的习惯，效率还高”</li>
+<li>50、对 global 变量，应该用完就 unset()掉;</li>
+</ul>
+<p>推荐：<a href="http://baijiahao.baidu.com/s?id=1600263247562743733&amp;wfr=spider&amp;for=pc" target="_blank" rel="noopener">http://baijiahao.baidu.com/s?id=1600263247562743733&amp;wfr=spider&amp;for=pc</a></p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="http://pd1l3bbt7.bkt.clouddn.com/img/wechatimg.jpg" alt="曹理鹏@iCocos 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="http://pd1l3bbt7.bkt.clouddn.com/img/alipayimg.jpg" alt="曹理鹏@iCocos 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>曹理鹏@iCocos</li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://icocos.github.io/2018/08/01/PHP高级——PHP性优化实战总结/" title="PHP高级——PHP性优化实战总结">https://icocos.github.io/2018/08/01/PHP高级——PHP性优化实战总结/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明出处！</li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/PHP/" rel="tag"># PHP</a>
+          
+            <a href="/tags/实战/" rel="tag"># 实战</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/07/28/MySQL拓展(extend)/" rel="next" title="MySQL拓展(extend)">
+                <i class="fa fa-chevron-left"></i> MySQL拓展(extend)
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/08/04/PHP高级——MySQL性优化实战总结/" rel="prev" title="PHP高级——MySQL性优化实战总结一">
+                PHP高级——MySQL性优化实战总结一 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="SOHUCS"></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="http://pd1l3bbt7.bkt.clouddn.com/icocos_user_icon.JPG"
+                alt="曹理鹏@iCocos" />
+            
+              <p class="site-author-name" itemprop="name">曹理鹏@iCocos</p>
+              <p class="site-description motion-element" itemprop="description">纯码迷、爱学习、爱交友、喜欢接触新鲜事物、迎接新的挑战，更爱游离于错综复杂的编码与逻辑中！</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives">
+                
+                    <span class="site-state-item-count">182</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">11</span>
+                    <span class="site-state-item-name">分类</span>
+                  
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">111</span>
+                    <span class="site-state-item-name">标签</span>
+                  
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/al1020119" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:al1020119@163.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://stackoverflow.com/users/10186720" target="_blank" title="StackOverflow"><i class="fa fa-fw fa-stack-overflow"></i>StackOverflow</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.icocos.cn/" title="梦工厂" target="_blank">梦工厂</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://al1020119.github.io/" title="iOS梦工厂" target="_blank">iOS梦工厂</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#压力测试"><span class="nav-number">1.</span> <span class="nav-text">压力测试</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Apache-Benchmark-简称ab"><span class="nav-number">1.0.1.</span> <span class="nav-text">Apache Benchmark 简称ab</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#webbench"><span class="nav-number">1.0.2.</span> <span class="nav-text">webbench</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#siege"><span class="nav-number">1.0.3.</span> <span class="nav-text">siege</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Opcode"><span class="nav-number">2.</span> <span class="nav-text">Opcode</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PHP语言级性能优化"><span class="nav-number"></span> <span class="nav-text">PHP语言级性能优化</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#为什么性能低"><span class="nav-number">0.0.0.1.</span> <span class="nav-text">为什么性能低? :</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#错误抑制符原理：在代码开始前、结束后，增加Opcode"><span class="nav-number">0.0.1.</span> <span class="nav-text">@ 错误抑制符原理：在代码开始前、结束后，增加Opcode</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#例如"><span class="nav-number">0.0.1.1.</span> <span class="nav-text">例如</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#为什么："><span class="nav-number">0.0.1.2.</span> <span class="nav-text">为什么：</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#所以总结来说：PHP适合衔接webserver与后端服务、UI呈现。（就是接口，简单数据处理，和套页面）"><span class="nav-number">0.0.2.</span> <span class="nav-text">所以总结来说：PHP适合衔接webserver与后端服务、UI呈现。（就是接口，简单数据处理，和套页面）</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#产生多余的查找工作，所以尽量带引号-双、单-书写，作为键值对"><span class="nav-number">0.0.3.</span> <span class="nav-text">产生多余的查找工作，所以尽量带引号(双、单)书写，作为键值对</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PHP周边问题的性能优化"><span class="nav-number"></span> <span class="nav-text">PHP周边问题的性能优化</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#其他高级优化"><span class="nav-number">0.0.1.</span> <span class="nav-text">其他高级优化</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PHP性能问题的具体分析"><span class="nav-number"></span> <span class="nav-text">PHP性能问题的具体分析</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#其他工具"><span class="nav-number">0.0.1.</span> <span class="nav-text">其他工具</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PHP性能瓶颈解决方法"><span class="nav-number"></span> <span class="nav-text">PHP性能瓶颈解决方法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#实战总结整理"><span class="nav-number">1.</span> <span class="nav-text">实战总结整理</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2017 – <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">曹理鹏@iCocos</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">站点总字数：</span>
+    
+    <span title="站点总字数">1.1m</span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    
+    <span title="站点阅读时长">16:05</span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv" title="总访客量">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="site-pv" title="总访问量">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/reading_progress/reading_progress.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.3.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.3.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.3.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.3.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+  
+    <script type="text/javascript">
+    (function(){
+      var appid = 'cytKHBEtW';
+      var conf = '43989b8e63b25c4e9f1fde821c996a39';
+      var width = window.innerWidth || document.documentElement.clientWidth;
+      if (width < 960) {
+      window.document.write('<script id="changyan_mobile_js" charset="utf-8" type="text/javascript" src="https://changyan.sohu.com/upload/mobile/wap-js/changyan_mobile.js?client_id=' + appid + '&conf=' + conf + '"><\/script>'); } else { var loadJs=function(d,a){var c=document.getElementsByTagName("head")[0]||document.head||document.documentElement;var b=document.createElement("script");b.setAttribute("type","text/javascript");b.setAttribute("charset","UTF-8");b.setAttribute("src",d);if(typeof a==="function"){if(window.attachEvent){b.onreadystatechange=function(){var e=b.readyState;if(e==="loaded"||e==="complete"){b.onreadystatechange=null;a()}}}else{b.onload=a}}c.appendChild(b)};loadJs("https://changyan.sohu.com/upload/changyan.js",function(){
+        window.changyan.api.config({appid:appid,conf:conf})});
+      }
+    })();
+    </script>
+    <script type="text/javascript" src="https://assets.changyan.sohu.com/upload/plugins/plugins.count.js"></script>
+  
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("Tc7k1mbaieCUSgmM8LPk1IBO-gzGzoHsz", "sAb7L2vwENJTteRrvFKQacUU");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            
+              var $element = $(document.getElementById(url));
+              $element.find('.leancloud-visitors-count').text(counter.get('time'));
+            
+            counter.save(null, {
+              success: function(counter) {
+                
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            
+              var $element = $(document.getElementById(url));
+              $element.find('.leancloud-visitors-count').text('Counter not initialized! See more at console err msg.');
+              console.error('ATTENTION! LeanCloud counter has security bug, see here how to solve it: https://github.com/theme-next/hexo-leancloud-counter-security. \n But you also can use LeanCloud without security, by set \'security\' option to \'false\'.');
+            
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #333;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #eee;
+      background-image: linear-gradient(#fcfcfc, #eee);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('复制').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+          if(result)$(this).text('复制成功')
+          else $(this).text('复制失败')
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('复制')
+        }, 300)
+      }).append(e)
+    })
+  </script>
+
+
+  
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("Tc7k1mbaieCUSgmM8LPk1IBO-gzGzoHsz", "sAb7L2vwENJTteRrvFKQacUU");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+  
+</body>
+</html>

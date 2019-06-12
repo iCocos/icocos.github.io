@@ -1,0 +1,1989 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.3.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="http://pd1l3bbt7.bkt.clouddn.com/img/favicon.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="http://pd1l3bbt7.bkt.clouddn.com/img/favicon.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="http://pd1l3bbt7.bkt.clouddn.com/img/favicon.png?v=6.3.0">
+
+
+  <link rel="mask-icon" href="http://pd1l3bbt7.bkt.clouddn.com/img/favicon.png?v=6.3.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="Blade 简介Blade 是由 Laravel 提供的非常简单但功能强大的模板引擎，不同于其他流行的 PHP 模板引擎，Blade 在视图中并不约束你使用 PHP 原生代码。所有的 Blade 视图最终都会被编译成原生 PHP 代码并缓存起来直到被修改，这意味着对应用的性能而言 Blade 基本上是零开销。  Blade 视图文件（也叫模板文件）使用 .blade.php 文件扩展名，都存放在">
+<meta name="keywords" content="PHP,框架,Laravel">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Laravel入门——视图">
+<meta property="og:url" content="https://icocos.github.io/2017/05/16/Laravel入门——视图/index.html">
+<meta property="og:site_name" content="iCocos">
+<meta property="og:description" content="Blade 简介Blade 是由 Laravel 提供的非常简单但功能强大的模板引擎，不同于其他流行的 PHP 模板引擎，Blade 在视图中并不约束你使用 PHP 原生代码。所有的 Blade 视图最终都会被编译成原生 PHP 代码并缓存起来直到被修改，这意味着对应用的性能而言 Blade 基本上是零开销。  Blade 视图文件（也叫模板文件）使用 .blade.php 文件扩展名，都存放在">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-05-21T06:49:40.182Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Laravel入门——视图">
+<meta name="twitter:description" content="Blade 简介Blade 是由 Laravel 提供的非常简单但功能强大的模板引擎，不同于其他流行的 PHP 模板引擎，Blade 在视图中并不约束你使用 PHP 原生代码。所有的 Blade 视图最终都会被编译成原生 PHP 代码并缓存起来直到被修改，这意味着对应用的性能而言 Blade 基本上是零开销。  Blade 视图文件（也叫模板文件）使用 .blade.php 文件扩展名，都存放在">
+
+
+
+  <link rel="alternate" href="/atom.xml" title="iCocos" type="application/atom+xml" />
+
+
+
+
+  <link rel="canonical" href="https://icocos.github.io/2017/05/16/Laravel入门——视图/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>Laravel入门——视图 | iCocos</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">iCocos</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">www.icocos.cn</p>
+      
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-首页">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-归档">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-关于">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-作品">
+    <a href="/works/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-calendar"></i> <br />作品</a>
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+    <div class="reading-progress-bar"></div>
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://icocos.github.io/2017/05/16/Laravel入门——视图/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="曹理鹏@iCocos">
+      <meta itemprop="description" content="纯码迷、爱学习、爱交友、喜欢接触新鲜事物、迎接新的挑战，更爱游离于错综复杂的编码与逻辑中！">
+      <meta itemprop="image" content="http://pd1l3bbt7.bkt.clouddn.com/icocos_user_icon.JPG">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="iCocos">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Laravel入门——视图
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2017-05-16 18:28:43" itemprop="dateCreated datePublished" datetime="2017-05-16T18:28:43+08:00">2017-05-16</time>
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/PHP/" itemprop="url" rel="index"><span itemprop="name">PHP</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+              <span class="post-meta-divider">|</span>
+              <span class="post-meta-item-icon">
+                <i class="fa fa-comment-o"></i>
+              </span>
+              
+                <a href="/2017/05/16/Laravel入门——视图/#SOHUCS" itemprop="discussionUrl">
+                  <span class="post-meta-item-text">评论数：</span> <span id="changyan_count_unit" class="post-comments-count hc-comment-count" data-xid="2017/05/16/Laravel入门——视图/" itemprop="commentsCount"></span>
+                </a>
+              
+            
+          
+
+          
+          
+             <span id="/2017/05/16/Laravel入门——视图/" class="leancloud_visitors" data-flag-title="Laravel入门——视图">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数：</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon"
+            >
+            <i class="fa fa-eye"></i>
+             阅读次数： 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+            <div class="post-symbolscount">
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">本文字数：</span>
+                
+                <span title="本文字数">11k</span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">10 分钟</span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="Blade-简介"><a href="#Blade-简介" class="headerlink" title="Blade 简介"></a>Blade 简介</h2><p>Blade 是由 Laravel 提供的非常简单但功能强大的模板引擎，不同于其他流行的 PHP 模板引擎，Blade 在视图中并不约束你使用 PHP 原生代码。所有的 Blade 视图最终都会被编译成原生 PHP 代码并缓存起来直到被修改，这意味着对应用的性能而言 Blade 基本上是零开销。</p>
+<blockquote>
+<p>Blade 视图文件（也叫模板文件）使用 .blade.php 文件扩展名，都存放在 resources/views 目录下。</p>
+</blockquote>
+<a id="more"></a>
+<h4 id="模板继承"><a href="#模板继承" class="headerlink" title="模板继承"></a>模板继承</h4><h5 id="1-定义布局"><a href="#1-定义布局" class="headerlink" title="1. 定义布局"></a>1. 定义布局</h5><p>使用 Blade 的两个最大优点是模板继承和片段组合，开始之前让我们先看一个例子。</p>
+<blockquote>
+<p>首先，我们测试主页面布局，由于大多数 Web 应用在不同页面中使用同一个布局，可以很方便的将这个布局定义为一个单独的 Blade 页面。</p>
+</blockquote>
+<p>在 resources/views/layouts 目录中，创建一个布局文件 layout.blade.php，内容如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">&lt;html&gt;</span><br><span class="line">    &lt;head&gt;</span><br><span class="line">        &lt;title&gt;应用名称 - @yield(&apos;title&apos;)&lt;/title&gt;</span><br><span class="line">    &lt;/head&gt;</span><br><span class="line">    &lt;body&gt;</span><br><span class="line">        @section(&apos;sidebar&apos;)</span><br><span class="line">            这里是侧边栏</span><br><span class="line">        @show</span><br><span class="line"> </span><br><span class="line">        &lt;div class=&quot;container&quot;&gt;</span><br><span class="line">            @yield(&apos;content&apos;)</span><br><span class="line">        &lt;/div&gt;</span><br><span class="line">    &lt;/body&gt;</span><br><span class="line">&lt;/html&gt;</span><br></pre></td></tr></table></figure>
+<p>该文件包含典型的 HTML 标记，不过，注意 “@section” 和 “@yield” 指令，前者定义了一个内容片段，而后者用于显示给定片段的内容。</p>
+<p>现在我们已经为应用定义了一个布局，接下来定义继承该布局的子页面。</p>
+<h5 id="2-继承布局"><a href="#2-继承布局" class="headerlink" title="2. 继承布局"></a>2. 继承布局</h5><p>定义子页面时，可以使用 Blade 的 “@extends” 指令来指定子页面所继承的布局，继承一个 Blade 布局的视图可以使用 “@section” 指令注入内容到布局定义的内容片段中。</p>
+<p>如上面例子所示，这些片段的内容将会显示在布局中使用 @yield 的地方。</p>
+<p>在 resources/views 目录中，创建视图文件 child.blade.php，内容如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">@extends(&apos;layouts.layout&apos;)</span><br><span class="line"> </span><br><span class="line">@section(&apos;title&apos;, &apos;视图标题&apos;)</span><br><span class="line"> </span><br><span class="line">@section(&apos;sidebar&apos;)</span><br><span class="line">    @parent</span><br><span class="line">    &lt;p&gt;这是子页面的内容&lt;/p&gt;</span><br><span class="line">@endsection</span><br><span class="line"> </span><br><span class="line">@section(&apos;content&apos;)</span><br><span class="line">    &lt;p&gt;这里是主体内容，完善中...&lt;/p&gt;</span><br><span class="line">@endsection</span><br></pre></td></tr></table></figure>
+<p>在本例中，sidebar 片段使用 “@parent” 指令来追加（而非覆盖）内容到布局的侧边栏，”@parent” 指令在视图渲染时将会被布局中的内容替换。</p>
+<p>然后，在 routes/web.php 中定义路由以便访问该视图。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Route::get(&apos;blade&apos;, function () &#123;</span><br><span class="line">   return view(&apos;child&apos;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>在浏览器中访问 <a href="http://www.adm.devp/blade" target="_blank" rel="noopener">http://www.adm.devp/blade</a> ，查看显示效果。</p>
+<h5 id="3-组件-amp-插槽"><a href="#3-组件-amp-插槽" class="headerlink" title="3. 组件&amp;插槽"></a>3. 组件&amp;插槽</h5><p>组件和插槽给内容片段（section）和布局（layout）带来了方便，不过，有些人可能会发现组件和插槽的模型更容易理解。</p>
+<p>首先，我们假设有一个可复用的“alert”组件，我们想要在整个应用中都可以复用它。</p>
+<p>创建 resources/views/alert.blade.php 文件，内容如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;div class=&quot;alert alert-danger&quot;&gt;</span><br><span class="line">    `&#123;`&#123; $slot &#125;`&#125;`</span><br><span class="line">&lt;/div&gt;</span><br></pre></td></tr></table></figure>
+<p><code>{</code>{ $slot }<code>}</code> 变量包含了我们想要注入组件的内容，现在，要构建这个组件，我们可以使用 Blade 指令 @component。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">@component(&apos;alert&apos;)</span><br><span class="line">    &lt;strong&gt;Whoops!&lt;/strong&gt; Something went wrong!</span><br><span class="line">@endcomponent</span><br></pre></td></tr></table></figure>
+<p>有时，为组件定义多个插槽很有用。下面我们来编辑 alert 组件。</p>
+<p>修改 resources/views/alert.blade.php 文件：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;div class=&quot;alert alert-danger&quot;&gt;</span><br><span class="line">    &lt;div class=&quot;alert-title&quot;&gt;`&#123;`&#123; $title &#125;`&#125;`&lt;/div&gt;</span><br><span class="line">    `&#123;`&#123; $slot &#125;`&#125;`</span><br><span class="line">&lt;/div&gt;</span><br></pre></td></tr></table></figure>
+<p>现在，我们可以使用指令 @slot 注入内容到命名的插槽。任何不在 @slot 指令中的内容都会被传递到组件的 $slot 变量中。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">@component(&apos;alert&apos;)</span><br><span class="line">    @slot(&apos;title&apos;)</span><br><span class="line">        Forbidden</span><br><span class="line">    @endslot</span><br><span class="line"> </span><br><span class="line">    You are not allowed to access this resource!</span><br><span class="line">@endcomponent</span><br></pre></td></tr></table></figure>
+<p>这段代码的意思是通过组件名 alert 去查找对应的视图文件，装载到当前视图，然后通过组件中 “@slot” 定义的插槽内容去渲染插槽视图中对应的插槽位，如果组件没有为某个插槽位定义对应的插槽内容片段，则组件中的其他不在 “@slot” 片段中的内容将会用于渲染该插槽位，如果没有其他多余内容则对应插槽位为空。<br>传递额外数据到组件</p>
+<p>有时，你可能需要传递额外数据到组件，出于这个原因，你可以传递数组数据作为第二个参数到 @component 指令，所有数据都会在组件模板中以变量方式生效：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">@component(&apos;alert&apos;, [&apos;foo&apos; =&gt; &apos;bar&apos;])</span><br><span class="line">    ...</span><br><span class="line">@endcomponent</span><br></pre></td></tr></table></figure>
+<h5 id="4-数据显示"><a href="#4-数据显示" class="headerlink" title="4. 数据显示"></a>4. 数据显示</h5><p>可以通过两个花括号包裹变量的形式，来显示传递到视图的数据。</p>
+<p>比如，如果给出如下路由：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Route::get(&apos;greeting&apos;, function () &#123;</span><br><span class="line">    return view(&apos;welcome&apos;, [&apos;name&apos; =&gt; &apos;jack&apos;]);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>在视图文件中，显示 name 变量的内容：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">`&#123;`&#123; $name &#125;`&#125;`</span><br></pre></td></tr></table></figure>
+<p>你还可以在视图文件中输出任何 PHP 函数的结果，实际上，可以将任何 PHP 代码放到 Blade 模板中：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">The current UNIX timestamp is `&#123;`&#123; time() &#125;`&#125;`.</span><br></pre></td></tr></table></figure>
+<p>注：Blade 的 “<code>{</code>{ }<code>}</code>“ 语句已经经过 PHP 的 htmlentities 函数处理以避免 XSS 攻击。</p>
+<h5 id="5-输出存在的数据"><a href="#5-输出存在的数据" class="headerlink" title="5. 输出存在的数据"></a>5. 输出存在的数据</h5><p>有时候你想要输出一个变量，但是不确定该变量是否被设置，我们可以通过如下 PHP 代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123; isset($name) ? $name : &apos;Default&apos; &#125;`&#125;`</span><br></pre></td></tr></table></figure>
+<p>除了使用三元运算符，Blade 还提供了更简单的方式：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">`&#123;`&#123; $name or &apos;Default&apos; &#125;`&#125;`</span><br></pre></td></tr></table></figure>
+<p>在本例中，如果 $name 变量存在，其值将会显示，否则将会显示 Default。</p>
+<h5 id="6-显示原生数据"><a href="#6-显示原生数据" class="headerlink" title="6. 显示原生数据"></a>6. 显示原生数据</h5><p>默认情况下，Blade 的 <code>{</code>{ }<code>}</code> 语句已经通过 PHP 的 htmlentities 函数处理以避免 XSS 攻击，如果你不想要数据被处理，比如要输出带 HTML 元素的富文本，可以使用如下语法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Hello, &#123;!! $name !!&#125;.</span><br></pre></td></tr></table></figure>
+<p>注：输出用户提供的内容时要当心，对用户提供的内容总是要使用双花括号包裹以避免直接输出 HTML 代码。</p>
+<h5 id="7-渲染-JSON-内容"><a href="#7-渲染-JSON-内容" class="headerlink" title="7. 渲染 JSON 内容"></a>7. 渲染 JSON 内容</h5><p>有时，你可能会将数据以数组方式传递到视图再将其转化为 JSON 格式以便初始化某个 JavaScript 变量，例如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;script&gt;</span><br><span class="line">    var app = &lt;?php echo json_encode($array); ?&gt;;</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+<p>这样显得很麻烦，有更简便的方式来实现这个功能，那就是 Blade 的 @json 指令：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;script&gt;</span><br><span class="line">    var app = @json($array);</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+<h5 id="8-Blade-amp-JavaScript-框架"><a href="#8-Blade-amp-JavaScript-框架" class="headerlink" title="8. Blade &amp; JavaScript 框架"></a>8. Blade &amp; JavaScript 框架</h5><p>由于很多 JavaScript 框架也是用花括号来表示要显示在浏览器中的表达式，如 Vue，我们可以使用 @ 符号来告诉 Blade 引擎该表达式应该保持原生格式不作改动。比如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&lt;h1&gt;Laravel&lt;/h1&gt;</span><br><span class="line">Hello, @`&#123;`&#123; name &#125;`&#125;`.</span><br></pre></td></tr></table></figure>
+<p>在本例中，@ 符号在编译阶段会被 Blade 移除，但是，<code>{</code>{ name }<code>}</code> 表达式将会保持不变，从而可以被 JavaScript 框架正常渲染。<br>@verbatim指令</p>
+<p>如果你在模板中有很大一部分篇幅显示 JavaScript 变量，那么可以将这部分 HTML 封装在 @verbatim 指令中，这样就不需要在每个 Blade 输出表达式前加上 @ 前缀。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">@verbatim</span><br><span class="line">    &lt;div class=&quot;container&quot;&gt;</span><br><span class="line">        Hello, `&#123;`&#123; name &#125;`&#125;`.</span><br><span class="line">    &lt;/div&gt;</span><br><span class="line">@endverbatim</span><br></pre></td></tr></table></figure>
+<h5 id="9-流程控制"><a href="#9-流程控制" class="headerlink" title="9. 流程控制"></a>9. 流程控制</h5><p>除了模板继承和数据显示之外，Blade 还为常用的 PHP 流程控制提供了便利操作，例如条件语句和循环。<br>If 语句</p>
+<p>可以使用 @if , @elseif , @else 和 @endif 来构造 if 语句，这些指令的功能和 PHP 相同：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">@if (count($records) === 1)</span><br><span class="line">    I have one record!</span><br><span class="line">@elseif (count($records) &gt; 1)</span><br><span class="line">    I have multiple records!</span><br><span class="line">@else</span><br><span class="line">    I don&apos;t have any records!</span><br><span class="line">@endif</span><br></pre></td></tr></table></figure>
+<p>为方便起见，Blade 还提供了 @unless 指令，表示除非：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">@unless (Auth::check())</span><br><span class="line">    You are not signed in.</span><br><span class="line">@endunless</span><br></pre></td></tr></table></figure>
+<p>此外，Blade 还提供了 “@isset” 和 “@empty” 指令，分别对应 PHP 的 isset 和 empty 方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">@isset($records)</span><br><span class="line">    // $records is defined and is not null...</span><br><span class="line">@endisset</span><br><span class="line"> </span><br><span class="line">@empty($records)</span><br><span class="line">    // $records is &quot;empty&quot;...</span><br><span class="line">@endempty</span><br></pre></td></tr></table></figure>
+<h5 id="10-认证指令"><a href="#10-认证指令" class="headerlink" title="10. 认证指令"></a>10. 认证指令</h5><p>@auth 和 @guest 指令可用于快速判断当前用户是否登录：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">@auth</span><br><span class="line">    // 用户已登录...</span><br><span class="line">@endauth</span><br><span class="line"> </span><br><span class="line">@guest</span><br><span class="line">    // 用户未登录...</span><br><span class="line">@endguest</span><br></pre></td></tr></table></figure>
+<p>如果需要的话，你也可以在使用 @auth 和 @guest 的时候指定登录用户类型：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">@auth(&apos;admin&apos;)</span><br><span class="line">    // The user is authenticated...</span><br><span class="line">@endauth</span><br><span class="line"> </span><br><span class="line">@guest(&apos;admin&apos;)</span><br><span class="line">    // The user is not authenticated...</span><br><span class="line">@endguest</span><br></pre></td></tr></table></figure>
+<p>关于用户登录认证我们后面再讲到用户认证的时候再深入探讨。</p>
+<h5 id="11-Switch-语句"><a href="#11-Switch-语句" class="headerlink" title="11. Switch 语句"></a>11. Switch 语句</h5><p>switch 语句可以通过 @switch，@case，@break，@default 和 @endswitch 指令构建：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">@switch($i)</span><br><span class="line">    @case(1)</span><br><span class="line">        First case...</span><br><span class="line">        @break</span><br><span class="line"> </span><br><span class="line">    @case(2)</span><br><span class="line">        Second case...</span><br><span class="line">        @break</span><br><span class="line"> </span><br><span class="line">    @default</span><br><span class="line">        Default case...</span><br><span class="line">@endswitch</span><br></pre></td></tr></table></figure>
+<h5 id="12-循环语句"><a href="#12-循环语句" class="headerlink" title="12. 循环语句"></a>12. 循环语句</h5><p>Blade 还提供了简单的指令用于处理 PHP 的循环结构。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">@for ($i = 0; $i &lt; 10; $i++)</span><br><span class="line">    The current value is `&#123;`&#123; $i &#125;`&#125;`</span><br><span class="line">@endfor</span><br><span class="line"> </span><br><span class="line">@foreach ($users as $user)</span><br><span class="line">    &lt;p&gt;This is user `&#123;`&#123; $user-&gt;id &#125;`&#125;`&lt;/p&gt;</span><br><span class="line">@endforeach</span><br><span class="line"> </span><br><span class="line">@forelse ($users as $user)</span><br><span class="line">    &lt;li&gt;`&#123;`&#123; $user-&gt;name &#125;`&#125;`&lt;/li&gt;</span><br><span class="line">@empty</span><br><span class="line">    &lt;p&gt;No users&lt;/p&gt;</span><br><span class="line">@endforelse</span><br><span class="line"> </span><br><span class="line">@while (true)</span><br><span class="line">    &lt;p&gt;I&apos;m looping forever.&lt;/p&gt;</span><br><span class="line">@endwhile</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>注：在循环的时候可以使用 $loop 变量获取循环信息，例如是否是循环的第一个或最后一个迭代。</p>
+</blockquote>
+<p>使用循环的时候还可以结束循环或跳出当前迭代：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">@foreach ($users as $user)</span><br><span class="line">    @if ($user-&gt;type == 1)</span><br><span class="line">        @continue</span><br><span class="line">    @endif</span><br><span class="line"> </span><br><span class="line">    &lt;li&gt;`&#123;`&#123; $user-&gt;name &#125;`&#125;`&lt;/li&gt;</span><br><span class="line"> </span><br><span class="line">    @if ($user-&gt;number == 5)</span><br><span class="line">        @break</span><br><span class="line">    @endif</span><br><span class="line">@endforeach</span><br></pre></td></tr></table></figure>
+<p>还可以使用指令声明来引入条件：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">@foreach ($users as $user)</span><br><span class="line">    @continue($user-&gt;type == 1)</span><br><span class="line">        &lt;li&gt;`&#123;`&#123; $user-&gt;name &#125;`&#125;`&lt;/li&gt;</span><br><span class="line">    @break($user-&gt;number == 5)</span><br><span class="line">@endforeach</span><br></pre></td></tr></table></figure>
+<h5 id="13-loop-变量"><a href="#13-loop-变量" class="headerlink" title="13. $loop 变量"></a>13. $loop 变量</h5><p>在循环的时候，可以在循环体中使用 $loop 变量，该变量提供了一些有用的信息，比如当前循环索引，以及当前循环是不是第一个或最后一个迭代：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">@foreach ($users as $user)</span><br><span class="line">    @if ($loop-&gt;first)</span><br><span class="line">        This is the first iteration.</span><br><span class="line">    @endif</span><br><span class="line"> </span><br><span class="line">    @if ($loop-&gt;last)</span><br><span class="line">        This is the last iteration.</span><br><span class="line">    @endif</span><br><span class="line"> </span><br><span class="line">    &lt;p&gt;This is user `&#123;`&#123; $user-&gt;id &#125;`&#125;`&lt;/p&gt;</span><br><span class="line">@endforeach</span><br></pre></td></tr></table></figure>
+<p>如果是嵌套循环，可以通过 $loop 变量的 parent 属性访问父级循环：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">@foreach ($users as $user)</span><br><span class="line">    @foreach ($user-&gt;posts as $post)</span><br><span class="line">        @if ($loop-&gt;parent-&gt;first)</span><br><span class="line">            This is first iteration of the parent loop.</span><br><span class="line">        @endif</span><br><span class="line">    @endforeach</span><br><span class="line">@endforeach</span><br></pre></td></tr></table></figure>
+<p>$loop 变量还提供了其他一些有用的属性：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">属性 			说明</span><br><span class="line">$loop-&gt;index 	当前循环迭代的索引 (从0开始)</span><br><span class="line">$loop-&gt;iteration 	当前循环迭代 (从1开始)</span><br><span class="line">$loop-&gt;remaining 	当前循环剩余的迭代</span><br><span class="line">$loop-&gt;count 	迭代数组元素的总数量</span><br><span class="line">$loop-&gt;first 	是否是当前循环的第一个迭代</span><br><span class="line">$loop-&gt;last 	是否是当前循环的最后一个迭代</span><br><span class="line">$loop-&gt;depth 	当前循环的嵌套层级</span><br><span class="line">$loop-&gt;parent 	嵌套循环中的父级循环变量</span><br></pre></td></tr></table></figure>
+<p>Blade 还允许你在视图中定义注释，然而，不同于 HTML 注释，Blade 注释并不会包含到 HTML 中被返回：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">`&#123;`&#123;-- This comment will not be present in the rendered HTML --&#125;`&#125;`</span><br></pre></td></tr></table></figure>
+<h5 id="14-嵌入原生-PHP-代码"><a href="#14-嵌入原生-PHP-代码" class="headerlink" title="14. 嵌入原生 PHP 代码"></a>14. 嵌入原生 PHP 代码</h5><p>在一些场景中，嵌入 PHP 代码到视图中很有用，你可以使用 @php 指令在模板中执行一段原生 PHP 代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">@php</span><br><span class="line">    //</span><br><span class="line">@endphp</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>注：尽管 Blade 提供了这个特性，如果过于频繁地使用它意味着你在视图模板中嵌入了过多的业务逻辑，需要注意。</p>
+</blockquote>
+<h5 id="15-包含子视图"><a href="#15-包含子视图" class="headerlink" title="15. 包含子视图"></a>15. 包含子视图</h5><p>Blade 的 @include 指令允许你很轻松地在一个视图中包含另一个 Blade 视图，所有父级视图中的变量在被包含的子视图中依然有效：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&lt;div&gt;</span><br><span class="line">    @include(&apos;shared.errors&apos;)</span><br><span class="line"> </span><br><span class="line">    &lt;form&gt;</span><br><span class="line">        &lt;!-- Form Contents --&gt;</span><br><span class="line">    &lt;/form&gt;</span><br><span class="line">&lt;/div&gt;</span><br></pre></td></tr></table></figure>
+<p>上述指令会在当前目录下的 shared 子目录中寻找 errors.blade.php 文件并将其内容引入当前视图。</p>
+<p>尽管被包含的视图可以继承所有父视图中的数据，你还可以传递额外参数到被包含的视图：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">@include(&apos;view.name&apos;, [&apos;some&apos; =&gt; &apos;data&apos;])</span><br></pre></td></tr></table></figure>
+<p>当然，如果你尝试包含一个不存在的视图，Laravel 会抛出错误，如果你想要包含一个有可能不存在的视图，可以使用 @includeIf 指令：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">@includeIf(&apos;view.name&apos;, [&apos;some&apos; =&gt; &apos;data&apos;])</span><br></pre></td></tr></table></figure>
+<p>如果包含的视图取决于一个给定的布尔条件，可以使用 @includeWhen 指令：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">@includeWhen($boolean, &apos;view.name&apos;, [&apos;some&apos; =&gt; &apos;data&apos;])</span><br></pre></td></tr></table></figure>
+<p>要包含给定数组中的第一个视图，可以使用 @includeFirst 指令：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">@includeFirst([&apos;custom.admin&apos;, &apos;admin&apos;], [&apos;some&apos; =&gt; &apos;data&apos;])</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>注：不要在 Blade 视图中使用 <strong>DIR</strong> 和 <strong>FILE</strong> 常量，因为它们会指向缓存视图的路径。</p>
+</blockquote>
+<h5 id="16-渲染集合视图"><a href="#16-渲染集合视图" class="headerlink" title="16. 渲染集合视图"></a>16. 渲染集合视图</h5><p>可以使用 Blade 的 @each 指令通过一行代码循环引入多个局部视图：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">@each(&apos;view.name&apos;, $jobs, &apos;job&apos;)</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>该指令的第一个参数是数组或集合中每个元素要渲染的局部视图，第二个参数是你希望迭代的数组或集合，第三个参数是要分配给当前视图的变量名。</p>
+</blockquote>
+<p>举个例子，如果你要迭代一个 jobs 数组，通常你需要在局部视图中访问 $job 变量。在局部视图中可以通过 key 变量访问当前迭代的键。</p>
+<p>你还可以传递第四个参数到 @each 指令，该参数用于指定给定数组为空时渲染的视图：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">@each(&apos;view.name&apos;, $jobs, &apos;job&apos;, &apos;view.empty&apos;)</span><br></pre></td></tr></table></figure>
+<h5 id="17-堆栈"><a href="#17-堆栈" class="headerlink" title="17. 堆栈"></a>17. 堆栈</h5><p>Blade 允许你推送内容到命名堆栈，以便在其他视图或布局中渲染。这在子视图中引入指定 JavaScript 库时很有用：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">@push(&apos;scripts&apos;)</span><br><span class="line">    &lt;script src=&quot;/example.js&quot;&gt;&lt;/script&gt;</span><br><span class="line">@endpush</span><br></pre></td></tr></table></figure>
+<p>推送次数不限，要渲染完整的堆栈内容，传递堆栈名称到 @stack 指令即可：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;head&gt;</span><br><span class="line">    &lt;!-- Head Contents --&gt;</span><br><span class="line"> </span><br><span class="line">    @stack(&apos;scripts&apos;)</span><br><span class="line">&lt;/head&gt;</span><br></pre></td></tr></table></figure>
+<h5 id="18-服务注入"><a href="#18-服务注入" class="headerlink" title="18. 服务注入"></a>18. 服务注入</h5><p>@inject 指令可以用于从服务容器中获取服务，传递给 @inject 的第一个参数是服务对应的变量名，第二个参数是要解析的服务类名或接口名：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">@inject(&apos;metrics&apos;, &apos;App\Services\MetricsService&apos;)</span><br><span class="line"> </span><br><span class="line">&lt;div&gt;</span><br><span class="line">    Monthly Revenue: `&#123;`&#123; $metrics-&gt;monthlyRevenue() &#125;`&#125;`.</span><br><span class="line">&lt;/div&gt;</span><br></pre></td></tr></table></figure>
+<h5 id="19-扩展-Blade"><a href="#19-扩展-Blade" class="headerlink" title="19. 扩展 Blade"></a>19. 扩展 Blade</h5><p>Blade 甚至还允许你自定义指令，可以使用 directive 方法来注册一个指令。当 Blade 编译器遇到该指令，将会传入参数并调用提供的回调。</p>
+<p>下面的例子创建了一个 @datetime($var) 指令格式化给定的 DateTime 的实例 $var：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line"> </span><br><span class="line">namespace App\Providers;</span><br><span class="line"> </span><br><span class="line">use Illuminate\Support\Facades\Blade;</span><br><span class="line">use Illuminate\Support\ServiceProvider;</span><br><span class="line"> </span><br><span class="line">class AppServiceProvider extends ServiceProvider</span><br><span class="line">&#123;</span><br><span class="line">    /**</span><br><span class="line">     * Perform post-registration booting of services.</span><br><span class="line">     *</span><br><span class="line">     * @return void</span><br><span class="line">     */</span><br><span class="line">    public function boot()</span><br><span class="line">    &#123;</span><br><span class="line">        \Blade::directive(&apos;datetime&apos;, function($expression) &#123;</span><br><span class="line">            return &quot;&lt;?php echo date(&apos;Y-m-d H:i:s&apos;, $expression); ?&gt;&quot;;</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    /**</span><br><span class="line">     * 在容器中注册绑定.</span><br><span class="line">     *</span><br><span class="line">     * @return void</span><br><span class="line">     */</span><br><span class="line">    public function register()</span><br><span class="line">    &#123;</span><br><span class="line">        //</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在视图文件中使用该自定义指令：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">@datetime(1508888888)</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>注：更新完 Blade 指令逻辑后，必须删除所有的 Blade 缓存视图。缓存的 Blade 视图可以通过 Artisan 命令 view:clear 移除。</p>
+</blockquote>
+<h5 id="20-自定义-if-语句"><a href="#20-自定义-if-语句" class="headerlink" title="20. 自定义 if 语句"></a>20. 自定义 if 语句</h5><p>在定义一些简单、自定义的条件语句时，编写自定义指令往往复杂性大于必要性，因为这个原因，Blade 提供了一个 Blade::if 方法通过闭包的方式快速定义自定义的条件指令，例如，我们来自定义一个条件来检查当前应用的环境，我们可以在 AppServiceProvider 的 boot 方法中定义这段逻辑。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">use Illuminate\Support\Facades\Blade;</span><br><span class="line"> </span><br><span class="line">/**</span><br><span class="line"> * Perform post-registration booting of services.</span><br><span class="line"> *</span><br><span class="line"> * @return void</span><br><span class="line"> */</span><br><span class="line">public function boot()</span><br><span class="line">&#123;</span><br><span class="line">    \Blade::if(&apos;env&apos;, function ($environment) &#123;</span><br><span class="line">        return app()-&gt;environment($environment);</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>定义好自定义条件后，就可以在模板中使用了：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">@env(&apos;local&apos;)</span><br><span class="line">    The application is in the local environment...</span><br><span class="line">@else</span><br><span class="line">    The application is not in the local environment...</span><br><span class="line">@endenv</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="http://pd1l3bbt7.bkt.clouddn.com/img/wechatimg.jpg" alt="曹理鹏@iCocos 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="http://pd1l3bbt7.bkt.clouddn.com/img/alipayimg.jpg" alt="曹理鹏@iCocos 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>曹理鹏@iCocos</li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://icocos.github.io/2017/05/16/Laravel入门——视图/" title="Laravel入门——视图">https://icocos.github.io/2017/05/16/Laravel入门——视图/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明出处！</li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/PHP/" rel="tag"># PHP</a>
+          
+            <a href="/tags/框架/" rel="tag"># 框架</a>
+          
+            <a href="/tags/Laravel/" rel="tag"># Laravel</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/05/16/Laravel入门——控制器/" rel="next" title="Laravel入门——控制器">
+                <i class="fa fa-chevron-left"></i> Laravel入门——控制器
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/05/16/Laravel入门——数据库操作/" rel="prev" title="Laravel入门——数据库操作">
+                Laravel入门——数据库操作 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="SOHUCS"></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="http://pd1l3bbt7.bkt.clouddn.com/icocos_user_icon.JPG"
+                alt="曹理鹏@iCocos" />
+            
+              <p class="site-author-name" itemprop="name">曹理鹏@iCocos</p>
+              <p class="site-description motion-element" itemprop="description">纯码迷、爱学习、爱交友、喜欢接触新鲜事物、迎接新的挑战，更爱游离于错综复杂的编码与逻辑中！</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives">
+                
+                    <span class="site-state-item-count">182</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">11</span>
+                    <span class="site-state-item-name">分类</span>
+                  
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">111</span>
+                    <span class="site-state-item-name">标签</span>
+                  
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/al1020119" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:al1020119@163.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://stackoverflow.com/users/10186720" target="_blank" title="StackOverflow"><i class="fa fa-fw fa-stack-overflow"></i>StackOverflow</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.icocos.cn/" title="梦工厂" target="_blank">梦工厂</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://al1020119.github.io/" title="iOS梦工厂" target="_blank">iOS梦工厂</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Blade-简介"><span class="nav-number">1.</span> <span class="nav-text">Blade 简介</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#模板继承"><span class="nav-number">1.0.1.</span> <span class="nav-text">模板继承</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1-定义布局"><span class="nav-number">1.0.1.1.</span> <span class="nav-text">1. 定义布局</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-继承布局"><span class="nav-number">1.0.1.2.</span> <span class="nav-text">2. 继承布局</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-组件-amp-插槽"><span class="nav-number">1.0.1.3.</span> <span class="nav-text">3. 组件&amp;插槽</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#4-数据显示"><span class="nav-number">1.0.1.4.</span> <span class="nav-text">4. 数据显示</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#5-输出存在的数据"><span class="nav-number">1.0.1.5.</span> <span class="nav-text">5. 输出存在的数据</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#6-显示原生数据"><span class="nav-number">1.0.1.6.</span> <span class="nav-text">6. 显示原生数据</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#7-渲染-JSON-内容"><span class="nav-number">1.0.1.7.</span> <span class="nav-text">7. 渲染 JSON 内容</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#8-Blade-amp-JavaScript-框架"><span class="nav-number">1.0.1.8.</span> <span class="nav-text">8. Blade &amp; JavaScript 框架</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#9-流程控制"><span class="nav-number">1.0.1.9.</span> <span class="nav-text">9. 流程控制</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#10-认证指令"><span class="nav-number">1.0.1.10.</span> <span class="nav-text">10. 认证指令</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#11-Switch-语句"><span class="nav-number">1.0.1.11.</span> <span class="nav-text">11. Switch 语句</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#12-循环语句"><span class="nav-number">1.0.1.12.</span> <span class="nav-text">12. 循环语句</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#13-loop-变量"><span class="nav-number">1.0.1.13.</span> <span class="nav-text">13. $loop 变量</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#14-嵌入原生-PHP-代码"><span class="nav-number">1.0.1.14.</span> <span class="nav-text">14. 嵌入原生 PHP 代码</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#15-包含子视图"><span class="nav-number">1.0.1.15.</span> <span class="nav-text">15. 包含子视图</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#16-渲染集合视图"><span class="nav-number">1.0.1.16.</span> <span class="nav-text">16. 渲染集合视图</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#17-堆栈"><span class="nav-number">1.0.1.17.</span> <span class="nav-text">17. 堆栈</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#18-服务注入"><span class="nav-number">1.0.1.18.</span> <span class="nav-text">18. 服务注入</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#19-扩展-Blade"><span class="nav-number">1.0.1.19.</span> <span class="nav-text">19. 扩展 Blade</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#20-自定义-if-语句"><span class="nav-number">1.0.1.20.</span> <span class="nav-text">20. 自定义 if 语句</span></a></li></ol></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2017 – <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">曹理鹏@iCocos</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">站点总字数：</span>
+    
+    <span title="站点总字数">1.1m</span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    
+    <span title="站点阅读时长">16:05</span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv" title="总访客量">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="site-pv" title="总访问量">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/reading_progress/reading_progress.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.3.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.3.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.3.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.3.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+  
+    <script type="text/javascript">
+    (function(){
+      var appid = 'cytKHBEtW';
+      var conf = '43989b8e63b25c4e9f1fde821c996a39';
+      var width = window.innerWidth || document.documentElement.clientWidth;
+      if (width < 960) {
+      window.document.write('<script id="changyan_mobile_js" charset="utf-8" type="text/javascript" src="https://changyan.sohu.com/upload/mobile/wap-js/changyan_mobile.js?client_id=' + appid + '&conf=' + conf + '"><\/script>'); } else { var loadJs=function(d,a){var c=document.getElementsByTagName("head")[0]||document.head||document.documentElement;var b=document.createElement("script");b.setAttribute("type","text/javascript");b.setAttribute("charset","UTF-8");b.setAttribute("src",d);if(typeof a==="function"){if(window.attachEvent){b.onreadystatechange=function(){var e=b.readyState;if(e==="loaded"||e==="complete"){b.onreadystatechange=null;a()}}}else{b.onload=a}}c.appendChild(b)};loadJs("https://changyan.sohu.com/upload/changyan.js",function(){
+        window.changyan.api.config({appid:appid,conf:conf})});
+      }
+    })();
+    </script>
+    <script type="text/javascript" src="https://assets.changyan.sohu.com/upload/plugins/plugins.count.js"></script>
+  
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("Tc7k1mbaieCUSgmM8LPk1IBO-gzGzoHsz", "sAb7L2vwENJTteRrvFKQacUU");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            
+              var $element = $(document.getElementById(url));
+              $element.find('.leancloud-visitors-count').text(counter.get('time'));
+            
+            counter.save(null, {
+              success: function(counter) {
+                
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            
+              var $element = $(document.getElementById(url));
+              $element.find('.leancloud-visitors-count').text('Counter not initialized! See more at console err msg.');
+              console.error('ATTENTION! LeanCloud counter has security bug, see here how to solve it: https://github.com/theme-next/hexo-leancloud-counter-security. \n But you also can use LeanCloud without security, by set \'security\' option to \'false\'.');
+            
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #333;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #eee;
+      background-image: linear-gradient(#fcfcfc, #eee);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('复制').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+          if(result)$(this).text('复制成功')
+          else $(this).text('复制失败')
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('复制')
+        }, 300)
+      }).append(e)
+    })
+  </script>
+
+
+  
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("Tc7k1mbaieCUSgmM8LPk1IBO-gzGzoHsz", "sAb7L2vwENJTteRrvFKQacUU");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+  
+</body>
+</html>

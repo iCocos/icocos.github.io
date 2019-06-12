@@ -1,0 +1,2127 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.3.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="http://pd1l3bbt7.bkt.clouddn.com/img/favicon.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="http://pd1l3bbt7.bkt.clouddn.com/img/favicon.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="http://pd1l3bbt7.bkt.clouddn.com/img/favicon.png?v=6.3.0">
+
+
+  <link rel="mask-icon" href="http://pd1l3bbt7.bkt.clouddn.com/img/favicon.png?v=6.3.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="请求流程通过apache或者nginx的设置所有用户的请求都会被导入到/public/index.php 来进行处理。 index.php 脚本按照如下的流程执行 加载位于/bootstrap/autoload.php 的composer 类加载器  从/bootstrap/app.php 生成一个app实例  将请求发送到http内核( /app/HTTP/Kernel =&amp;gt; /Illum">
+<meta name="keywords" content="PHP,框架,Laravel">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Laravel入门——执行流程与生命周期">
+<meta property="og:url" content="https://icocos.github.io/2017/05/16/Laravel入门——执行流程与生命周期/index.html">
+<meta property="og:site_name" content="iCocos">
+<meta property="og:description" content="请求流程通过apache或者nginx的设置所有用户的请求都会被导入到/public/index.php 来进行处理。 index.php 脚本按照如下的流程执行 加载位于/bootstrap/autoload.php 的composer 类加载器  从/bootstrap/app.php 生成一个app实例  将请求发送到http内核( /app/HTTP/Kernel =&amp;gt; /Illum">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-05-21T09:49:40.035Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Laravel入门——执行流程与生命周期">
+<meta name="twitter:description" content="请求流程通过apache或者nginx的设置所有用户的请求都会被导入到/public/index.php 来进行处理。 index.php 脚本按照如下的流程执行 加载位于/bootstrap/autoload.php 的composer 类加载器  从/bootstrap/app.php 生成一个app实例  将请求发送到http内核( /app/HTTP/Kernel =&amp;gt; /Illum">
+
+
+
+  <link rel="alternate" href="/atom.xml" title="iCocos" type="application/atom+xml" />
+
+
+
+
+  <link rel="canonical" href="https://icocos.github.io/2017/05/16/Laravel入门——执行流程与生命周期/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>Laravel入门——执行流程与生命周期 | iCocos</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">iCocos</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">www.icocos.cn</p>
+      
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-首页">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-归档">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-关于">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-作品">
+    <a href="/works/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-calendar"></i> <br />作品</a>
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+    <div class="reading-progress-bar"></div>
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://icocos.github.io/2017/05/16/Laravel入门——执行流程与生命周期/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="曹理鹏@iCocos">
+      <meta itemprop="description" content="纯码迷、爱学习、爱交友、喜欢接触新鲜事物、迎接新的挑战，更爱游离于错综复杂的编码与逻辑中！">
+      <meta itemprop="image" content="http://pd1l3bbt7.bkt.clouddn.com/icocos_user_icon.JPG">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="iCocos">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Laravel入门——执行流程与生命周期
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2017-05-16 18:28:23" itemprop="dateCreated datePublished" datetime="2017-05-16T18:28:23+08:00">2017-05-16</time>
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/PHP/" itemprop="url" rel="index"><span itemprop="name">PHP</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+              <span class="post-meta-divider">|</span>
+              <span class="post-meta-item-icon">
+                <i class="fa fa-comment-o"></i>
+              </span>
+              
+                <a href="/2017/05/16/Laravel入门——执行流程与生命周期/#SOHUCS" itemprop="discussionUrl">
+                  <span class="post-meta-item-text">评论数：</span> <span id="changyan_count_unit" class="post-comments-count hc-comment-count" data-xid="2017/05/16/Laravel入门——执行流程与生命周期/" itemprop="commentsCount"></span>
+                </a>
+              
+            
+          
+
+          
+          
+             <span id="/2017/05/16/Laravel入门——执行流程与生命周期/" class="leancloud_visitors" data-flag-title="Laravel入门——执行流程与生命周期">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数：</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon"
+            >
+            <i class="fa fa-eye"></i>
+             阅读次数： 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+            <div class="post-symbolscount">
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">本文字数：</span>
+                
+                <span title="本文字数">9k</span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">8 分钟</span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="请求流程"><a href="#请求流程" class="headerlink" title="请求流程"></a>请求流程</h3><p>通过apache或者nginx的设置所有用户的请求都会被导入到/public/index.php 来进行处理。</p>
+<h5 id="index-php-脚本按照如下的流程执行"><a href="#index-php-脚本按照如下的流程执行" class="headerlink" title="index.php 脚本按照如下的流程执行"></a>index.php 脚本按照如下的流程执行</h5><ul>
+<li><p>加载位于/bootstrap/autoload.php 的composer 类加载器</p>
+</li>
+<li><p>从/bootstrap/app.php 生成一个app实例</p>
+</li>
+<li><p>将请求发送到http内核( /app/HTTP/Kernel =&gt; /Illuminate/Foundation/Gttp/Kernel ) 或者控制台内核</p>
+<ul>
+<li><p>处理请求前执行bootstrappers 数组定义的内容包括：配置错误处理、配置日志记录等</p>
+</li>
+<li><p>处理请求前执行middlewarePriority 数组定义的http中间件</p>
+</li>
+</ul>
+</li>
+<li><p>执行 kernel实例的handel() 方法来返回response</p>
+</li>
+</ul>
+<a id="more"></a>
+<h3 id="一、-laravel结构"><a href="#一、-laravel结构" class="headerlink" title="一、 laravel结构"></a>一、 laravel结构</h3><pre><code>｜–　app 包含Controller、Model、路由等在内的应用目录，大部分业务将在该目录下进行
+｜　　｜–　Console 命令行程序目录
+｜　　｜　　｜–　Commands 包含了用于命令行执行的类，可在该目录下自定义类
+｜　　｜　　｜–　Kernel.php 命令调用内核文件，包含commands变量(命令清单，自定义的命令需加入到这里)和schedule方法(用于任务调度，即定时任务)
+｜　　｜–　Events 事件目录
+｜　　｜–　Exceptions 包含了自定义错误和异常处理类
+｜　　｜–　Http HTTP传输层相关的类目录
+｜　　｜　　｜–　Controllers 控制器目录
+｜　　｜　　｜–　Middleware 中间件目录
+｜　　｜　　｜–　Requests 请求类目录
+｜　　｜　　｜–　Kernel.php 包含http中间件和路由中间件的内核文件
+｜　　｜　　｜–　routes.php 强大的路由
+｜　　｜–　Jobs 该目录下包含队列的任务类
+｜　　｜–　Listeners 监听器目录
+｜　　｜–　Providers 服务提供者目录
+｜　　｜–　User.php 自带的模型实例，我们新建的Model默认也存储在该目录
+｜–　bootstrap 框架启动载入目录
+｜　　｜–　app.php 创建框架应用实例
+｜　　｜–　autoload.php 自动加载
+｜　　｜–　cache 存放框架启动缓存，web服务器需要有该目录的写入权限
+｜–　config 各种配置文件的目录
+｜　　｜–　app.php 系统级配置文件
+｜　　｜–　auth.php 用户身份认证配置文件，指定好table和model就可以很方便地用身份认证功能了
+｜　　｜–　broadcasting.php 事件广播配置文件
+｜　　｜–　cache.php 缓存配置文件
+｜　　｜–　compile.php 编译额外文件和类需要的配置文件，一般用户很少用到
+｜　　｜–　database.php 数据库配置文件
+｜　　｜–　filesystems.php 文件系统配置文件，这里可以配置云存储参数
+｜　　｜–　mail.php 电子邮件配置文件
+｜　　｜–　queue.php 消息队列配置文件
+｜　　｜–　services.php 可存放第三方服务的配置信息
+｜　　｜–　session.php 配置session的存储方式、生命周期等信息
+｜　　｜–　view.php 模板文件配置文件，包含模板目录和编译目录等
+｜–　database 数据库相关目录
+｜　　｜–　factories 5.1以上版本的新特性，工厂类目录，也是用于数据填充
+｜　　｜　　｜–　ModelFactory.php 在该文件可定义不同Model所需填充的数据类型
+｜　　｜–　migrations 存储数据库迁移文件
+｜　　｜–　seeds 存放数据填充类的目录
+｜　　　　　｜–　DatabaseSeeder.php 执行php artisan db:seed命令将会调用该类的run方法。该方法可调用执行该目录下其他Seeder类，也可调用factories方法生成ModelFactory里定义的数据模型
+｜–　public 网站入口，应当将ip或域名指向该目录而不是根目录。可供外部访问的css、js和图片等资源皆放置于此
+｜　　｜–　index.php 入口文件
+｜　　｜–　.htaccess Apache服务器用该文件重写URL
+｜　　｜–　web.config IIS服务器用该文件重写URL
+｜–　resources 资源文件目录
+｜　　｜–　assets 可存放包含LESS、SASS、CoffeeScript在内的原始资源文件
+｜　　｜–　lang 本地化文件目录
+｜　　｜–　views 视图文件就放在这啦
+｜–　storage 存储目录。web服务器需要有该目录及所有子目录的写入权限
+｜　　｜–　app 可用于存储应用程序所需的一些文件
+｜　　｜–　framework 该目录下包括缓存、sessions和编译后的视图文件
+｜　　｜–　logs 日志目录
+｜–　tests 测试目录
+｜–　vendor 该目录下包含Laravel源代码和第三方依赖包
+｜–　.env 环境配置文件。config目录下的配置文件会使用该文件里面的参数，不同生产环境使用不同的.env文件即可。
+｜–　artisan 强大的命令行接口，你可以在app/Console/Commands下编写自定义命令
+｜–　composer.json 存放依赖关系的文件
+｜–　composer.lock 锁文件，存放安装时依赖包的真实版本
+｜–　gulpfile.js gulp（一种前端构建工具）配置文件
+｜–　package.json gulp配置文件
+｜–　phpspec.yml phpspec（一种PHP测试框架）配置文件
+｜–　phpunit.xml phpunit（一种PHP测试框架）配置文件
+｜–　server.php PHP内置的Web服务器将把这个文件作为入口。以public/index.php为入口的可以忽略掉该文件
+</code></pre><h3 id="二、生命周期"><a href="#二、生命周期" class="headerlink" title="二、生命周期"></a>二、生命周期</h3><h5 id="1-入口文件："><a href="#1-入口文件：" class="headerlink" title="1. 入口文件："></a>1. 入口文件：</h5><p>Laravel框架所有请求入口统一进入/public/index.php文件，请求通过Ngxin/Apache指向该文件。<br>index.php文件是加载其他文件入口，本身代码不多。</p>
+<blockquote>
+<p>index.php文件载入通过Composer生产的自动加载配置，然后从bootstrap/app.php获取应用实例，创建服务容器。</p>
+</blockquote>
+<h5 id="2-Http-Console内核"><a href="#2-Http-Console内核" class="headerlink" title="2.Http/Console内核"></a>2.Http/Console内核</h5><p>接上面，请求被发送到HTTP内核或Console内核，取决于应用请求类型（会在下篇文章说明）。这两个内核为所有请求必须经过的中央处理器，</p>
+<p>下面介绍App\Http\Kernel的HTTP内核：</p>
+<ul>
+<li><p>HTTP内核 继承自Illuminate\Foundation\Http\Kernel类，该类定义了一个bootstrappers数组，该数组中的类在请求被执行前运行，bootstrappers配置了错误处理、日志、检测应用环境、其他在请求被处理前需要处理的任务。</p>
+</li>
+<li><p>HTTP内核还定义请求处理前需要经过HTTP中间件，该中间件处理HTTP会话的读写、判断应用是否处于维护模式，验证CSRF令牌（防止CSRF攻击）等。</p>
+</li>
+</ul>
+<p>HTTP内核标签方法handle：获取一个Request，返回一个Response，输入HTTP请求，返回HTTP响应。</p>
+<h5 id="3-服务提供者"><a href="#3-服务提供者" class="headerlink" title="3.服务提供者"></a>3.服务提供者</h5><p>内核启动会为应用载入服务提供者，服务提供者都被配置在config/app.php配置文件的providers数组中。服务提供者被注册后，boot方法被调用。</p>
+<p>服务提供者负责启动框架的所有组件，如数据库、队列、验证器、路由组件等。因他们启动并配置框架提供的所有特性，服务提供者是整个Laravel启动过程中最重要部分。</p>
+<blockquote>
+<p>「延迟」提供器：即providers数组中较多服务都是提供的实际服务需要才会加载。</p>
+</blockquote>
+<h5 id="4-分发请求"><a href="#4-分发请求" class="headerlink" title="4. 分发请求"></a>4. 分发请求</h5><p>一旦应用被启动且所有服务提供者被注册，Request将会被交给路由器进行分发，路由器将会分发请求到路由或控制器，同时运行所有路由指定的中间件。</p>
+<h3 id="三、启动过程"><a href="#三、启动过程" class="headerlink" title="三、启动过程"></a>三、启动过程</h3><pre><code>index.php
+bootstrap/autoload.php      --&gt; 自动加载
+bootstrap/app.php           --&gt; 初始化服务容器(注册基础的服务提供者(事件、日志、路由)、注册核心类别名)
+bootstrap/app.php           --&gt; 注册共享的Kernel和异常处理器
+Foundation\Http\Kernel.php  --&gt; 处理请求和响应
+index.php                   --&gt; 将响应信息发送到浏览器
+index.php                   --&gt; 处理继承自TerminableMiddleware接口的中间件（Session）并结束应用生命周期
+</code></pre><p>其中处理请求和响应包括：</p>
+<blockquote>
+<p>解析Illuminate\Contracts\Http\Kernel，实例化App\Http\Kernel</p>
+</blockquote>
+<ol>
+<li>实例化Kernel ： 构造函数：设置$app/$router，初始化$router中middleware数值</li>
+<li><p>handle处理请求：</p>
+<ul>
+<li>加载路由中间件、加载环境变量、加载配置文件、加载异常处理机制、注册门面、注册服务提供者、启动服务提供者、管道模式注入中间件</li>
+</ul>
+</li>
+<li><p>将响应信息发送到浏览器</p>
+<ul>
+<li>注册request实例到容器 ($app[‘request’]-&gt;Illuminate\Http\Request)  –  $request是经过Symfony封装的请求对象</li>
+<li>清空之前容器中的request实例</li>
+<li>调用bootstrap方法，启动一系列启动类的bootstrap方法：</li>
+<li>Illuminate\Foundation\Bootstrap\DetectEnvironment  环境配置（$app[‘env’]）</li>
+<li>Illuminate\Foundation\Bootstrap\LoadConfiguration  基本配置（$app[‘config’]）</li>
+<li>Illuminate\Foundation\Bootstrap\ConfigureLogging   日志文件（$app[‘log’]）</li>
+<li>Illuminate\Foundation\Bootstrap\HandleExceptions   错误&amp;异常处理</li>
+<li>Illuminate\Foundation\Bootstrap\RegisterFacades    清除已解析的Facade并重新启动，注册config文件中alias定义的所有Facade类到容器</li>
+<li>Illuminate\Foundation\Bootstrap\RegisterProviders  注册config中providers定义的所有Providers类到容器</li>
+<li>Illuminate\Foundation\Bootstrap\BootProviders      调用所有已注册Providers的boot方法</li>
+<li>通过Pipeline发送请求，经过中间件，再由路由转发，最终返回响应</li>
+</ul>
+</li>
+</ol>
+<h5 id="1-自动加载"><a href="#1-自动加载" class="headerlink" title="1.自动加载"></a>1.自动加载</h5><pre><code>包括全局函数的加载、顶级命名空间映射、PSR0、PSR4标准的实现
+</code></pre><h5 id="2-初始化服务容器"><a href="#2-初始化服务容器" class="headerlink" title="2.初始化服务容器"></a>2.初始化服务容器</h5><ul>
+<li>注册容器本身</li>
+</ul>
+<p>将基本的绑定注册到容器中，包括容器自身、容器实例名称app</p>
+<pre><code>实例化
+app, Illuminate\Container\Container
+</code></pre><p>关键代码：</p>
+<pre><code>protected function registerBaseBindings() {
+    static::setInstance($this);
+    $this-&gt;instance(&apos;app&apos;, $this);
+    $this-&gt;instance(Container::class, $this);
+}
+</code></pre><ul>
+<li>注册基础服务提供者</li>
+</ul>
+<p>向容器分别注册了Key为以下值得实例</p>
+<pre><code>events
+log
+router、url、redirect、Illuminate\Contracts\Routing\ResponseFactory
+</code></pre><p>关键代码：</p>
+<pre><code>protected function registerBaseServiceProviders() {
+    $this-&gt;register(new EventServiceProvider($this));
+    $this-&gt;register(new LogServiceProvider($this));
+    $this-&gt;register(new RoutingServiceProvider($this));
+}
+</code></pre><ul>
+<li>注册容器别名(注册共享的Kernel)</li>
+</ul>
+<p>在调用此方法之前，我们想取得一个容器实例的做法是 App::make(‘app’);<br>现在我们可以使用三种方法来取得一个容器实例app</p>
+<pre><code>App::make(&apos;Illuminate\Foundation\Application&apos;)
+App::make(&apos;Illuminate\Contracts\Container\Container&apos;)
+App::make(&apos;Illuminate\Contracts\Foundation\Application&apos;)
+</code></pre><p>关键代码：</p>
+<pre><code>public function registerCoreContainerAliases(){
+    ...
+}
+</code></pre><h5 id="3-注册共享的Kernel和异常处理器"><a href="#3-注册共享的Kernel和异常处理器" class="headerlink" title="3. 注册共享的Kernel和异常处理器"></a>3. 注册共享的Kernel和异常处理器</h5><p>关键代码：</p>
+<pre><code>$app-&gt;singleton(
+    Illuminate\Contracts\Http\Kernel::class,
+    App\Http\Kernel::class
+);
+
+$app-&gt;singleton(
+    Illuminate\Contracts\Console\Kernel::class,
+    App\Console\Kernel::class
+);
+
+$app-&gt;singleton(
+    Illuminate\Contracts\Debug\ExceptionHandler::class,
+    App\Exceptions\Handler::class
+);
+</code></pre><h5 id="4-处理请求和响应"><a href="#4-处理请求和响应" class="headerlink" title="4. 处理请求和响应"></a>4. 处理请求和响应</h5><p>实例化App\Http\Kernel</p>
+<p>构造函数：设置$app/$router，初始化$router中middleware数值</p>
+<p>关键代码：</p>
+<pre><code>public function __construct(Application $app, Router $router)
+{
+    $this-&gt;app = $app;
+    $this-&gt;router = $router;
+
+    $router-&gt;middlewarePriority = $this-&gt;middlewarePriority;
+
+    foreach ($this-&gt;middlewareGroups as $key =&gt; $middleware) {
+        $router-&gt;middlewareGroup($key, $middleware);
+    }
+
+    foreach ($this-&gt;routeMiddleware as $key =&gt; $middleware) {
+        $router-&gt;aliasMiddleware($key, $middleware);
+    }
+}
+</code></pre><h5 id="5-handle处理请求"><a href="#5-handle处理请求" class="headerlink" title="5. handle处理请求"></a>5. handle处理请求</h5><ul>
+<li>a. 注册request实例到容器 ($app[‘request’]-&gt;Illuminate\Http\Request)  –  $request是经过Symfony封装的请求对象</li>
+<li>b. 清空之前容器中的request实例</li>
+<li>c. 调用bootstrap方法，启动一系列启动类的bootstrap方法</li>
+<li>d. 通过Pipeline发送请求，经过中间件，再由路由转发，最终返回响应</li>
+</ul>
+<p>关键代码：</p>
+<pre><code>protected function sendRequestThroughRouter($request)
+{
+    $this-&gt;app-&gt;instance(&apos;request&apos;, $request);
+
+    Facade::clearResolvedInstance(&apos;request&apos;);
+
+    $this-&gt;bootstrap();
+
+    return (new Pipeline($this-&gt;app))
+                -&gt;send($request)
+                -&gt;through($this-&gt;app-&gt;shouldSkipMiddleware() ? [] : $this-&gt;middleware)
+                -&gt;then($this-&gt;dispatchToRouter());
+}
+</code></pre><p>​    </p>
+<h5 id="6-bootstrap方法"><a href="#6-bootstrap方法" class="headerlink" title="6. bootstrap方法"></a>6. bootstrap方法</h5><ul>
+<li>a.检测环境变量文件是否正常</li>
+<li>b.取得配置文件，即把/config/下的所有配置文件读取到容器（app()-&gt;make(‘config’)可以查看所有配置信息）</li>
+<li>c.注册异常： set_error_handler,set_exception_handler, register_shutdown_function</li>
+<li>d.把/config/app.php里面的aliases项利用PHP库函数class_alias创建别名，从此，我们可以使用App::make(‘app’)方式取得实例</li>
+<li>e.把/config/app.php里面的providers项,注册到容器</li>
+<li>f.运行容器中注册的所有的ServiceProvider中得boot方法</li>
+</ul>
+<p>关键代码：</p>
+<pre><code>protected $bootstrappers = [
+    \Illuminate\Foundation\Bootstrap\LoadEnvironmentVariables::class,
+    \Illuminate\Foundation\Bootstrap\LoadConfiguration::class,
+    \Illuminate\Foundation\Bootstrap\HandleExceptions::class,
+    \Illuminate\Foundation\Bootstrap\RegisterFacades::class,
+    \Illuminate\Foundation\Bootstrap\RegisterProviders::class,
+    \Illuminate\Foundation\Bootstrap\BootProviders::class,
+];
+</code></pre><h5 id="7-将响应信息发送到浏览器"><a href="#7-将响应信息发送到浏览器" class="headerlink" title="7. 将响应信息发送到浏览器"></a>7. 将响应信息发送到浏览器</h5><p>关键代码：</p>
+<pre><code>$response-&gt;send();
+</code></pre><p>​    </p>
+<h5 id="9-处理继承自TerminableMiddleware"><a href="#9-处理继承自TerminableMiddleware" class="headerlink" title="9. 处理继承自TerminableMiddleware"></a>9. 处理继承自TerminableMiddleware</h5><p>关键代码：</p>
+<pre><code>$kernel-&gt;terminate($request, $response);
+</code></pre><p>​    </p>
+<h5 id="10-Laravel路由"><a href="#10-Laravel路由" class="headerlink" title="10. Laravel路由"></a>10. Laravel路由</h5><pre><code>$this-&gt;dispatchToRouter()
+--&gt; $this-&gt;router-&gt;dispatch($request)
+--&gt; $this-&gt;dispatchToRoute($request);  -- /Illuminate/Routing/Router.php
+--&gt; $response = $this-&gt;runRouteWithinStack($route, $request);
+
+//干货来了
+protected function runRouteWithinStack(Route $route, Request $request)
+{
+    // 取得routes.php里面的Middleware节点
+    $middleware = $this-&gt;gatherRouteMiddlewares($route);
+    //这个有点眼熟
+    return (new Pipeline($this-&gt;container))
+            -&gt;send($request)
+            -&gt;through($middleware)    //执行上述的中间件
+            -&gt;then(function($request) use ($route)
+            {
+                //不容易啊，终于到Controller类了
+                return $this-&gt;prepareResponse(
+                    $request,
+                    $route-&gt;run($request); //run控制器
+                );
+            });
+}
+</code></pre><p>服务提供者</p>
+<blockquote>
+<p>服务提供是启动Laravel关键部分，应用实例被创建，服务提供被注册，请求被启动后的应用进行处理。<br>默认存放在app/Providers目录下。</p>
+</blockquote>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="http://pd1l3bbt7.bkt.clouddn.com/img/wechatimg.jpg" alt="曹理鹏@iCocos 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="http://pd1l3bbt7.bkt.clouddn.com/img/alipayimg.jpg" alt="曹理鹏@iCocos 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>曹理鹏@iCocos</li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://icocos.github.io/2017/05/16/Laravel入门——执行流程与生命周期/" title="Laravel入门——执行流程与生命周期">https://icocos.github.io/2017/05/16/Laravel入门——执行流程与生命周期/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明出处！</li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/PHP/" rel="tag"># PHP</a>
+          
+            <a href="/tags/框架/" rel="tag"># 框架</a>
+          
+            <a href="/tags/Laravel/" rel="tag"># Laravel</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/05/15/2017-Swift——后感/" rel="next" title="2017@Swift——后感">
+                <i class="fa fa-chevron-left"></i> 2017@Swift——后感
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/05/16/Laravel入门——控制器/" rel="prev" title="Laravel入门——控制器">
+                Laravel入门——控制器 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="SOHUCS"></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="http://pd1l3bbt7.bkt.clouddn.com/icocos_user_icon.JPG"
+                alt="曹理鹏@iCocos" />
+            
+              <p class="site-author-name" itemprop="name">曹理鹏@iCocos</p>
+              <p class="site-description motion-element" itemprop="description">纯码迷、爱学习、爱交友、喜欢接触新鲜事物、迎接新的挑战，更爱游离于错综复杂的编码与逻辑中！</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives">
+                
+                    <span class="site-state-item-count">182</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">11</span>
+                    <span class="site-state-item-name">分类</span>
+                  
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">111</span>
+                    <span class="site-state-item-name">标签</span>
+                  
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/al1020119" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:al1020119@163.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://stackoverflow.com/users/10186720" target="_blank" title="StackOverflow"><i class="fa fa-fw fa-stack-overflow"></i>StackOverflow</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.icocos.cn/" title="梦工厂" target="_blank">梦工厂</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://al1020119.github.io/" title="iOS梦工厂" target="_blank">iOS梦工厂</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#请求流程"><span class="nav-number">1.</span> <span class="nav-text">请求流程</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#index-php-脚本按照如下的流程执行"><span class="nav-number">1.0.1.</span> <span class="nav-text">index.php 脚本按照如下的流程执行</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#一、-laravel结构"><span class="nav-number">2.</span> <span class="nav-text">一、 laravel结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#二、生命周期"><span class="nav-number">3.</span> <span class="nav-text">二、生命周期</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1-入口文件："><span class="nav-number">3.0.1.</span> <span class="nav-text">1. 入口文件：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-Http-Console内核"><span class="nav-number">3.0.2.</span> <span class="nav-text">2.Http/Console内核</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-服务提供者"><span class="nav-number">3.0.3.</span> <span class="nav-text">3.服务提供者</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#4-分发请求"><span class="nav-number">3.0.4.</span> <span class="nav-text">4. 分发请求</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#三、启动过程"><span class="nav-number">4.</span> <span class="nav-text">三、启动过程</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1-自动加载"><span class="nav-number">4.0.1.</span> <span class="nav-text">1.自动加载</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-初始化服务容器"><span class="nav-number">4.0.2.</span> <span class="nav-text">2.初始化服务容器</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-注册共享的Kernel和异常处理器"><span class="nav-number">4.0.3.</span> <span class="nav-text">3. 注册共享的Kernel和异常处理器</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#4-处理请求和响应"><span class="nav-number">4.0.4.</span> <span class="nav-text">4. 处理请求和响应</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#5-handle处理请求"><span class="nav-number">4.0.5.</span> <span class="nav-text">5. handle处理请求</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#6-bootstrap方法"><span class="nav-number">4.0.6.</span> <span class="nav-text">6. bootstrap方法</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#7-将响应信息发送到浏览器"><span class="nav-number">4.0.7.</span> <span class="nav-text">7. 将响应信息发送到浏览器</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#9-处理继承自TerminableMiddleware"><span class="nav-number">4.0.8.</span> <span class="nav-text">9. 处理继承自TerminableMiddleware</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#10-Laravel路由"><span class="nav-number">4.0.9.</span> <span class="nav-text">10. Laravel路由</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2017 – <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">曹理鹏@iCocos</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">站点总字数：</span>
+    
+    <span title="站点总字数">1.1m</span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    
+    <span title="站点阅读时长">16:05</span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv" title="总访客量">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="site-pv" title="总访问量">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/reading_progress/reading_progress.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.3.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.3.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.3.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.3.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+  
+    <script type="text/javascript">
+    (function(){
+      var appid = 'cytKHBEtW';
+      var conf = '43989b8e63b25c4e9f1fde821c996a39';
+      var width = window.innerWidth || document.documentElement.clientWidth;
+      if (width < 960) {
+      window.document.write('<script id="changyan_mobile_js" charset="utf-8" type="text/javascript" src="https://changyan.sohu.com/upload/mobile/wap-js/changyan_mobile.js?client_id=' + appid + '&conf=' + conf + '"><\/script>'); } else { var loadJs=function(d,a){var c=document.getElementsByTagName("head")[0]||document.head||document.documentElement;var b=document.createElement("script");b.setAttribute("type","text/javascript");b.setAttribute("charset","UTF-8");b.setAttribute("src",d);if(typeof a==="function"){if(window.attachEvent){b.onreadystatechange=function(){var e=b.readyState;if(e==="loaded"||e==="complete"){b.onreadystatechange=null;a()}}}else{b.onload=a}}c.appendChild(b)};loadJs("https://changyan.sohu.com/upload/changyan.js",function(){
+        window.changyan.api.config({appid:appid,conf:conf})});
+      }
+    })();
+    </script>
+    <script type="text/javascript" src="https://assets.changyan.sohu.com/upload/plugins/plugins.count.js"></script>
+  
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("Tc7k1mbaieCUSgmM8LPk1IBO-gzGzoHsz", "sAb7L2vwENJTteRrvFKQacUU");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            
+              var $element = $(document.getElementById(url));
+              $element.find('.leancloud-visitors-count').text(counter.get('time'));
+            
+            counter.save(null, {
+              success: function(counter) {
+                
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            
+              var $element = $(document.getElementById(url));
+              $element.find('.leancloud-visitors-count').text('Counter not initialized! See more at console err msg.');
+              console.error('ATTENTION! LeanCloud counter has security bug, see here how to solve it: https://github.com/theme-next/hexo-leancloud-counter-security. \n But you also can use LeanCloud without security, by set \'security\' option to \'false\'.');
+            
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #333;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #eee;
+      background-image: linear-gradient(#fcfcfc, #eee);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('复制').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+          if(result)$(this).text('复制成功')
+          else $(this).text('复制失败')
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('复制')
+        }, 300)
+      }).append(e)
+    })
+  </script>
+
+
+  
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("Tc7k1mbaieCUSgmM8LPk1IBO-gzGzoHsz", "sAb7L2vwENJTteRrvFKQacUU");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+  
+</body>
+</html>

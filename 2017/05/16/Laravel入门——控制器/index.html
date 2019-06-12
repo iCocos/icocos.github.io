@@ -1,0 +1,2265 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.3.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="http://pd1l3bbt7.bkt.clouddn.com/img/favicon.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="http://pd1l3bbt7.bkt.clouddn.com/img/favicon.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="http://pd1l3bbt7.bkt.clouddn.com/img/favicon.png?v=6.3.0">
+
+
+  <link rel="mask-icon" href="http://pd1l3bbt7.bkt.clouddn.com/img/favicon.png?v=6.3.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="简介 控制器是模型和视图的桥梁！  手动写Controller在App\Http\Controllers下编写Controller，本身会自带一个Controller，我们可以新建一个Controller继承该Controller。 之前是直接在路由就返回视图，而视图一般应该由Controller来操作。我们可以像这样定义指向该控制器动作的路由：">
+<meta name="keywords" content="PHP,框架,Laravel">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Laravel入门——控制器">
+<meta property="og:url" content="https://icocos.github.io/2017/05/16/Laravel入门——控制器/index.html">
+<meta property="og:site_name" content="iCocos">
+<meta property="og:description" content="简介 控制器是模型和视图的桥梁！  手动写Controller在App\Http\Controllers下编写Controller，本身会自带一个Controller，我们可以新建一个Controller继承该Controller。 之前是直接在路由就返回视图，而视图一般应该由Controller来操作。我们可以像这样定义指向该控制器动作的路由：">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-05-20T10:25:53.061Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Laravel入门——控制器">
+<meta name="twitter:description" content="简介 控制器是模型和视图的桥梁！  手动写Controller在App\Http\Controllers下编写Controller，本身会自带一个Controller，我们可以新建一个Controller继承该Controller。 之前是直接在路由就返回视图，而视图一般应该由Controller来操作。我们可以像这样定义指向该控制器动作的路由：">
+
+
+
+  <link rel="alternate" href="/atom.xml" title="iCocos" type="application/atom+xml" />
+
+
+
+
+  <link rel="canonical" href="https://icocos.github.io/2017/05/16/Laravel入门——控制器/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>Laravel入门——控制器 | iCocos</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">iCocos</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">www.icocos.cn</p>
+      
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-首页">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-归档">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-关于">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-作品">
+    <a href="/works/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-calendar"></i> <br />作品</a>
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+    <div class="reading-progress-bar"></div>
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://icocos.github.io/2017/05/16/Laravel入门——控制器/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="曹理鹏@iCocos">
+      <meta itemprop="description" content="纯码迷、爱学习、爱交友、喜欢接触新鲜事物、迎接新的挑战，更爱游离于错综复杂的编码与逻辑中！">
+      <meta itemprop="image" content="http://pd1l3bbt7.bkt.clouddn.com/icocos_user_icon.JPG">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="iCocos">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Laravel入门——控制器
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2017-05-16 18:28:39" itemprop="dateCreated datePublished" datetime="2017-05-16T18:28:39+08:00">2017-05-16</time>
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/PHP/" itemprop="url" rel="index"><span itemprop="name">PHP</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+              <span class="post-meta-divider">|</span>
+              <span class="post-meta-item-icon">
+                <i class="fa fa-comment-o"></i>
+              </span>
+              
+                <a href="/2017/05/16/Laravel入门——控制器/#SOHUCS" itemprop="discussionUrl">
+                  <span class="post-meta-item-text">评论数：</span> <span id="changyan_count_unit" class="post-comments-count hc-comment-count" data-xid="2017/05/16/Laravel入门——控制器/" itemprop="commentsCount"></span>
+                </a>
+              
+            
+          
+
+          
+          
+             <span id="/2017/05/16/Laravel入门——控制器/" class="leancloud_visitors" data-flag-title="Laravel入门——控制器">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数：</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon"
+            >
+            <i class="fa fa-eye"></i>
+             阅读次数： 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+            <div class="post-symbolscount">
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">本文字数：</span>
+                
+                <span title="本文字数">12k</span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">11 分钟</span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><blockquote>
+<p>控制器是模型和视图的桥梁！</p>
+</blockquote>
+<h3 id="手动写Controller"><a href="#手动写Controller" class="headerlink" title="手动写Controller"></a>手动写Controller</h3><p>在App\Http\Controllers下编写Controller，本身会自带一个Controller，我们可以新建一个Controller继承该Controller。</p>
+<p>之前是直接在路由就返回视图，而视图一般应该由Controller来操作。<br>我们可以像这样定义指向该控制器动作的路由：</p>
+<a id="more"></a>
+<pre><code>//第二个参数@之前的是控制器名称，之后是方法名称
+Route::get(&apos;user/{id}&apos;, &apos;UserController@showProfile&apos;);
+</code></pre><p>还能自动创建，使用artisan命令，在根目录，也就是app文件所在的目录（我也不太清楚其他目录行不行）</p>
+<pre><code>php artisan make:controller UserController
+</code></pre><p>如果要改自定义Controller的目录，也就是再建一个文件夹做个分类，那么要记得改namespace，而且继承的Controller要用use引入。而且路由的第二个参数也要加上新建的目录。<br>‘Admin\UserController@showProfile’</p>
+<h3 id="RESTful-资源控制器"><a href="#RESTful-资源控制器" class="headerlink" title="RESTful 资源控制器"></a>RESTful 资源控制器</h3><pre><code>Route::resource(&apos;photo&apos;, &apos;PhotoController&apos;);
+</code></pre><p>控制器用于将相关的 HTTP 请求封装到一个类中进行处理，这些控制器类存放在 app/Http/Controllers 目录下。</p>
+<h3 id="控制器入门"><a href="#控制器入门" class="headerlink" title="控制器入门"></a>控制器入门</h3><h5 id="定义控制器"><a href="#定义控制器" class="headerlink" title="定义控制器"></a>定义控制器</h5><p>可使用 Artisan 命令快速创建一个控制器。</p>
+<pre><code>php artisan make:controller UserController
+</code></pre><p>这样，会自动生成 app/Http/Controllers/UserController.php 文件，内容如下：</p>
+<pre><code>&lt;?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+
+class UserController extends Controller
+{
+    //
+}
+</code></pre><p>所有的控制器一般会继承 Laravel 自带的控制器基类 App\Http\Controllers\Controller。</p>
+<p>现在，在该控制器中添加 show 方法。</p>
+<pre><code>&lt;?php
+
+namespace App\Http\Controllers;
+
+use App\User;
+use Illuminate\Http\Request;
+
+class UserController extends Controller
+{
+    /**
+     * 为指定用户显示详情
+     *
+     * @param int $id
+     * @return Response
+     */
+    public function show($id)
+    {
+        return view(&apos;user.profile&apos;, [&apos;user&apos; =&gt; User::findOrFail($id)]);
+    }
+}
+</code></pre><p>然后，在 routes/web.php 中定义路由：</p>
+<pre><code>Route::get(&apos;user/{id}&apos;, &apos;UserController@show&apos;);
+</code></pre><p>现在，如果一个请求匹配上面的路由 URI，UserController 的 show 方法就会被执行，当然，路由参数也会被传递给这个方法。</p>
+<blockquote>
+<p>此外，这里的 show 方法里面还用到了 view 方法，该方法用于将 user 变量渲染到 user/profile 视图中。</p>
+</blockquote>
+<p>然后在 resources/veiws 目录下创建 user 子目录，然后在 user 目录下新建 profile.blade.php 视图文件，内容如下：</p>
+<pre><code>{{ dd($user) }}
+</code></pre><p>现在，在浏览器中访问 <a href="http://www.adm.devp/user/1" target="_blank" rel="noopener">http://www.adm.devp/user/1</a> ，就可看到打印结果：</p>
+<pre><code>User {#208 ▼
+  #fillable: array:3 [▶]
+  #hidden: array:2 [▶]
+  #connection: &quot;mysql&quot;
+  #table: null
+  #primaryKey: &quot;id&quot;
+  #keyType: &quot;int&quot;
+  +incrementing: true
+  #with: []
+  #withCount: []
+  #perPage: 15
+  +exists: true
+  +wasRecentlyCreated: false
+  #attributes: array:7 [▶]
+  #original: array:7 [▶]
+  #changes: []
+  #casts: []
+  #dates: []
+  #dateFormat: null
+  #appends: []
+  #dispatchesEvents: []
+  #observables: []
+  #relations: []
+  #touches: []
+  +timestamps: true
+  #visible: []
+  #guarded: array:1 [▶]
+  #rememberTokenName: &quot;remember_token&quot;
+}
+</code></pre><blockquote>
+<p>注：控制器并不是一定要继承基类，不过，那样的话就不能使用一些基类提供的便利方法了，比如 middleware、validate 和 dispatch 等。</p>
+</blockquote>
+<h5 id="命名空间"><a href="#命名空间" class="headerlink" title="命名空间"></a>命名空间</h5><p>在定义控制器路由时，我们并没有指定完整的控制器命名空间，而只是指定了 App\Http\Controllers 之后的部分，那为什么可以这么做呢？</p>
+<blockquote>
+<p>这是因为在 RouteServiceProvider 文件中，已经定义了 App\Http\Controllers ，故而我们只需指定后面的相对命名空间即可。</p>
+</blockquote>
+<p>如果你在 App\Http\Controllers 目录下选择使用 PHP 命名空间嵌套或组织控制器，只需要使用相对于 App\Http\Controllers 命名空间的指定类名即可。</p>
+<p>因此，如果你的完整控制器类是 App\Http\Controllers\Photos\AdminController，则可以像这样注册路由：</p>
+<pre><code>Route::get(&apos;foo&apos;, &apos;Photos\AdminController@method&apos;);
+</code></pre><h5 id="单方法控制器"><a href="#单方法控制器" class="headerlink" title="单方法控制器"></a>单方法控制器</h5><p>如果你的控制器只有一个方法，则可以在这个控制器中定义 __invoke 方法：</p>
+<pre><code>&lt;?php
+
+namespace App\Http\Controllers;
+
+use App\User;
+use App\Http\Controllers\Controller;
+
+class ShowProfile extends Controller
+{
+    /**
+     * 展示给定用户的详情         
+     *
+     * @param  int  $id
+     * @return Response
+     */
+    public function __invoke($id)
+    {
+        return view(&apos;user.profile&apos;, [&apos;user&apos; =&gt; User::findOrFail($id)]);
+    }
+}
+</code></pre><p>当你为单方法控制器注册路由时，不需要指定方法：</p>
+<pre><code>Route::get(&apos;user/{id}&apos;, &apos;ShowProfile&apos;);
+</code></pre><p>原理是当尝试以调用函数的方式调用一个对象时，__invoke() 魔术方法会被自动调用。</p>
+<h5 id="控制器中间件"><a href="#控制器中间件" class="headerlink" title="控制器中间件"></a>控制器中间件</h5><p>中间件可以像这样分配给控制器路由：</p>
+<pre><code>Route::get(&apos;profile&apos;, &apos;UserController@show&apos;)-&gt;middleware(&apos;auth&apos;);
+</code></pre><p>不过，将中间件放在控制器的构造函数中更方便，在控制器的构造函数中使用 middleware 方法可以轻松地分配中间件给该控制器（该方法继承自控制器基类）。</p>
+<pre><code>&lt;?php
+
+namespace App\Http\Controllers;
+
+use App\User;
+use Illuminate\Http\Request;
+
+class UserController extends Controller
+{
+    public function __construct()
+    {
+        $this-&gt;middleware(&apos;token&apos;);
+    }
+
+    /**
+     * 为指定用户显示详情
+     *
+     * @param int $id
+     * @return Response
+     */
+    public function show($id)
+    {
+        return view(&apos;user.profile&apos;, [&apos;user&apos; =&gt; User::findOrFail($id)]);
+    }
+}
+</code></pre><p>在这个示例中，我们在控制器的构造方法中使用了 token 中间件，但是我们还没有定义和注册 token 中间件。</p>
+<h5 id="创建-token-中间件："><a href="#创建-token-中间件：" class="headerlink" title="创建 token 中间件："></a>创建 token 中间件：</h5><pre><code>php artisan make:middleware Token
+</code></pre><p>这样，就会自动生成 app/Http/Middleware/Token.php 文件，稍作修改后，内容如下：</p>
+<pre><code>&lt;?php
+
+namespace App\Http\Middleware;
+
+use Closure;
+
+class Token
+{
+    /**
+     * Handle an incoming request.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \Closure  $next
+     * @return mixed
+     */
+    public function handle($request, Closure $next)
+    {
+        // 如果 token 的值不是 abcdef，则跳转到首页。
+        if ($request-&gt;token != &apos;abcdef&apos;) {
+            return redirect(&apos;/&apos;);
+        }
+
+        // 如果 token 正确，就正常访问
+        return $next($request);
+    }
+}
+</code></pre><h5 id="注册-token-中间件："><a href="#注册-token-中间件：" class="headerlink" title="注册 token 中间件："></a>注册 token 中间件：</h5><p>修改 app/Http/Kernel.php 文件，为 $routeMiddleware 属性添加一个新的键值对即可。</p>
+<pre><code>&apos;token&apos; =&gt; \App\Http\Middleware\Token::class,
+</code></pre><p>这样，当我们访问 <a href="http://www.adm.devp/user/1" target="_blank" rel="noopener">http://www.adm.devp/user/1</a> 时，会跳转到首页；访问 <a href="http://www.adm.devp/user/1?token=abcdef" target="_blank" rel="noopener">http://www.adm.devp/user/1?token=abcdef</a> 时，才能访问到正确的页面。</p>
+<p>除此之外，我们还可以指定中间件对指定方法生效或者排除指定方法的校验：</p>
+<pre><code>$this-&gt;middleware(&apos;auth&apos;)-&gt;only(&apos;show&apos;); // 只对该方法生效
+
+$this-&gt;middleware(&apos;auth&apos;)-&gt;except(&apos;show&apos;);  // 对该方法以外的方法生效
+</code></pre><p>如果要指定多个控制器方法可以以数组的方式传参：</p>
+<pre><code>$this-&gt;middleware(&apos;auth&apos;)-&gt;only([&apos;show&apos;, &apos;index&apos;]); // 只对指定方法生效
+
+$this-&gt;middleware(&apos;auth&apos;)-&gt;except([&apos;show&apos;, &apos;index&apos;]);  // 对指定方法以外的方法生效
+</code></pre><p>在控制器中还可以使用闭包注册中间件，这为我们定义只在某个控制器中使用的中间件提供了方便，而无需定义完整的中间件类：</p>
+<pre><code>$this-&gt;middleware(function ($request, $next) {
+    // ...
+
+    return $next($request);
+});
+</code></pre><p>还是以 UserController 为例，我们为其定义一个匿名中间件：</p>
+<pre><code>use App\User;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+
+class UserController extends Controller
+{
+    public function __construct()
+    {
+        $this-&gt;middleware(function($request, $next){
+            if($request-&gt;input(&apos;token&apos;)!=&apos;abcdef&apos;){
+                throw new NotFoundHttpException();
+            }
+            return $next($request);
+        });
+    }
+}
+</code></pre><p>这样当我们访问 <a href="http://www.adm.devp/user/1" target="_blank" rel="noopener">http://www.adm.devp/user/1</a> 时会抛出 404 异常；只有当访问 <a href="http://www.adm.devp/user/1?token=abcdef" target="_blank" rel="noopener">http://www.adm.devp/user/1?token=abcdef</a> 时才能正常展示。</p>
+<h3 id="资源控制器"><a href="#资源控制器" class="headerlink" title="资源控制器"></a>资源控制器</h3><p>Laravel 的资源控制器可以很便捷地构建基于资源的 RESTful 控制器。</p>
+<p>例如，你可能想要在应用中创建一个控制器，用于处理关于文章存储的 HTTP 请求，使用 Artisan 命令 make:controller，我们可以快速创建这样的控制器：</p>
+<pre><code>php artisan make:controller PostController --resource
+</code></pre><p>这样，会自动生成 app/Http/Controllers/PostController.php 文件，内容如下：</p>
+<pre><code>&lt;?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+
+class PostController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
+    {
+        //
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        //
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+        //
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show($id)
+    {
+        //
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function edit($id)
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, $id)
+    {
+        //
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy($id)
+    {
+        //
+    }
+}
+</code></pre><p>接下来，可以通过 resource 方法为该控制器注册一个资源路由：</p>
+<pre><code>Route::resource(&apos;posts&apos;, &apos;PostController&apos;);
+</code></pre><p>这个路由声明包含了处理文章资源对应方法的多个路由。具体如下表：</p>
+<pre><code>请求方式     URI路径     控制器方法     路由名称     说明
+GET     /posts     index     posts.index     文章列表（首页）
+GET     /posts/create     create     posts.create     新增文章的表单界面
+POST     /posts     store     posts.store     执行存储新文章
+GET     /posts/{post}     show     posts.show     查看指定的文章
+GET     /posts/{post}/edit     edit     posts.edit     更新文章的表单界面
+PUT/PATCH     /posts/{post}     update     posts.update     执行更新文章
+DELETE     /posts/{post}     destroy     posts.destroy     执行删除文章
+</code></pre><h5 id="指定资源模型"><a href="#指定资源模型" class="headerlink" title="指定资源模型"></a>指定资源模型</h5><p>如果你使用了路由模型绑定，并且想要在资源控制器的方法中对模型实例进行依赖注入，可以在生成控制器时使用 –model 选项：</p>
+<pre><code>php artisan make:controller PostController --resource --model=Post
+</code></pre><p>不过，不推荐使用这种模型绑定，因为这里会涉及到对模型数据的缓存逻辑，为性能考虑，我们不想总是从数据库取数据，所以，尽量保持单个功能的简单和单一职责，让开发者自己去组装需要的功能，这是 Unix 奉行的设计哲学，也是我们在系统设计的时候需要考量的重要因素。</p>
+<h5 id="伪造表单方法"><a href="#伪造表单方法" class="headerlink" title="伪造表单方法"></a>伪造表单方法</h5><p>由于 HTML 表单不支持发起 PUT、PATCH 和 DELETE 请求，需要添加一个隐藏的 _method 字段来伪造 HTTP 请求方式，辅助函数 method_field 可以帮我们做这件事：</p>
+<pre><code>{{ method_field('PUT') }}
+</code></pre><h5 id="部分资源路由"><a href="#部分资源路由" class="headerlink" title="部分资源路由"></a>部分资源路由</h5><p>声明资源路由时可以指定该路由处理的动作子集：</p>
+<pre><code>Route::resource(&apos;post&apos;, &apos;PostController&apos;, [&apos;only&apos; =&gt; 
+    [&apos;index&apos;, &apos;show&apos;]
+]);
+
+Route::resource(&apos;post&apos;, &apos;PostController&apos;, [&apos;except&apos; =&gt; 
+    [&apos;create&apos;, &apos;store&apos;, &apos;update&apos;, &apos;destroy&apos;]
+]);
+</code></pre><h5 id="API资源路由"><a href="#API资源路由" class="headerlink" title="API资源路由"></a>API资源路由</h5><p>声明被 API 消费的资源路由时，你可能需要排除展示 HTML 模板的路由，如 create 和 edit，为了方便起见，Laravel 提供了 apiResource 方法自动排除这两个路由：</p>
+<pre><code>Route::apiResource(&apos;post&apos;, &apos;PostController&apos;);
+</code></pre><h5 id="命名资源路由"><a href="#命名资源路由" class="headerlink" title="命名资源路由"></a>命名资源路由</h5><p>默认情况下，所有资源控制器的动作都有一个路由名称，不过，我们可以通过传入 names 数组来覆盖这些默认的名称：</p>
+<pre><code>Route::resource(&apos;post&apos;, &apos;PostController&apos;, [&apos;names&apos; =&gt; 
+    [&apos;create&apos; =&gt; &apos;post.build&apos;]
+]);
+</code></pre><h5 id="命名资源路由参数"><a href="#命名资源路由参数" class="headerlink" title="命名资源路由参数"></a>命名资源路由参数</h5><p>默认情况下，Route::resource 将会基于资源名称的单数格式为资源路由创建路由参数，你可以通过在选项数组中传递 parameters 来覆盖这一默认设置。 parameters 是资源名称和参数名称的关联数组：</p>
+<pre><code>Route::resource(&apos;user&apos;, &apos;AdminUserController&apos;, [&apos;parameters&apos; =&gt; [
+    &apos;user&apos; =&gt; &apos;admin_user&apos;
+]]);
+</code></pre><p>上面的示例代码会为资源的 show 路由生成如下 URL：</p>
+<pre><code>/user/{admin_user}
+</code></pre><h5 id="补充资源控制器"><a href="#补充资源控制器" class="headerlink" title="补充资源控制器"></a>补充资源控制器</h5><p>如果需要在默认资源路由之外添加额外的路由到资源控制器，应该在调用 Route::resource 之前定义这些路由，否则，通过 resource 方法定义的路由可能无意中覆盖掉补充的额外路由：</p>
+<pre><code>Route::get(&apos;posts/popular&apos;, &apos;PostController@method&apos;);
+
+Route::resource(&apos;posts&apos;, &apos;PostController&apos;);
+</code></pre><p>注：注意保持控制器的单一职责，如果你发现指向控制器动作的路由超过默认提供的资源控制器动作集合了，考虑将你的控制器分割成多个更小的控制器。</p>
+<h3 id="依赖注入"><a href="#依赖注入" class="headerlink" title="依赖注入"></a>依赖注入</h3><h5 id="构造函数注入"><a href="#构造函数注入" class="headerlink" title="构造函数注入"></a>构造函数注入</h5><p>Laravel 使用服务容器解析所有的 Laravel 控制器，因此，可以在控制器的构造函数中注入任何依赖，这些依赖会被自动解析并注入到控制器实例中：</p>
+<pre><code>&lt;?php
+
+namespace App\Http\Controllers;
+
+use App\Repositories\UserRepository;
+
+class UserController extends Controller
+{
+    /**
+     * The user repository instance.
+     */
+    protected $users;
+
+    /**
+     * 创建新的控制器实例
+     *
+     * @param UserRepository $users
+     * @return void
+     */
+    public function __construct(UserRepository $users)
+    {
+        $this-&gt;users = $users;
+    }
+}
+</code></pre><p>当然，你还可以注入任何 Laravel 契约，如果容器可以解析，就可以进行依赖注入。注入依赖到控制器可以让应用更加易于测试，同时也更加方便使用。</p>
+<h5 id="普通方法注入"><a href="#普通方法注入" class="headerlink" title="普通方法注入"></a>普通方法注入</h5><p>除了构造函数注入之外，还可以在控制器的普通方法中进行依赖注入，例如，我们可以在某个方法中注入 Illuminate\Http\Request 实例：</p>
+<pre><code>&lt;?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+
+class UserController extends Controller
+{
+    /**
+     * 存储新用户
+     *
+     * @param Request $request
+     * @return Response
+     */
+    public function store(Request $request)
+    {
+        $name = $request-&gt;input(&apos;name&apos;);
+
+        //
+    }
+}
+</code></pre><p>如果控制器方法期望输入路由参数，只需要将路由参数放到其他依赖之后，例如，如果你的路由定义如下：</p>
+<pre><code>Route::put(&apos;user/{id}&apos;, &apos;UserController@update&apos;);
+</code></pre><p>则需要以如下方式定义控制器方法来注入 Illuminate\Http\Request 依赖并访问路由参数 id：</p>
+<pre><code>&lt;?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+
+class UserController extends Controller
+{
+    /**
+     * 更新指定用户
+     *
+     * @param Request $request
+     * @param int $id
+     * @return Response
+     */
+    public function update(Request $request, $id)
+    {
+        //
+    }
+}
+</code></pre>
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="http://pd1l3bbt7.bkt.clouddn.com/img/wechatimg.jpg" alt="曹理鹏@iCocos 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="http://pd1l3bbt7.bkt.clouddn.com/img/alipayimg.jpg" alt="曹理鹏@iCocos 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>曹理鹏@iCocos</li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://icocos.github.io/2017/05/16/Laravel入门——控制器/" title="Laravel入门——控制器">https://icocos.github.io/2017/05/16/Laravel入门——控制器/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明出处！</li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/PHP/" rel="tag"># PHP</a>
+          
+            <a href="/tags/框架/" rel="tag"># 框架</a>
+          
+            <a href="/tags/Laravel/" rel="tag"># Laravel</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/05/16/Laravel入门——执行流程与生命周期/" rel="next" title="Laravel入门——执行流程与生命周期">
+                <i class="fa fa-chevron-left"></i> Laravel入门——执行流程与生命周期
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/05/16/Laravel入门——视图/" rel="prev" title="Laravel入门——视图">
+                Laravel入门——视图 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="SOHUCS"></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="http://pd1l3bbt7.bkt.clouddn.com/icocos_user_icon.JPG"
+                alt="曹理鹏@iCocos" />
+            
+              <p class="site-author-name" itemprop="name">曹理鹏@iCocos</p>
+              <p class="site-description motion-element" itemprop="description">纯码迷、爱学习、爱交友、喜欢接触新鲜事物、迎接新的挑战，更爱游离于错综复杂的编码与逻辑中！</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives">
+                
+                    <span class="site-state-item-count">182</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">11</span>
+                    <span class="site-state-item-name">分类</span>
+                  
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">111</span>
+                    <span class="site-state-item-name">标签</span>
+                  
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/al1020119" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:al1020119@163.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://stackoverflow.com/users/10186720" target="_blank" title="StackOverflow"><i class="fa fa-fw fa-stack-overflow"></i>StackOverflow</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.icocos.cn/" title="梦工厂" target="_blank">梦工厂</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://al1020119.github.io/" title="iOS梦工厂" target="_blank">iOS梦工厂</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#简介"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#手动写Controller"><span class="nav-number">1.1.</span> <span class="nav-text">手动写Controller</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RESTful-资源控制器"><span class="nav-number">1.2.</span> <span class="nav-text">RESTful 资源控制器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#控制器入门"><span class="nav-number">1.3.</span> <span class="nav-text">控制器入门</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#定义控制器"><span class="nav-number">1.3.0.1.</span> <span class="nav-text">定义控制器</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#命名空间"><span class="nav-number">1.3.0.2.</span> <span class="nav-text">命名空间</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#单方法控制器"><span class="nav-number">1.3.0.3.</span> <span class="nav-text">单方法控制器</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#控制器中间件"><span class="nav-number">1.3.0.4.</span> <span class="nav-text">控制器中间件</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#创建-token-中间件："><span class="nav-number">1.3.0.5.</span> <span class="nav-text">创建 token 中间件：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#注册-token-中间件："><span class="nav-number">1.3.0.6.</span> <span class="nav-text">注册 token 中间件：</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#资源控制器"><span class="nav-number">1.4.</span> <span class="nav-text">资源控制器</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#指定资源模型"><span class="nav-number">1.4.0.1.</span> <span class="nav-text">指定资源模型</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#伪造表单方法"><span class="nav-number">1.4.0.2.</span> <span class="nav-text">伪造表单方法</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#部分资源路由"><span class="nav-number">1.4.0.3.</span> <span class="nav-text">部分资源路由</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#API资源路由"><span class="nav-number">1.4.0.4.</span> <span class="nav-text">API资源路由</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#命名资源路由"><span class="nav-number">1.4.0.5.</span> <span class="nav-text">命名资源路由</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#命名资源路由参数"><span class="nav-number">1.4.0.6.</span> <span class="nav-text">命名资源路由参数</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#补充资源控制器"><span class="nav-number">1.4.0.7.</span> <span class="nav-text">补充资源控制器</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#依赖注入"><span class="nav-number">1.5.</span> <span class="nav-text">依赖注入</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#构造函数注入"><span class="nav-number">1.5.0.1.</span> <span class="nav-text">构造函数注入</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#普通方法注入"><span class="nav-number">1.5.0.2.</span> <span class="nav-text">普通方法注入</span></a></li></ol></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2017 – <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">曹理鹏@iCocos</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">站点总字数：</span>
+    
+    <span title="站点总字数">1.1m</span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    
+    <span title="站点阅读时长">16:05</span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv" title="总访客量">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="site-pv" title="总访问量">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/reading_progress/reading_progress.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.3.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.3.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.3.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.3.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+  
+    <script type="text/javascript">
+    (function(){
+      var appid = 'cytKHBEtW';
+      var conf = '43989b8e63b25c4e9f1fde821c996a39';
+      var width = window.innerWidth || document.documentElement.clientWidth;
+      if (width < 960) {
+      window.document.write('<script id="changyan_mobile_js" charset="utf-8" type="text/javascript" src="https://changyan.sohu.com/upload/mobile/wap-js/changyan_mobile.js?client_id=' + appid + '&conf=' + conf + '"><\/script>'); } else { var loadJs=function(d,a){var c=document.getElementsByTagName("head")[0]||document.head||document.documentElement;var b=document.createElement("script");b.setAttribute("type","text/javascript");b.setAttribute("charset","UTF-8");b.setAttribute("src",d);if(typeof a==="function"){if(window.attachEvent){b.onreadystatechange=function(){var e=b.readyState;if(e==="loaded"||e==="complete"){b.onreadystatechange=null;a()}}}else{b.onload=a}}c.appendChild(b)};loadJs("https://changyan.sohu.com/upload/changyan.js",function(){
+        window.changyan.api.config({appid:appid,conf:conf})});
+      }
+    })();
+    </script>
+    <script type="text/javascript" src="https://assets.changyan.sohu.com/upload/plugins/plugins.count.js"></script>
+  
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("Tc7k1mbaieCUSgmM8LPk1IBO-gzGzoHsz", "sAb7L2vwENJTteRrvFKQacUU");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            
+              var $element = $(document.getElementById(url));
+              $element.find('.leancloud-visitors-count').text(counter.get('time'));
+            
+            counter.save(null, {
+              success: function(counter) {
+                
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            
+              var $element = $(document.getElementById(url));
+              $element.find('.leancloud-visitors-count').text('Counter not initialized! See more at console err msg.');
+              console.error('ATTENTION! LeanCloud counter has security bug, see here how to solve it: https://github.com/theme-next/hexo-leancloud-counter-security. \n But you also can use LeanCloud without security, by set \'security\' option to \'false\'.');
+            
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #333;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #eee;
+      background-image: linear-gradient(#fcfcfc, #eee);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('复制').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+          if(result)$(this).text('复制成功')
+          else $(this).text('复制失败')
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('复制')
+        }, 300)
+      }).append(e)
+    })
+  </script>
+
+
+  
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("Tc7k1mbaieCUSgmM8LPk1IBO-gzGzoHsz", "sAb7L2vwENJTteRrvFKQacUU");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+  
+</body>
+</html>

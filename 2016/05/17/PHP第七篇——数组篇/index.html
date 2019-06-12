@@ -1,0 +1,2098 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.3.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="http://pd1l3bbt7.bkt.clouddn.com/img/favicon.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="http://pd1l3bbt7.bkt.clouddn.com/img/favicon.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="http://pd1l3bbt7.bkt.clouddn.com/img/favicon.png?v=6.3.0">
+
+
+  <link rel="mask-icon" href="http://pd1l3bbt7.bkt.clouddn.com/img/favicon.png?v=6.3.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="什么是数组？数组就是被命名的用来存储一系列数值的地方。数组array是非常重要的数据类型。相对于其他的数据类型，它更像是一种结构，而这种结果构可以存储一系列数值。数组能够在单一变量名中存储许多值，并且能够通过引用下标号来访问某个值。">
+<meta name="keywords" content="PHP,实战">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PHP第七篇——数组篇">
+<meta property="og:url" content="https://icocos.github.io/2016/05/17/PHP第七篇——数组篇/index.html">
+<meta property="og:site_name" content="iCocos">
+<meta property="og:description" content="什么是数组？数组就是被命名的用来存储一系列数值的地方。数组array是非常重要的数据类型。相对于其他的数据类型，它更像是一种结构，而这种结果构可以存储一系列数值。数组能够在单一变量名中存储许多值，并且能够通过引用下标号来访问某个值。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-05-22T09:17:22.231Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="PHP第七篇——数组篇">
+<meta name="twitter:description" content="什么是数组？数组就是被命名的用来存储一系列数值的地方。数组array是非常重要的数据类型。相对于其他的数据类型，它更像是一种结构，而这种结果构可以存储一系列数值。数组能够在单一变量名中存储许多值，并且能够通过引用下标号来访问某个值。">
+
+
+
+  <link rel="alternate" href="/atom.xml" title="iCocos" type="application/atom+xml" />
+
+
+
+
+  <link rel="canonical" href="https://icocos.github.io/2016/05/17/PHP第七篇——数组篇/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>PHP第七篇——数组篇 | iCocos</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">iCocos</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">www.icocos.cn</p>
+      
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-首页">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-归档">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-关于">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-作品">
+    <a href="/works/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-calendar"></i> <br />作品</a>
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+    <div class="reading-progress-bar"></div>
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://icocos.github.io/2016/05/17/PHP第七篇——数组篇/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="曹理鹏@iCocos">
+      <meta itemprop="description" content="纯码迷、爱学习、爱交友、喜欢接触新鲜事物、迎接新的挑战，更爱游离于错综复杂的编码与逻辑中！">
+      <meta itemprop="image" content="http://pd1l3bbt7.bkt.clouddn.com/icocos_user_icon.JPG">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="iCocos">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">PHP第七篇——数组篇
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2016-05-17 00:06:22" itemprop="dateCreated datePublished" datetime="2016-05-17T00:06:22+08:00">2016-05-17</time>
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/PHP/" itemprop="url" rel="index"><span itemprop="name">PHP</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+              <span class="post-meta-divider">|</span>
+              <span class="post-meta-item-icon">
+                <i class="fa fa-comment-o"></i>
+              </span>
+              
+                <a href="/2016/05/17/PHP第七篇——数组篇/#SOHUCS" itemprop="discussionUrl">
+                  <span class="post-meta-item-text">评论数：</span> <span id="changyan_count_unit" class="post-comments-count hc-comment-count" data-xid="2016/05/17/PHP第七篇——数组篇/" itemprop="commentsCount"></span>
+                </a>
+              
+            
+          
+
+          
+          
+             <span id="/2016/05/17/PHP第七篇——数组篇/" class="leancloud_visitors" data-flag-title="PHP第七篇——数组篇">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数：</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon"
+            >
+            <i class="fa fa-eye"></i>
+             阅读次数： 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+            <div class="post-symbolscount">
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">本文字数：</span>
+                
+                <span title="本文字数">7.7k</span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">7 分钟</span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>什么是数组？数组就是被命名的用来存储一系列数值的地方。数组array是非常重要的数据类型。相对于其他的数据类型，它更像是一种结构，而这种结果构可以存储一系列数值。数组能够在单一变量名中存储许多值，并且能够通过引用下标号来访问某个值。</p>
+<a id="more"></a>
+<p>在 PHP 中，有三种数组类型：</p>
+<pre><code>索引数组 - 带有数字索引的数组
+关联数组 - 带有指定键的数组
+多维数组 - 包含一个或多个数组的数组
+</code></pre><h2 id="数组篇"><a href="#数组篇" class="headerlink" title="数组篇"></a>数组篇</h2><h3 id="PHP数组定义"><a href="#PHP数组定义" class="headerlink" title="PHP数组定义"></a>PHP数组定义</h3><p>数组就是一个键值对组成的语言结构，键类似于酒店的房间号，值类似于酒店房间里存储的东西。</p>
+<p>其实在PHP中数组感觉更像iOS中的字典，但也有iOS中的数组相似点，只是数组通过索引，字典是通过键值对。</p>
+<p>创建数组（空）</p>
+<pre><code>$arr = array();
+</code></pre><h2 id="PHP有两种数组：索引数组、关联数组。"><a href="#PHP有两种数组：索引数组、关联数组。" class="headerlink" title="PHP有两种数组：索引数组、关联数组。"></a>PHP有两种数组：索引数组、关联数组。</h2><pre><code>索引和关联两个词都是针对数组的键而言的。
+</code></pre><h2 id="PHP索引数组–iOS中的数组"><a href="#PHP索引数组–iOS中的数组" class="headerlink" title="PHP索引数组–iOS中的数组"></a>PHP索引数组–iOS中的数组</h2><p>先介绍下索引数组，索引数组是指数组的键是整数的数组，并且键的整数顺序是从0开始，依次类推。</p>
+<h3 id="创建索引数组"><a href="#创建索引数组" class="headerlink" title="创建索引数组"></a>创建索引数组</h3><pre><code>$arrIndex = array(&quot;iCocos&quot;, &quot;iOS&quot;, &quot;苹果&quot;);
+</code></pre><p>注意数组的键是从0开始的。可以使用print_r($arr);语句输出数组键及对应的值。</p>
+<h3 id="赋值方式"><a href="#赋值方式" class="headerlink" title="赋值方式"></a>赋值方式</h3><pre><code>第一种：用数组变量的名字后面跟一个中括号的方式赋值，当然，索引数组中，中括号内的键一定是整数。比如，$arr[0]=&apos;iCocos&apos;;
+
+第二种：用array()创建一个空数组，使用=&gt;符号来分隔键和值，左侧表示键，右侧表示值。当然，索引数组中，键一定是整数。比如，array(&apos;0&apos;=&gt;&apos;iCocos&apos;);
+
+第三种：用array()创建一个空数组，直接在数组里用英文的单引号&apos;或者英文的双引号&quot;赋值，数组会默认建立从0开始的整数的键。比如array(&apos;iCocos&apos;);这个数组相当于array(&apos;0&apos;=&gt;&apos;iCocos&apos;);
+</code></pre><h3 id="读取内容"><a href="#读取内容" class="headerlink" title="读取内容"></a>读取内容</h3><p>用数组变量的名字后跟的中括号中的键，来访问数组中的值。</p>
+<pre><code>$arr = array(&apos;iCocos&apos;,&apos;iOS&apos;);
+$arr0 = $arr[&apos;0&apos;];
+print_r($arr0);//结果为iCocos
+</code></pre><h3 id="遍历数组（开发中最常用的操作）–-gt-for"><a href="#遍历数组（开发中最常用的操作）–-gt-for" class="headerlink" title="遍历数组（开发中最常用的操作）–&gt;for"></a>遍历数组（开发中最常用的操作）–&gt;for</h3><pre><code>$arr=array(&apos;iCocos&apos;,&apos;iOS&apos;,&apos;苹果&apos;);
+for($i=0; $i&lt;3; $i++){
+echo &apos;&lt;br&gt;数组第&apos;.$i.&apos;值是：&apos;.$arr[$i];
+}
+</code></pre><h3 id="遍历数组（开发中最常用的操作）–-gt-foreach"><a href="#遍历数组（开发中最常用的操作）–-gt-foreach" class="headerlink" title="遍历数组（开发中最常用的操作）–&gt;foreach"></a>遍历数组（开发中最常用的操作）–&gt;foreach</h3><pre><code>$arr=array(&apos;iCocos&apos;,&apos;iOS&apos;,&apos;苹果&apos;);
+foreach($arr as $k=&gt;$v){
+echo &apos;&lt;br&gt;第&apos;.$k.&apos;值是：&apos;.$v;
+}
+</code></pre><h2 id="PHP关联数组–iOS中的字典"><a href="#PHP关联数组–iOS中的字典" class="headerlink" title="PHP关联数组–iOS中的字典"></a>PHP关联数组–iOS中的字典</h2><p>关联数组是指数组的键是字符串的数组。</p>
+<h3 id="创建关联数组"><a href="#创建关联数组" class="headerlink" title="创建关联数组"></a>创建关联数组</h3><pre><code>$arr = array(
+&apos;apple&apos;=&gt;&quot;iCocos&quot;,
+&apos;banana&apos;=&gt;&quot;iOS&quot;,
+&apos;pineapple&apos;=&gt;&quot;苹果&quot;
+); 
+</code></pre><h3 id="赋值方式-1"><a href="#赋值方式-1" class="headerlink" title="赋值方式"></a>赋值方式</h3><pre><code>第一种：用数组变量的名字后面跟一个中括号的方式赋值，当然，关联数组中，中括号内的键一定是字符串。比如，$arr[&apos;apple&apos;]=&apos;iCocos&apos;;
+
+第二种：用array()创建一个空数组，使用=&gt;符号来分隔键和值，左侧表示键，右侧表示值。当然，关联数组中，键一定是字符串。比如，array(&apos;apple&apos;=&gt;&apos;iCocos&apos;);
+</code></pre><h3 id="读取内容-1"><a href="#读取内容-1" class="headerlink" title="读取内容"></a>读取内容</h3><p>用数组变量的名字后跟中括号+键的方式来访问数组中的值，键使用单引号或者双引号括起来。</p>
+<pre><code>$arr = array(&apos;apple&apos;=&gt;&quot;iCocos&quot;,&apos;banana&apos;=&gt;&quot;iOS&quot;,&apos;pineapple&apos;=&gt;&quot;苹果&quot;); 
+$arr0 = $arr[&apos;banana&apos;];
+print_r($arr0);
+</code></pre><h3 id="遍历数组（开发中最常用的操作）–-gt-foreach-1"><a href="#遍历数组（开发中最常用的操作）–-gt-foreach-1" class="headerlink" title="遍历数组（开发中最常用的操作）–&gt;foreach"></a>遍历数组（开发中最常用的操作）–&gt;foreach</h3><pre><code>$arr=array(&apos;apple&apos;=&gt;&quot;iCocos&quot;,&apos;banana&apos;=&gt;&quot;iOS&quot;,&apos;pineapple&apos;=&gt;&quot;苹果&quot;);
+foreach($arr as $k=&gt;$v){
+echo &apos;&lt;br&gt;水果的英文键名：&apos;.$k.&apos;，对应的值是：&apos;.$v;
+}
+</code></pre><h2 id="常用函数"><a href="#常用函数" class="headerlink" title="常用函数"></a>常用函数</h2><pre><code>array_filter(*array*,*callbackfunction*); 
+array_intersect_uassoc(*array1*,*array2*,*array3*...,*myfunction*) 
+array_intersect_ukey(*array1*,*array2*,*array3*...,*myfunction*) 
+array_reduce(*array*,*myfunction*,*initial*) 
+array_walk(*array*,*myfunction*,*userdata*...) 
+……
+</code></pre><h2 id="其他常用技巧总结"><a href="#其他常用技巧总结" class="headerlink" title="其他常用技巧总结"></a>其他常用技巧总结</h2><h3 id="多维数组"><a href="#多维数组" class="headerlink" title="多维数组"></a>多维数组</h3><pre><code>array(array(),array()) 二维数组
+</code></pre><h3 id="数组长度"><a href="#数组长度" class="headerlink" title="数组长度"></a>数组长度</h3><pre><code>$arr = array(&quot;百度&quot;,&quot;阿里&quot;,&quot;腾讯&quot;); 
+echo count($arr); 
+</code></pre><h2 id="增加删除数组的元素"><a href="#增加删除数组的元素" class="headerlink" title="增加删除数组的元素"></a>增加删除数组的元素</h2><h3 id="在数组元素的尾部增加"><a href="#在数组元素的尾部增加" class="headerlink" title="在数组元素的尾部增加"></a>在数组元素的尾部增加</h3><p>array_push(array,value1,value2…) 函数向第一个参数的数组尾部添加一个或多个元素（入栈），然后返回新数组的长度。<br>该函数等于多次调用 $array[] = $value。</p>
+<pre><code>&lt;?php
+$arr = array(&quot;百度&quot;,&quot;阿里&quot;,&quot;腾讯&quot;);
+array_push($arr,&quot;知乎&quot;,&quot;微博&quot;);
+echo &quot;&lt;pre&gt;&quot;; //换行显示
+print_r($arr);
+打印结果显示：
+Array
+(
+[0] =&gt; 百度
+[1] =&gt; 阿里
+[2] =&gt; 腾讯
+[3] =&gt; 知乎
+[4] =&gt; 微博
+)
+</code></pre><h3 id="在数组元素的开始增加"><a href="#在数组元素的开始增加" class="headerlink" title="在数组元素的开始增加"></a>在数组元素的开始增加</h3><p>array_unshift(array,value1,value2,value3…) 函数用于向数组插入新元素。新数组的值将被插入到数组的开头。</p>
+<pre><code>&lt;?php
+$arr = array(&quot;百度&quot;,&quot;阿里&quot;,&quot;腾讯&quot;);
+array_unshift($arr,&quot;知乎&quot;,&quot;微博&quot;);
+echo &quot;&lt;pre&gt;&quot;; //换行显示
+print_r($arr);
+打印结果显示：
+Array
+(
+[0] =&gt; 知乎
+[1] =&gt; 微博
+[2] =&gt; 百度
+[3] =&gt; 阿里
+[4] =&gt; 腾讯
+)
+</code></pre><h3 id="在数组元素的尾部删除"><a href="#在数组元素的尾部删除" class="headerlink" title="在数组元素的尾部删除"></a>在数组元素的尾部删除</h3><p>array_pop(array) 函数删除数组中的最后一个元素。</p>
+<pre><code>&lt;?php
+$arr = array(&quot;百度&quot;,&quot;阿里&quot;,&quot;腾讯&quot;);
+array_pop($arr);
+echo &quot;&lt;pre&gt;&quot;; //换行显示
+print_r($arr);
+打印结果显示：
+Array
+(
+[0] =&gt; 百度
+[1] =&gt; 阿里
+)
+</code></pre><h3 id="在数组元素的开始删除"><a href="#在数组元素的开始删除" class="headerlink" title="在数组元素的开始删除"></a>在数组元素的开始删除</h3><p>array_shift(array) 函数删除数组中第一个元素 并可以返回被删除元素的值。</p>
+<pre><code>&lt;?php
+$arr = array(&quot;百度&quot;,&quot;阿里&quot;,&quot;腾讯&quot;);
+array_shift($arr);
+echo &quot;&lt;pre&gt;&quot;; //换行显示
+print_r($arr);
+打印结果显示：
+Array
+(
+[0] =&gt; 阿里
+[1] =&gt; 腾讯
+)
+</code></pre><h3 id="移除数组中重复的值"><a href="#移除数组中重复的值" class="headerlink" title="移除数组中重复的值"></a>移除数组中重复的值</h3><p>array_unique(array) 函数移除数组中的重复的值，并返回结果数组。</p>
+<pre><code>&lt;?php
+$arr = array(&quot;百度&quot;,&quot;阿里&quot;,&quot;腾讯&quot;,&quot;百度&quot;,&quot;微博&quot;);
+$data = array_unique($arr);
+echo &quot;&lt;pre&gt;&quot;;
+print_r($data);
+打印结果显示：
+Array
+(
+[0] =&gt; 百度
+[1] =&gt; 阿里
+[2] =&gt; 腾讯
+[4] =&gt; 微博
+)
+</code></pre><h3 id="数组合并、拆分、比较"><a href="#数组合并、拆分、比较" class="headerlink" title="数组合并、拆分、比较"></a>数组合并、拆分、比较</h3><p>array_merge()函数将数组合并到一起，返回一个联合的数组。所得到的数组以第一个输入数组参数开始，按后面数组参数出现的顺序依次追加。</p>
+<pre><code>&lt;?php
+$arr1 = array(&quot;百度&quot;,&quot;阿里&quot;,&quot;腾讯&quot;);
+$arr2 = array(&quot;知乎&quot;,&quot;微博&quot;);
+$data = array_merge($arr1,$arr2);
+echo &quot;&lt;pre&gt;&quot;;
+print_r($data);
+打印结果显示：
+Array
+(
+[0] =&gt; 百度
+[1] =&gt; 阿里
+[2] =&gt; 腾讯
+[3] =&gt; 知乎
+[4] =&gt; 微博
+)
+</code></pre><h3 id="递归追加数组"><a href="#递归追加数组" class="headerlink" title="递归追加数组"></a>递归追加数组</h3><p>array_merge_recursive()函数与array_merge()相同，可以将两个或多个数组合并到一起，形成一个联合的数组。两者之间的区别在于，当某个输入数组中的某个键已经存在于结果数组中时该函数会采取不同的处理方法。array_merge()会覆盖前面存在的键/值对，将其替换为当前输入数组中的键/值对，而array_merge_recursive()将两个值合并在一起，形成一个新的数组并以原有的键作为数组名。其形式为：</p>
+<pre><code>$arr= array(&apos;one&apos;=&gt;&apos;C&apos;, &apos;one&apos;=&gt;&apos;B&apos;); 
+$arr1= array(&apos;three&apos;=&gt;&apos;1&apos;, &apos;one&apos;=&gt;&apos;2&apos;); 
+$arr2= array_merge_recursive($arr, $arr1); 
+echo &quot;&lt;pre&gt;&quot;;
+print_r($arr2); 
+打印结果显示：
+Array
+(
+[one] =&gt; Array
+(
+[0] =&gt; B
+[1] =&gt; 2
+)
+
+[three] =&gt; 1
+)
+</code></pre><h3 id="合并两个数组"><a href="#合并两个数组" class="headerlink" title="合并两个数组"></a>合并两个数组</h3><p>array_combine()函数会生成一个新数组，这个数组由一组提交的键和对应的值组成，其形式为：</p>
+<pre><code>$arr= array(&apos;A&apos;, &apos;B&apos;); 
+$arr1= array(&apos;1&apos;, &apos;2&apos;); 
+$arr2= array_combine($arr, $arr1);
+echo &quot;&lt;pre&gt;&quot;;
+print_r($arr2); 
+打印结果显示：
+Array
+(
+[A] =&gt; 1
+[B] =&gt; 2
+)
+</code></pre><h3 id="求数组的交集"><a href="#求数组的交集" class="headerlink" title="求数组的交集"></a>求数组的交集</h3><p>array_intersect()函数返回一个保留了键的数组，这个数组只由第一个数组中出现的且在其他每个输入数组中都出现的值组成。其形式如下：</p>
+<pre><code>$arr= array(&apos;A&apos;, &apos;B&apos;, &apos;C&apos;, &apos;D&apos;); 
+$arr1= array(&apos;A&apos;, &apos;B&apos;, &apos;E&apos;); 
+$arr2= array(&apos;A&apos;, &apos;F&apos;, &apos;D&apos;); 
+$arr3= array_intersect($arr, $arr1, $arr2); 
+echo &quot;&lt;pre&gt;&quot;;
+print_r($arr3); 
+打印结果显示：
+Array
+(
+[0] =&gt; A
+)
+</code></pre><p>注意：只有在两个元素有相同的数据类型时，array_intersect()才会认为它们相等。</p>
+<h3 id="求关联数组的交集"><a href="#求关联数组的交集" class="headerlink" title="求关联数组的交集"></a>求关联数组的交集</h3><p>array_intersect_assoc()与array_intersect()基本相同，只不过它在比较中还考虑了数组的键。因此，只有在第一个数组中出现，且在所有其他输入数组中也出现的键/值对才被返回到结果数组中。其形式如下：</p>
+<pre><code>$arr= array(&apos;a&apos;=&gt;&apos;A&apos;, &apos;b&apos;=&gt;&apos;B&apos;, &apos;c&apos;=&gt;&apos;C&apos;, &apos;d&apos;=&gt;&apos;D&apos;); 
+$arr1= array(&apos;a&apos;=&gt;&apos;A&apos;, &apos;c&apos;=&gt;&apos;B&apos;, &apos;E&apos;); 
+$arr2= array(&apos;a&apos;=&gt;&apos;A&apos;, &apos;b&apos;=&gt;&apos;F&apos;, &apos;d&apos;=&gt;&apos;B&apos;); 
+$arr3= array_intersect_assoc($arr, $arr1, $arr2); 
+echo &quot;&lt;pre&gt;&quot;;
+print_r($arr3); 
+打印结果显示：
+Array
+(
+[a] =&gt; A
+)
+</code></pre><h3 id="求关联数组的差集"><a href="#求关联数组的差集" class="headerlink" title="求关联数组的差集"></a>求关联数组的差集</h3><p>函数array_diff_assoc()与array_diff()基本相同，只是它在比较时还考虑了数组的键，因此，只在第一个数组中出现而不在其他输入数组中出现的键/值对才会被返回到结果数组中。其形式如下：</p>
+<pre><code>$arr= array(&apos;a&apos;=&gt;&apos;A&apos;, &apos;b&apos;=&gt;&apos;B&apos;, &apos;c&apos;=&gt;&apos;C&apos;, &apos;d&apos;=&gt;&apos;D&apos;); 
+$arr1= array(&apos;a&apos;=&gt;&apos;A&apos;, &apos;b&apos;=&gt;&apos;B&apos;, &apos;e&apos;=&gt;&apos;E&apos;); 
+$arr3= array_diff_assoc($arr, $arr1); 
+echo &quot;&lt;pre&gt;&quot;;
+print_r($arr3); 
+打印结果显示：
+Array
+(
+[c] =&gt; C
+[d] =&gt; D
+)
+</code></pre><h3 id="其他有用的数组函数"><a href="#其他有用的数组函数" class="headerlink" title="其他有用的数组函数"></a>其他有用的数组函数</h3><p>返回一组随机的键 array_rand()函数将返回数组中的一个或多个键。其形式为：</p>
+<pre><code>$arr= array(&apos;a&apos;=&gt;&apos;A&apos;, &apos;b&apos;=&gt;&apos;B&apos;, &apos;c&apos;=&gt;&apos;C&apos;, &apos;d&apos;=&gt;&apos;D&apos;); 
+$arr1= array_rand($arr, 2); 
+echo &quot;&lt;pre&gt;&quot;;
+print_r($arr1);
+打印结果显示：
+Array
+(
+[0] =&gt; c
+[1] =&gt; d
+) //每次刷新显示的结果都不一样
+</code></pre><h3 id="对数组中的值求和"><a href="#对数组中的值求和" class="headerlink" title="对数组中的值求和"></a>对数组中的值求和</h3><p>array_sum()函数将数组内的所有值加在一起，返回最终的和，其形式如下：</p>
+<pre><code>$arr= array(&apos;A&apos;, 32, 12, &apos;B&apos;); 
+$count= array_sum($arr); 
+echo &quot;&lt;pre&gt;&quot;;
+print_r($count); 
+打印结果显示：
+44
+</code></pre><p>如果数组中包含其他数据类型(例如字符串)，这些值将被忽略。</p>
+<h3 id="划分数组"><a href="#划分数组" class="headerlink" title="划分数组"></a>划分数组</h3><p>array_chunk()函数将数组分解为一个多维数组，这个多维数组由多个包含size个元素的数组所组成。其形式如下：</p>
+<pre><code>$arr= array(&apos;A&apos;, &apos;B&apos;, &apos;C&apos;, &apos;D&apos;); 
+$arr1= array_chunk($arr, 2); 
+echo &quot;&lt;pre&gt;&quot;;
+print_r($arr1); 
+打印结果显示：
+Array
+(
+[0] =&gt; Array
+(
+[0] =&gt; A
+[1] =&gt; B
+)
+
+[1] =&gt; Array
+(
+[0] =&gt; C
+[1] =&gt; D
+)
+
+)
+</code></pre>
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="http://pd1l3bbt7.bkt.clouddn.com/img/wechatimg.jpg" alt="曹理鹏@iCocos 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="http://pd1l3bbt7.bkt.clouddn.com/img/alipayimg.jpg" alt="曹理鹏@iCocos 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>曹理鹏@iCocos</li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://icocos.github.io/2016/05/17/PHP第七篇——数组篇/" title="PHP第七篇——数组篇">https://icocos.github.io/2016/05/17/PHP第七篇——数组篇/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明出处！</li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/PHP/" rel="tag"># PHP</a>
+          
+            <a href="/tags/实战/" rel="tag"># 实战</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/05/15/PHP第六篇——PHP底层机制/" rel="next" title="PHP第六篇——PHP底层机制">
+                <i class="fa fa-chevron-left"></i> PHP第六篇——PHP底层机制
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/05/19/PHP第八篇——函数篇/" rel="prev" title="PHP第八篇——函数篇">
+                PHP第八篇——函数篇 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="SOHUCS"></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="http://pd1l3bbt7.bkt.clouddn.com/icocos_user_icon.JPG"
+                alt="曹理鹏@iCocos" />
+            
+              <p class="site-author-name" itemprop="name">曹理鹏@iCocos</p>
+              <p class="site-description motion-element" itemprop="description">纯码迷、爱学习、爱交友、喜欢接触新鲜事物、迎接新的挑战，更爱游离于错综复杂的编码与逻辑中！</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives">
+                
+                    <span class="site-state-item-count">182</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">11</span>
+                    <span class="site-state-item-name">分类</span>
+                  
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">111</span>
+                    <span class="site-state-item-name">标签</span>
+                  
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/al1020119" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:al1020119@163.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://stackoverflow.com/users/10186720" target="_blank" title="StackOverflow"><i class="fa fa-fw fa-stack-overflow"></i>StackOverflow</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.icocos.cn/" title="梦工厂" target="_blank">梦工厂</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://al1020119.github.io/" title="iOS梦工厂" target="_blank">iOS梦工厂</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#数组篇"><span class="nav-number">1.</span> <span class="nav-text">数组篇</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#PHP数组定义"><span class="nav-number">1.1.</span> <span class="nav-text">PHP数组定义</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PHP有两种数组：索引数组、关联数组。"><span class="nav-number">2.</span> <span class="nav-text">PHP有两种数组：索引数组、关联数组。</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PHP索引数组–iOS中的数组"><span class="nav-number">3.</span> <span class="nav-text">PHP索引数组–iOS中的数组</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#创建索引数组"><span class="nav-number">3.1.</span> <span class="nav-text">创建索引数组</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#赋值方式"><span class="nav-number">3.2.</span> <span class="nav-text">赋值方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#读取内容"><span class="nav-number">3.3.</span> <span class="nav-text">读取内容</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#遍历数组（开发中最常用的操作）–-gt-for"><span class="nav-number">3.4.</span> <span class="nav-text">遍历数组（开发中最常用的操作）–&gt;for</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#遍历数组（开发中最常用的操作）–-gt-foreach"><span class="nav-number">3.5.</span> <span class="nav-text">遍历数组（开发中最常用的操作）–&gt;foreach</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PHP关联数组–iOS中的字典"><span class="nav-number">4.</span> <span class="nav-text">PHP关联数组–iOS中的字典</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#创建关联数组"><span class="nav-number">4.1.</span> <span class="nav-text">创建关联数组</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#赋值方式-1"><span class="nav-number">4.2.</span> <span class="nav-text">赋值方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#读取内容-1"><span class="nav-number">4.3.</span> <span class="nav-text">读取内容</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#遍历数组（开发中最常用的操作）–-gt-foreach-1"><span class="nav-number">4.4.</span> <span class="nav-text">遍历数组（开发中最常用的操作）–&gt;foreach</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#常用函数"><span class="nav-number">5.</span> <span class="nav-text">常用函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#其他常用技巧总结"><span class="nav-number">6.</span> <span class="nav-text">其他常用技巧总结</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#多维数组"><span class="nav-number">6.1.</span> <span class="nav-text">多维数组</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数组长度"><span class="nav-number">6.2.</span> <span class="nav-text">数组长度</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#增加删除数组的元素"><span class="nav-number">7.</span> <span class="nav-text">增加删除数组的元素</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#在数组元素的尾部增加"><span class="nav-number">7.1.</span> <span class="nav-text">在数组元素的尾部增加</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#在数组元素的开始增加"><span class="nav-number">7.2.</span> <span class="nav-text">在数组元素的开始增加</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#在数组元素的尾部删除"><span class="nav-number">7.3.</span> <span class="nav-text">在数组元素的尾部删除</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#在数组元素的开始删除"><span class="nav-number">7.4.</span> <span class="nav-text">在数组元素的开始删除</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#移除数组中重复的值"><span class="nav-number">7.5.</span> <span class="nav-text">移除数组中重复的值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数组合并、拆分、比较"><span class="nav-number">7.6.</span> <span class="nav-text">数组合并、拆分、比较</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#递归追加数组"><span class="nav-number">7.7.</span> <span class="nav-text">递归追加数组</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#合并两个数组"><span class="nav-number">7.8.</span> <span class="nav-text">合并两个数组</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#求数组的交集"><span class="nav-number">7.9.</span> <span class="nav-text">求数组的交集</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#求关联数组的交集"><span class="nav-number">7.10.</span> <span class="nav-text">求关联数组的交集</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#求关联数组的差集"><span class="nav-number">7.11.</span> <span class="nav-text">求关联数组的差集</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#其他有用的数组函数"><span class="nav-number">7.12.</span> <span class="nav-text">其他有用的数组函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#对数组中的值求和"><span class="nav-number">7.13.</span> <span class="nav-text">对数组中的值求和</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#划分数组"><span class="nav-number">7.14.</span> <span class="nav-text">划分数组</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2017 – <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">曹理鹏@iCocos</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">站点总字数：</span>
+    
+    <span title="站点总字数">1.1m</span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    
+    <span title="站点阅读时长">16:05</span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv" title="总访客量">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="site-pv" title="总访问量">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/reading_progress/reading_progress.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.3.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.3.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.3.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.3.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+  
+    <script type="text/javascript">
+    (function(){
+      var appid = 'cytKHBEtW';
+      var conf = '43989b8e63b25c4e9f1fde821c996a39';
+      var width = window.innerWidth || document.documentElement.clientWidth;
+      if (width < 960) {
+      window.document.write('<script id="changyan_mobile_js" charset="utf-8" type="text/javascript" src="https://changyan.sohu.com/upload/mobile/wap-js/changyan_mobile.js?client_id=' + appid + '&conf=' + conf + '"><\/script>'); } else { var loadJs=function(d,a){var c=document.getElementsByTagName("head")[0]||document.head||document.documentElement;var b=document.createElement("script");b.setAttribute("type","text/javascript");b.setAttribute("charset","UTF-8");b.setAttribute("src",d);if(typeof a==="function"){if(window.attachEvent){b.onreadystatechange=function(){var e=b.readyState;if(e==="loaded"||e==="complete"){b.onreadystatechange=null;a()}}}else{b.onload=a}}c.appendChild(b)};loadJs("https://changyan.sohu.com/upload/changyan.js",function(){
+        window.changyan.api.config({appid:appid,conf:conf})});
+      }
+    })();
+    </script>
+    <script type="text/javascript" src="https://assets.changyan.sohu.com/upload/plugins/plugins.count.js"></script>
+  
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("Tc7k1mbaieCUSgmM8LPk1IBO-gzGzoHsz", "sAb7L2vwENJTteRrvFKQacUU");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            
+              var $element = $(document.getElementById(url));
+              $element.find('.leancloud-visitors-count').text(counter.get('time'));
+            
+            counter.save(null, {
+              success: function(counter) {
+                
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            
+              var $element = $(document.getElementById(url));
+              $element.find('.leancloud-visitors-count').text('Counter not initialized! See more at console err msg.');
+              console.error('ATTENTION! LeanCloud counter has security bug, see here how to solve it: https://github.com/theme-next/hexo-leancloud-counter-security. \n But you also can use LeanCloud without security, by set \'security\' option to \'false\'.');
+            
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #333;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #eee;
+      background-image: linear-gradient(#fcfcfc, #eee);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('复制').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+          if(result)$(this).text('复制成功')
+          else $(this).text('复制失败')
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('复制')
+        }, 300)
+      }).append(e)
+    })
+  </script>
+
+
+  
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("Tc7k1mbaieCUSgmM8LPk1IBO-gzGzoHsz", "sAb7L2vwENJTteRrvFKQacUU");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+  
+</body>
+</html>

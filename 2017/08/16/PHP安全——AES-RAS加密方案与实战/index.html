@@ -1,0 +1,2103 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.3.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="http://pd1l3bbt7.bkt.clouddn.com/img/favicon.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="http://pd1l3bbt7.bkt.clouddn.com/img/favicon.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="http://pd1l3bbt7.bkt.clouddn.com/img/favicon.png?v=6.3.0">
+
+
+  <link rel="mask-icon" href="http://pd1l3bbt7.bkt.clouddn.com/img/favicon.png?v=6.3.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="具体过程是先由接收方创建RSA密钥对，接收方通过Internet发送RSA公钥到发送方，同时保存RSA私钥。而发送方创建AES密钥，并用该 AES密钥加密待传送的明文数据，同时用接受的RSA公钥加密AES密钥，最后把用RSA公钥加密后的AES密钥同密文一起通过Internet传输发送 到接收方。当接收方收到这个被加密的AES密钥和密文后，首先调用接收方保存的RSA私钥，并用该私钥解密加密的AES密">
+<meta name="keywords" content="PHP,实战">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PHP安全——AES&amp;RAS加密方案与实战">
+<meta property="og:url" content="https://icocos.github.io/2017/08/16/PHP安全——AES-RAS加密方案与实战/index.html">
+<meta property="og:site_name" content="iCocos">
+<meta property="og:description" content="具体过程是先由接收方创建RSA密钥对，接收方通过Internet发送RSA公钥到发送方，同时保存RSA私钥。而发送方创建AES密钥，并用该 AES密钥加密待传送的明文数据，同时用接受的RSA公钥加密AES密钥，最后把用RSA公钥加密后的AES密钥同密文一起通过Internet传输发送 到接收方。当接收方收到这个被加密的AES密钥和密文后，首先调用接收方保存的RSA私钥，并用该私钥解密加密的AES密">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-05-22T09:17:24.230Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="PHP安全——AES&amp;RAS加密方案与实战">
+<meta name="twitter:description" content="具体过程是先由接收方创建RSA密钥对，接收方通过Internet发送RSA公钥到发送方，同时保存RSA私钥。而发送方创建AES密钥，并用该 AES密钥加密待传送的明文数据，同时用接受的RSA公钥加密AES密钥，最后把用RSA公钥加密后的AES密钥同密文一起通过Internet传输发送 到接收方。当接收方收到这个被加密的AES密钥和密文后，首先调用接收方保存的RSA私钥，并用该私钥解密加密的AES密">
+
+
+
+  <link rel="alternate" href="/atom.xml" title="iCocos" type="application/atom+xml" />
+
+
+
+
+  <link rel="canonical" href="https://icocos.github.io/2017/08/16/PHP安全——AES-RAS加密方案与实战/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>PHP安全——AES&RAS加密方案与实战 | iCocos</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">iCocos</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">www.icocos.cn</p>
+      
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-首页">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-归档">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-关于">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-作品">
+    <a href="/works/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-calendar"></i> <br />作品</a>
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+    <div class="reading-progress-bar"></div>
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://icocos.github.io/2017/08/16/PHP安全——AES-RAS加密方案与实战/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="曹理鹏@iCocos">
+      <meta itemprop="description" content="纯码迷、爱学习、爱交友、喜欢接触新鲜事物、迎接新的挑战，更爱游离于错综复杂的编码与逻辑中！">
+      <meta itemprop="image" content="http://pd1l3bbt7.bkt.clouddn.com/icocos_user_icon.JPG">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="iCocos">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">PHP安全——AES&RAS加密方案与实战
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2017-08-16 18:38:36" itemprop="dateCreated datePublished" datetime="2017-08-16T18:38:36+08:00">2017-08-16</time>
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/PHP/" itemprop="url" rel="index"><span itemprop="name">PHP</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+              <span class="post-meta-divider">|</span>
+              <span class="post-meta-item-icon">
+                <i class="fa fa-comment-o"></i>
+              </span>
+              
+                <a href="/2017/08/16/PHP安全——AES-RAS加密方案与实战/#SOHUCS" itemprop="discussionUrl">
+                  <span class="post-meta-item-text">评论数：</span> <span id="changyan_count_unit" class="post-comments-count hc-comment-count" data-xid="2017/08/16/PHP安全——AES-RAS加密方案与实战/" itemprop="commentsCount"></span>
+                </a>
+              
+            
+          
+
+          
+          
+             <span id="/2017/08/16/PHP安全——AES-RAS加密方案与实战/" class="leancloud_visitors" data-flag-title="PHP安全——AES&RAS加密方案与实战">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数：</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon"
+            >
+            <i class="fa fa-eye"></i>
+             阅读次数： 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+            <div class="post-symbolscount">
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">本文字数：</span>
+                
+                <span title="本文字数">9.3k</span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">8 分钟</span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>具体过程是先由接收方创建RSA密钥对，接收方通过Internet发送RSA公钥到发送方，同时保存RSA私钥。而发送方创建AES密钥，并用该 AES密钥加密待传送的明文数据，同时用接受的RSA公钥加密AES密钥，最后把用RSA公钥加密后的AES密钥同密文一起通过Internet传输发送 到接收方。当接收方收到这个被加密的AES密钥和密文后，首先调用接收方保存的RSA私钥，并用该私钥解密加密的AES密钥，得到AES密钥。最后用该 AES密钥解密密文得到明文。</p>
+<blockquote>
+<p>服务器端进行请求响应时将上面流程反过来即可,具体实现流程可做优化，例如：client将encryptkey传输给服务器端的方式可以通过HttpHeader来实现。</p>
+</blockquote>
+<a id="more"></a>
+<h3 id="RSA"><a href="#RSA" class="headerlink" title="RSA"></a>RSA</h3><p>非对称加密，公钥加密，私钥解密，反之亦然。由于需要大数的乘幂求模等算法，运行速度慢，不易于硬件实现。</p>
+<blockquote>
+<p>通常私钥长度有512bit，1024bit，2048bit，4096bit，长度越长，越安全，但是生成密钥越慢，加解密也越耗时。</p>
+</blockquote>
+<p>既然是加密，那肯定是不希望别人知道我的消息，所以只有我才能解密，所以可得出公钥负责加密，私钥负责解密；</p>
+<ul>
+<li>同理，既然是签名，那肯定是不希望有人冒充我发消息，只有我才能发布这个签名，所以可得出私钥负责签名，公钥负责验证。</li>
+</ul>
+<h5 id="1-加密SecretKey"><a href="#1-加密SecretKey" class="headerlink" title="1. 加密SecretKey"></a>1. 加密SecretKey</h5><p>使用RSA 公钥(publicKey)加密AES SecretKey，将得到的加密数据经过Base64编码得到一个UTF-8字符串。将此结果字符串作为HTTP POST方法请求头的requestId字段值</p>
+<h5 id="2-解密SecretKey"><a href="#2-解密SecretKey" class="headerlink" title="2. 解密SecretKey"></a>2. 解密SecretKey</h5><p>使用RSA 私钥(privateKey)加密请求头中的requestIdBase64字符串，得到AES SecretKey的原始字节数据，并重新构建成SecretKey。<br>请求响应流程</p>
+<h5 id="1-发起请求"><a href="#1-发起请求" class="headerlink" title="1. 发起请求"></a>1. 发起请求</h5><p>客户端准备请求头(appId、requestId)、请求体信息(requestBody)，通过HTTP POST方法向服务端发起请求。</p>
+<h5 id="2-服务端验证"><a href="#2-服务端验证" class="headerlink" title="2. 服务端验证"></a>2. 服务端验证</h5><p>服务端接收到客户端请求，首先获取appId，判断appId是否有效；如果appId无效或requestId为空，立即响应未授权信息(HttpStatus:401)。<br>服务端对requestId做Base64解码，通过appId对应的RSA 私钥(privateKey)解密Base64解密结果，得到AES SecretKey。<br>服务端读取请求体重的Base64字符串，并进行Base64解码，通过AES SecretKey解密<br>Base64解密结果，得到原始请求的JSON的UTF-8字符串。<br>在解密过程中因为requestId的不合法情况，服务端立即响应拒绝请求信息(HttpStatus:403)。</p>
+<h5 id="3-服务端响应"><a href="#3-服务端响应" class="headerlink" title="3. 服务端响应"></a>3. 服务端响应</h5><p>服务端成功处理业务后，将响应结果转换成JSON的UTF-8字符串，通过AES SecretKey加密得到Base64字符串，将此字符串作为请求响应结果。</p>
+<h5 id="4-响应客户端"><a href="#4-响应客户端" class="headerlink" title="4. 响应客户端"></a>4. 响应客户端</h5><p>客户端接收到服务端成功响应(HttpStatus:200)，获取响应结果(加密后的Base64字符串)。经过Base64解码，通过AES SecretKey解密，将解密后的数据转换为UTF-8格式的字符串，得到服务端响应的原始JSON字符串。</p>
+<!--more-->
+<h3 id="AES"><a href="#AES" class="headerlink" title="AES"></a>AES</h3><p>对称加密，密钥最长只有256个bit，执行速度快，易于硬件实现。由于是对称加密，密钥需要在传输前通讯双方获知。</p>
+<p>基于以上特点，通常使用RSA来首先传输AES的密钥给对方，然后再使用AES来进行加密通讯。</p>
+<h5 id="1-加密请求信息"><a href="#1-加密请求信息" class="headerlink" title="1. 加密请求信息"></a>1. 加密请求信息</h5><p>为每个请求生成一个独立的AES SecretKey，使用AES算法，通过SecretKey加密请求数据的JSON字符串，将得到的加密数据经过Base64编码得到一个UTF-8字符串。将此结果字符串作为HTTP POST方法的请求主体(RequestBody)。</p>
+<h5 id="2-解密响应结果"><a href="#2-解密响应结果" class="headerlink" title="2. 解密响应结果"></a>2. 解密响应结果</h5><p>使用AES SecretKey解密服务端成功响应的Base64字符串，解密后得到服务端响应的JSON字符串。</p>
+<h5 id="请求流程："><a href="#请求流程：" class="headerlink" title="请求流程："></a>请求流程：</h5><ol>
+<li>服务器端(server)和客户端(client)分别生成自己的密钥对</li>
+<li>server和client分别交换自己的公钥</li>
+<li>client生成AES密钥(aesKey)</li>
+<li>client使用自己的RSA私钥(privateKey)对请求明文数据(params)进行数字签名</li>
+<li>将签名加入到请求参数中，然后转换为json格式</li>
+<li>client使用aesKey对json数据进行加密得到密文(data)</li>
+<li>client使用sever的RSA公钥对aesKey进行加密(encryptkey)</li>
+<li>分别将data和encryptkey作为参数传输给服务器端</li>
+</ol>
+<h5 id="AES-1"><a href="#AES-1" class="headerlink" title="AES:"></a>AES:</h5><pre><code>&lt;?php
+header(&apos;Content-Type: text/plain;charset=utf-8&apos;);
+$data = &apos;phpbest&apos;;
+$key = &apos;oScGU3fj8m/tDCyvsbEhwI91M1FcwvQqWuFpPoDHlFk=&apos;; //echo base64_encode(openssl_random_pseudo_bytes(32));
+$iv = &apos;w2wJCnctEG09danPPI7SxQ==&apos;; //echo base64_encode(openssl_random_pseudo_bytes(16));
+echo &apos;内容: &apos;.$data.&quot;\n&quot;;
+$encrypted = openssl_encrypt($data, &apos;aes-256-cbc&apos;, base64_decode($key), OPENSSL_RAW_DATA, base64_decode($iv));
+echo &apos;加密: &apos;.base64_encode($encrypted).&quot;\n&quot;;
+$encrypted = base64_decode(&apos;To3QFfvGJNm84KbKG1PLzA==&apos;);
+$decrypted = openssl_decrypt($encrypted, &apos;aes-256-cbc&apos;, base64_decode($key), OPENSSL_RAW_DATA, base64_decode($iv));
+echo &apos;解密: &apos;.$decrypted.&quot;\n&quot;;
+?&gt;
+</code></pre><p>用openssl生成rsa密钥对(私钥/公钥):</p>
+<pre><code>openssl genrsa -out rsa_private_key.pem 2048
+openssl rsa -pubout -in rsa_private_key.pem -out rsa_public_key.pem
+</code></pre><h5 id="RSA-1"><a href="#RSA-1" class="headerlink" title="RSA:"></a>RSA:</h5><pre><code>&lt;?php
+header(&apos;Content-Type: text/plain;charset=utf-8&apos;);
+$data = &apos;phpbest&apos;;
+echo &apos;原始内容: &apos;.$data.&quot;\n&quot;;
+openssl_public_encrypt($data, $encrypted, file_get_contents(dirname(__FILE__).&apos;/rsa_public_key.pem&apos;));
+echo &apos;公钥加密: &apos;.base64_encode($encrypted).&quot;\n&quot;;
+$encrypted = base64_decode(&apos;nMD7Yrx37U5AZRpXukingESUNYiSUHWThekrmRA0oD0=&apos;);
+openssl_private_decrypt($encrypted, $decrypted, file_get_contents(dirname(__FILE__).&apos;/rsa_private_key.pem&apos;));
+echo &apos;私钥解密: &apos;.$decrypted.&quot;\n&quot;;
+?&gt;
+</code></pre><h3 id="通用协议"><a href="#通用协议" class="headerlink" title="通用协议"></a>通用协议</h3><pre><code>通讯协议     HTTP
+请求方法     POST
+请求URL     http://host:port/sdk
+授权验证     appId: 请求头，客户端唯一标识(无需加密) requestId: 请求头，请求唯一标识(使用RSA加密)
+请求数据     请求数据在HTTP请求主体中传递(使用AES加密)
+加密算法     RSA 与 AES 结合 (AES/ECB/PKCS5Padding)
+字符编码     Base64、UTF-8
+</code></pre><h2 id="请求实例"><a href="#请求实例" class="headerlink" title="请求实例"></a>请求实例</h2><h5 id="证书信息"><a href="#证书信息" class="headerlink" title="证书信息"></a>证书信息</h5><pre><code>appId:
+test
+publicKey:
+MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDEBflTi1uIdpSLZdpTpwjtPu+xMKi6OlzdcZqzRaR0NnCNYI1NlkNi5sMIm7CRSVymvfifFpd1Y9GHnqLmW9r4dfiHzQpn75KDnsMODNNKuHiHTNt+JFOxwmn2eJ1bJJhUaPs/vSbe+2L113nZ/PK9PnwLlzv09prJICv4LjfMwwIDAQAB
+privateKey:
+MIICdwIBADANBgkqhkiG9w0BAQEFAASCAmEwggJdAgEAAoGBAMQF+VOLW4h2lItl2lOnCO0+77EwqLo6XN1xmrNFpHQ2cI1gjU2WQ2LmwwibsJFJXKa9+J8Wl3Vj0YeeouZb2vh1+IfNCmfvkoOeww4M00q4eIdM234kU7HCafZ4nVskmFRo+z+9Jt77YvXXedn88r0+fAuXO/T2mskgK/guN8zDAgMBAAECgYAWBqXRYWNTnh9q2nMB208BeYTtYA5VfqFYsJ81bang9Q0IlcTK5wuDXXKk0PmyGZAznD0Hgz5ZjnHIz2Z2g/PCrMVt+ygGNi/Ic7dOcEBUCU8lNgBQ9Rb0rDy4FAyei0moIBuX5mm5l7664B4ctKGaD/ZTnT1lpBiI1m6NkpT0AQJBAPfKc/ovQZcJs4CwizasEBHKFU20BOanF0Q2KXXQMEfUVeJwMmRIAfaNg5X/R+Y+p3vIRdbzCvlzzu9b8yGPyUMCQQDKhHlQNr1IVbAm+u+Xwq60ee8bMK/6yreVYEmTz7glNMnDLk1htq0iBinZJz+IpfJi4UIUy4aDQ7qttHyY3/aBAkEAvpXZ5FkKgsg0Z0vil5d5+KTNA+ntRxbHf3CFLReGuwinUjXnnFgCIoev6OPjgkU4fq2Igg6Hp1wakuHPPEYijwJAdxpH+nvnADac3Z/w7tDpTGz1yYjtxlIYe/pf61VbmE4eZvLBQblcw0jarcKeY/AsyChwY6h62JIppOUj7gixgQJBAIK4zPkJhiiFZYrjkHp8JXjprLbyTFL/FpwQTB4l53qXdLZXroymFZFhN3eWXMdcwGwC+vNFva1OC2bPDf2RA44=
+</code></pre><h5 id="发送请求"><a href="#发送请求" class="headerlink" title="发送请求"></a>发送请求</h5><p>AES SecretKey对应的Base64字符串：</p>
+<pre><code>cbkV1CTPzgC7K8u1485GNg==
+原始请求体JSON字符串：
+{“val1”:1,”val2”:5}
+</code></pre><h5 id="请求信息"><a href="#请求信息" class="headerlink" title="请求信息"></a>请求信息</h5><pre><code>{
+Headers: {
+appId: &quot;test&quot;,
+requestId: &quot;KUct+A/Ukkssnz4zBXI7TG+fMIJeLGsudtbz96s3BIk5fPAFxIkbGIwNmc5UcmUXk5lJ+6jk1gT7pPiYoE7ksafKFuxO8eZF7sWII/dPkxOIfgMOC2ZEp84IoGwEYJiWkUQsnHcMNiFixQySZo7bNGre5rzTD7mjLkjMRQLqetA=&quot;
+},
+requestBody: &quot;Bsa3B8/HtY2KGdQu6P5Itt8ZIAOzwtVA24VW21oIUaA=&quot;
+}
+</code></pre><h5 id="服务端响应"><a href="#服务端响应" class="headerlink" title="服务端响应"></a>服务端响应</h5><p>原始JSON字符串：</p>
+<pre><code>{“code”:200,”result”:6}
+客户端实际接收到的结果(Base64字符串)：
+h5nN/sAshI7iQ0ES5AMT+vRcEmysGBeV+WAyuw0B1lk=
+</code></pre><h5 id="PHP加密验证代码"><a href="#PHP加密验证代码" class="headerlink" title="PHP加密验证代码"></a>PHP加密验证代码</h5><pre><code>/**
+* 获取honor私钥资源id
+*/ 
+if(!function_exists(&apos;pi_key&apos;)){ 
+    function pi_key($from = &quot;honor&quot;) { 
+        return openssl_pkey_get_private(file_get_contents(
+        &apos;../cert/&apos;.$from.&apos;/cert_private.pem&apos;)); 
+    } 
+} 
+
+/**
+* 获取partner公钥资源id
+*/ 
+if(!function_exists(&apos;pu_key&apos;)){ 
+function pu_key($to = &quot;partner&quot;) { 
+return openssl_pkey_get_public(file_get_contents(
+    &apos;../cert/&apos;.$to.&apos;/cert_public.key&apos;)); 
+    } 
+} 
+
+/**
+* rsa私钥加密
+*/ 
+if(!function_exists(&apos;pi_encrypt&apos;)){ 
+
+/**
+* @param $data
+* @param string $use
+* @return string
+*/ 
+function pi_encrypt($data,$use = &apos;honor&apos;) { 
+    openssl_private_encrypt($data,$encrypt,pi_key($use)); 
+        return base64_encode($encrypt); 
+    } 
+} 
+
+/**
+* rsa私钥解密
+*/ 
+if(!function_exists(&apos;pi_decrypt&apos;)){ 
+/**
+* @param $data
+* @param string $use
+* @return mixed
+*/ 
+function pi_decrypt($data,$use = &apos;partner&apos;){ 
+    openssl_private_decrypt(base64_decode($data),$decrypt,pi_key($use)); 
+        return $decrypt; 
+    } 
+} 
+
+/**
+* rsa公钥解密
+*/ 
+if(!function_exists(&apos;pu_decrypt&apos;)){ 
+/**
+* @param $data
+* @param string $use
+* @return mixed
+*/ 
+function pu_decrypt($data,$use = &quot;honor&quot;) { 
+    openssl_public_decrypt(base64_decode($data),$decrypt,pu_key($use)); 
+        return $decrypt; 
+    } 
+} 
+
+/**
+* rsa 公钥加密
+*/ 
+if(!function_exists(&apos;pu_encrypt&apos;)){ 
+/**
+* @param $data  $data  要加密的数据
+* @param string $use    用哪个公钥
+* @return string
+*/ 
+function pu_encrypt($data,$use = &quot;partner&quot;) { 
+    openssl_public_encrypt($data,$encrypt,pu_key($use)); 
+        return base64_encode($encrypt); 
+    } 
+} 
+
+/**
+* aes 加密
+*/ 
+if(!function_exists(&apos;aes_encrypt&apos;)){ 
+    /**
+    * @param $key  私钥
+    * @param $input 要加密的数据
+    * @return string
+    */ 
+    function aes_encrypt($key,$input) { 
+            $data = is_array($input)? json_encode($input,JSON_UNESCAPED_UNICODE):$input; 
+            return openssl_encrypt($data,&apos;aes-128-ecb&apos;,$key); 
+    } 
+} 
+
+/**
+* aes 解密
+*/ 
+if(!function_exists(&apos;aes_decrypt&apos;)){ 
+    /**
+    * @param $key  私钥
+    * @param $data 要解密的数据
+    * @return bool|string
+    */ 
+    function aes_decrypt($key,$data) { 
+        return json_decode(openssl_decrypt($data,&apos;aes-128-ecb&apos;,$key),true)?:json_decode($data,true); 
+    } 
+} 
+
+/**
+* 连接半半
+*/ 
+if(!function_exists(&apos;connect_partner&apos;)){ 
+    /**
+    * @param $raw_data    post  过去的数据
+    * @param string   $action   接口名
+    * @return mixed
+    */ 
+    function connect_partner($raw_data,$action = &quot;addition&quot;) { 
+        //aes 随机私钥（16位重要） 
+        $aes_key = str_random(16); 
+        //rsa 公钥加密 
+        $requestId = pu_encrypt($aes_key); 
+        //aes 加密后数据 
+        $aes_data = aes_encrypt($aes_key,$raw_data); 
+        //请求地址 
+        $url = &quot;192.168.0.131:8088/sdk/&quot;.$action; 
+        //请求头 
+        $header = [&quot;appId:test&quot;,&quot;requestId:$requestId&quot;,&quot;Content-Type:application/json&quot;]; 
+        //curl 
+        $ch = curl_init($url); 
+        curl_setopt($ch, CURLOPT_HTTPHEADER,$header); 
+        curl_setopt($ch, CURLOPT_HEADER, 0); 
+        curl_setopt($ch, CURLOPT_TIMEOUT,1); 
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); 
+        curl_setopt($ch, CURLOPT_POST, 1); 
+        curl_setopt($ch, CURLOPT_POSTFIELDS,$aes_data);
+        $out_put = curl_exec($ch) or die(&apos;远程主机连接失败!&apos;); 
+        return aes_decrypt($aes_key,$out_put); 
+    } 
+}
+</code></pre><blockquote>
+<p>PS：关于加密解密感兴趣的朋友还可以参考本站在线工具：</p>
+</blockquote>
+<p>在线RSA加密/解密工具：</p>
+<ul>
+<li><a href="http://tools.jb51.net/password/rsa_encode" target="_blank" rel="noopener">http://tools.jb51.net/password/rsa_encode</a></li>
+</ul>
+<p>文字在线加密解密工具（包含AES、DES、RC4等）：</p>
+<ul>
+<li><a href="http://tools.jb51.net/password/txt_encode" target="_blank" rel="noopener">http://tools.jb51.net/password/txt_encode</a></li>
+</ul>
+<p>在线散列/哈希算法加密工具:</p>
+<ul>
+<li><a href="http://tools.jb51.net/password/hash_encrypt" target="_blank" rel="noopener">http://tools.jb51.net/password/hash_encrypt</a></li>
+</ul>
+<p>在线MD5/hash/SHA-1/SHA-2/SHA-256/SHA-512/SHA-3/RIPEMD-160加密工具：</p>
+<ul>
+<li><a href="http://tools.jb51.net/password/hash_md5_sha" target="_blank" rel="noopener">http://tools.jb51.net/password/hash_md5_sha</a></li>
+</ul>
+<p>在线sha1/sha224/sha256/sha384/sha512加密工具：</p>
+<ul>
+<li><a href="http://tools.jb51.net/password/sha_encode" target="_blank" rel="noopener">http://tools.jb51.net/password/sha_encode</a></li>
+</ul>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="http://pd1l3bbt7.bkt.clouddn.com/img/wechatimg.jpg" alt="曹理鹏@iCocos 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="http://pd1l3bbt7.bkt.clouddn.com/img/alipayimg.jpg" alt="曹理鹏@iCocos 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>曹理鹏@iCocos</li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://icocos.github.io/2017/08/16/PHP安全——AES-RAS加密方案与实战/" title="PHP安全——AES&RAS加密方案与实战">https://icocos.github.io/2017/08/16/PHP安全——AES-RAS加密方案与实战/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明出处！</li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/PHP/" rel="tag"># PHP</a>
+          
+            <a href="/tags/实战/" rel="tag"># 实战</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/07/16/深入理解PHP——内存管理垃圾回收/" rel="next" title="深入理解PHP——内存管理垃圾回收">
+                <i class="fa fa-chevron-left"></i> 深入理解PHP——内存管理垃圾回收
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/08/25/单点登录实现方案与流程/" rel="prev" title="单点登录实现方案与流程">
+                单点登录实现方案与流程 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="SOHUCS"></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="http://pd1l3bbt7.bkt.clouddn.com/icocos_user_icon.JPG"
+                alt="曹理鹏@iCocos" />
+            
+              <p class="site-author-name" itemprop="name">曹理鹏@iCocos</p>
+              <p class="site-description motion-element" itemprop="description">纯码迷、爱学习、爱交友、喜欢接触新鲜事物、迎接新的挑战，更爱游离于错综复杂的编码与逻辑中！</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives">
+                
+                    <span class="site-state-item-count">182</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">11</span>
+                    <span class="site-state-item-name">分类</span>
+                  
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">111</span>
+                    <span class="site-state-item-name">标签</span>
+                  
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/al1020119" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:al1020119@163.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://stackoverflow.com/users/10186720" target="_blank" title="StackOverflow"><i class="fa fa-fw fa-stack-overflow"></i>StackOverflow</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.icocos.cn/" title="梦工厂" target="_blank">梦工厂</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://al1020119.github.io/" title="iOS梦工厂" target="_blank">iOS梦工厂</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#RSA"><span class="nav-number">1.</span> <span class="nav-text">RSA</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1-加密SecretKey"><span class="nav-number">1.0.1.</span> <span class="nav-text">1. 加密SecretKey</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-解密SecretKey"><span class="nav-number">1.0.2.</span> <span class="nav-text">2. 解密SecretKey</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#1-发起请求"><span class="nav-number">1.0.3.</span> <span class="nav-text">1. 发起请求</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-服务端验证"><span class="nav-number">1.0.4.</span> <span class="nav-text">2. 服务端验证</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-服务端响应"><span class="nav-number">1.0.5.</span> <span class="nav-text">3. 服务端响应</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#4-响应客户端"><span class="nav-number">1.0.6.</span> <span class="nav-text">4. 响应客户端</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#AES"><span class="nav-number">2.</span> <span class="nav-text">AES</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1-加密请求信息"><span class="nav-number">2.0.1.</span> <span class="nav-text">1. 加密请求信息</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-解密响应结果"><span class="nav-number">2.0.2.</span> <span class="nav-text">2. 解密响应结果</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#请求流程："><span class="nav-number">2.0.3.</span> <span class="nav-text">请求流程：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#AES-1"><span class="nav-number">2.0.4.</span> <span class="nav-text">AES:</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#RSA-1"><span class="nav-number">2.0.5.</span> <span class="nav-text">RSA:</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#通用协议"><span class="nav-number">3.</span> <span class="nav-text">通用协议</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#请求实例"><span class="nav-number"></span> <span class="nav-text">请求实例</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#证书信息"><span class="nav-number">0.0.1.</span> <span class="nav-text">证书信息</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#发送请求"><span class="nav-number">0.0.2.</span> <span class="nav-text">发送请求</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#请求信息"><span class="nav-number">0.0.3.</span> <span class="nav-text">请求信息</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#服务端响应"><span class="nav-number">0.0.4.</span> <span class="nav-text">服务端响应</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#PHP加密验证代码"><span class="nav-number">0.0.5.</span> <span class="nav-text">PHP加密验证代码</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2017 – <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">曹理鹏@iCocos</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">站点总字数：</span>
+    
+    <span title="站点总字数">1.1m</span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    
+    <span title="站点阅读时长">16:05</span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv" title="总访客量">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="site-pv" title="总访问量">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/reading_progress/reading_progress.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.3.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.3.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.3.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.3.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+  
+    <script type="text/javascript">
+    (function(){
+      var appid = 'cytKHBEtW';
+      var conf = '43989b8e63b25c4e9f1fde821c996a39';
+      var width = window.innerWidth || document.documentElement.clientWidth;
+      if (width < 960) {
+      window.document.write('<script id="changyan_mobile_js" charset="utf-8" type="text/javascript" src="https://changyan.sohu.com/upload/mobile/wap-js/changyan_mobile.js?client_id=' + appid + '&conf=' + conf + '"><\/script>'); } else { var loadJs=function(d,a){var c=document.getElementsByTagName("head")[0]||document.head||document.documentElement;var b=document.createElement("script");b.setAttribute("type","text/javascript");b.setAttribute("charset","UTF-8");b.setAttribute("src",d);if(typeof a==="function"){if(window.attachEvent){b.onreadystatechange=function(){var e=b.readyState;if(e==="loaded"||e==="complete"){b.onreadystatechange=null;a()}}}else{b.onload=a}}c.appendChild(b)};loadJs("https://changyan.sohu.com/upload/changyan.js",function(){
+        window.changyan.api.config({appid:appid,conf:conf})});
+      }
+    })();
+    </script>
+    <script type="text/javascript" src="https://assets.changyan.sohu.com/upload/plugins/plugins.count.js"></script>
+  
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("Tc7k1mbaieCUSgmM8LPk1IBO-gzGzoHsz", "sAb7L2vwENJTteRrvFKQacUU");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            
+              var $element = $(document.getElementById(url));
+              $element.find('.leancloud-visitors-count').text(counter.get('time'));
+            
+            counter.save(null, {
+              success: function(counter) {
+                
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            
+              var $element = $(document.getElementById(url));
+              $element.find('.leancloud-visitors-count').text('Counter not initialized! See more at console err msg.');
+              console.error('ATTENTION! LeanCloud counter has security bug, see here how to solve it: https://github.com/theme-next/hexo-leancloud-counter-security. \n But you also can use LeanCloud without security, by set \'security\' option to \'false\'.');
+            
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #333;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #eee;
+      background-image: linear-gradient(#fcfcfc, #eee);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('复制').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+          if(result)$(this).text('复制成功')
+          else $(this).text('复制失败')
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('复制')
+        }, 300)
+      }).append(e)
+    })
+  </script>
+
+
+  
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("Tc7k1mbaieCUSgmM8LPk1IBO-gzGzoHsz", "sAb7L2vwENJTteRrvFKQacUU");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+  
+</body>
+</html>

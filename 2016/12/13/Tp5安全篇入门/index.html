@@ -1,0 +1,2256 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.3.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="http://pd1l3bbt7.bkt.clouddn.com/img/favicon.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="http://pd1l3bbt7.bkt.clouddn.com/img/favicon.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="http://pd1l3bbt7.bkt.clouddn.com/img/favicon.png?v=6.3.0">
+
+
+  <link rel="mask-icon" href="http://pd1l3bbt7.bkt.clouddn.com/img/favicon.png?v=6.3.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="输入安全设置public目录为唯一对外访问目录，不能把资源文件放入到应用目录； 使用框架提供的请求变量获取方法（Request类的param方法及input助手函数）而不是原生系统变量获取用户输入的数据； 使用验证类或者验证方法对业务数据设置必要的验证规则； 设置安全过滤函数对用户输入的数据进行过滤处理。 htmlspecialchars()此函数是将用户输入的所有信息原样输出。 避免用户输入的h">
+<meta name="keywords" content="PHP,实战">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Tp5安全篇入门">
+<meta property="og:url" content="https://icocos.github.io/2016/12/13/Tp5安全篇入门/index.html">
+<meta property="og:site_name" content="iCocos">
+<meta property="og:description" content="输入安全设置public目录为唯一对外访问目录，不能把资源文件放入到应用目录； 使用框架提供的请求变量获取方法（Request类的param方法及input助手函数）而不是原生系统变量获取用户输入的数据； 使用验证类或者验证方法对业务数据设置必要的验证规则； 设置安全过滤函数对用户输入的数据进行过滤处理。 htmlspecialchars()此函数是将用户输入的所有信息原样输出。 避免用户输入的h">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-05-22T09:17:15.334Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Tp5安全篇入门">
+<meta name="twitter:description" content="输入安全设置public目录为唯一对外访问目录，不能把资源文件放入到应用目录； 使用框架提供的请求变量获取方法（Request类的param方法及input助手函数）而不是原生系统变量获取用户输入的数据； 使用验证类或者验证方法对业务数据设置必要的验证规则； 设置安全过滤函数对用户输入的数据进行过滤处理。 htmlspecialchars()此函数是将用户输入的所有信息原样输出。 避免用户输入的h">
+
+
+
+  <link rel="alternate" href="/atom.xml" title="iCocos" type="application/atom+xml" />
+
+
+
+
+  <link rel="canonical" href="https://icocos.github.io/2016/12/13/Tp5安全篇入门/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>Tp5安全篇入门 | iCocos</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">iCocos</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">www.icocos.cn</p>
+      
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-首页">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-归档">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-关于">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-作品">
+    <a href="/works/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-calendar"></i> <br />作品</a>
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+    <div class="reading-progress-bar"></div>
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://icocos.github.io/2016/12/13/Tp5安全篇入门/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="曹理鹏@iCocos">
+      <meta itemprop="description" content="纯码迷、爱学习、爱交友、喜欢接触新鲜事物、迎接新的挑战，更爱游离于错综复杂的编码与逻辑中！">
+      <meta itemprop="image" content="http://pd1l3bbt7.bkt.clouddn.com/icocos_user_icon.JPG">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="iCocos">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Tp5安全篇入门
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2016-12-13 18:50:07" itemprop="dateCreated datePublished" datetime="2016-12-13T18:50:07+08:00">2016-12-13</time>
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/PHP/" itemprop="url" rel="index"><span itemprop="name">PHP</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+              <span class="post-meta-divider">|</span>
+              <span class="post-meta-item-icon">
+                <i class="fa fa-comment-o"></i>
+              </span>
+              
+                <a href="/2016/12/13/Tp5安全篇入门/#SOHUCS" itemprop="discussionUrl">
+                  <span class="post-meta-item-text">评论数：</span> <span id="changyan_count_unit" class="post-comments-count hc-comment-count" data-xid="2016/12/13/Tp5安全篇入门/" itemprop="commentsCount"></span>
+                </a>
+              
+            
+          
+
+          
+          
+             <span id="/2016/12/13/Tp5安全篇入门/" class="leancloud_visitors" data-flag-title="Tp5安全篇入门">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数：</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon"
+            >
+            <i class="fa fa-eye"></i>
+             阅读次数： 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+            <div class="post-symbolscount">
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">本文字数：</span>
+                
+                <span title="本文字数">21k</span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">19 分钟</span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="输入安全"><a href="#输入安全" class="headerlink" title="输入安全"></a>输入安全</h3><pre><code>设置public目录为唯一对外访问目录，不能把资源文件放入到应用目录；
+使用框架提供的请求变量获取方法（Request类的param方法及input助手函数）而不是原生系统变量获取用户输入的数据；
+使用验证类或者验证方法对业务数据设置必要的验证规则；
+设置安全过滤函数对用户输入的数据进行过滤处理。
+htmlspecialchars()此函数是将用户输入的所有信息原样输出。
+避免用户输入的html，js等代码被浏览器解析影响服务器原来的功能，有效避免黑客攻击。
+strip_tags() 函数默认删除字符串中所有html标签，也可以指定删除部分html标签。
+</code></pre><a id="more"></a>
+<pre><code>&lt;?php
+$str = &quot;&lt;font color=&apos;red&apos; size=7&gt;Linux&lt;/font&gt; &lt;i&gt;Apache&lt;/i&gt; &lt;u&gt;Mysql&lt;/u&gt; &lt;b&gt;PHP&lt;/b&gt;&quot;;
+echo strip_tags($str); //删除了全部HTML标签，输出：Linux Apache Mysql PHP
+echo strip_tags($str,&quot;&lt;font&gt;&quot;); //输出&lt;font color=&apos;red&apos; size=7&gt;Linux&lt;/font&gt;Apache Mysql PHP
+echo strip_tags($str,&quot;&lt;b&gt;&lt;u&gt;&lt;i&gt;&quot;); //输出Linux &lt;i&gt;Apache&lt;/i&gt; &lt;u&gt;Mysql&lt;/u&gt; &lt;b&gt;PHP&lt;/b&gt;
+?&gt;
+</code></pre><h3 id="数据库安全"><a href="#数据库安全" class="headerlink" title="数据库安全"></a>数据库安全</h3><pre><code>尽量少使用字符串查询条件，如果不得以的情况下，使用手动参数绑定参数；
+不要让用户输入决定要查询或者写入的字段；
+对于敏感数据在输出的时候使用hidden方法进行隐藏；
+对于数据的写入操作应当做好权限检查工作；
+写入数据严格使用field方法限制写入字段；
+对于需要输出到页面的数据做好必要的XSS过滤。
+注：XSS（Cross Site Scripting）跨站脚本攻击，一种常见的web攻击手段，与SQL注入类似。黑客通过在插入恶意脚本，实现对用户浏览器的控制。
+</code></pre><h3 id="上传安全"><a href="#上传安全" class="headerlink" title="上传安全"></a>上传安全</h3><p>主要指对上传的文件进行安全性验证。系统的think\file提供了文件上传的安全支持，包括对文件后缀、文件类型、文件大小及上传图片文件的合法性检查，确保你已经在上传操作中启用了这些合法性检查。</p>
+<p>其他安全性建议</p>
+<pre><code>对所有公共的操作方法做必要的安全检查，防止用户通过URL直接调用；
+不要缓存需要用户认证的页面；
+对用户的上传文件，做必要的安全检查，例如上传路径和非格式；
+对于项目进行充分的测试，避免业务逻辑的安全隐患；
+做好服务器安全防护。
+</code></pre><p>ThinkPHP框架是国内比较流行的PHP框架之一，虽然跟国外的那些个框架没法比，但优点在于，恩，中文手册很全面。最近研究SQL注入，之前用TP框架的时候因为底层提供了安全功能，在开发过程中没怎么考虑安全问题。想知道TP到底是怎么实现防SQL注入的，所以看了一些源码。结合phith0n大牛在乌云上发的漏洞，分析了一下，整理了一些思路~~</p>
+<h3 id="一、不得不说的I函数"><a href="#一、不得不说的I函数" class="headerlink" title="一、不得不说的I函数"></a>一、不得不说的I函数</h3><p>TP系统提供了I函数用于输入变量的过滤。整个函数主体的意义就是获取各种格式的数据，比如I(‘get.’)、I(‘post.id’)，然后用htmlspecialchars函数（默认情况下）进行处理。如果需要采用其他的方法进行安全过滤，可以从/ThinkPHP/Conf/convention.php中设置：</p>
+<pre><code>&apos;DEFAULT_FILTER&apos;        =&gt;  &apos;strip_tags&apos;,
+//也可以设置多种过滤方法
+&apos;DEFAULT_FILTER&apos;        =&gt;  &apos;strip_tags,stripslashes&apos;,
+</code></pre><p>从/ThinkPHP/Common/functions.php中可以找到I函数，源码如下：</p>
+<pre><code>/**
+ * 获取输入参数 支持过滤和默认值
+ * 使用方法:
+ * &lt;code&gt;
+ * I(&apos;id&apos;,0); 获取id参数 自动判断get或者post
+ * I(&apos;post.name&apos;,&apos;&apos;,&apos;htmlspecialchars&apos;); 获取$_POST[&apos;name&apos;]
+ * I(&apos;get.&apos;); 获取$_GET
+ * &lt;/code&gt;
+ * @param string $name 变量的名称 支持指定类型
+ * @param mixed $default 不存在的时候默认值
+ * @param mixed $filter 参数过滤方法
+ * @param mixed $datas 要获取的额外数据源
+ * @return mixed
+ */
+function I($name,$default=&apos;&apos;,$filter=null,$datas=null) {
+    static $_PUT    =    null;
+    if(strpos($name,&apos;/&apos;)){ // 指定修饰符
+        list($name,$type)     =    explode(&apos;/&apos;,$name,2);
+    }elseif(C(&apos;VAR_AUTO_STRING&apos;)){ // 默认强制转换为字符串
+        $type   =   &apos;s&apos;;
+    }
+
+    /*根据$name的格式获取数据：先判断参数的来源，然后再根据各种格式获取数据*/
+    if(strpos($name,&apos;.&apos;)) {list($method,$name) =   explode(&apos;.&apos;,$name,2);} // 指定参数来源
+    else{$method =   &apos;param&apos;;}//设定为自动获取
+    switch(strtolower($method)) {
+        case &apos;get&apos;     :   $input =&amp; $_GET;break;
+        case &apos;post&apos;    :   $input =&amp; $_POST;break;
+        case &apos;put&apos;     :   /*此处省略*/
+        case &apos;param&apos;   :   /*此处省略*/
+        case &apos;path&apos;    :   /*此处省略*/
+    }
+
+    /*对获取的数据进行过滤*/
+    if(&apos;&apos; // 获取全部变量
+        $data       =   $input;
+        $filters    =   isset($filter)?$filter:C(&apos;DEFAULT_FILTER&apos;);
+        if($filters) {
+            if(is_string($filters)){$filters    =   explode(&apos;,&apos;,$filters);} //为多种过滤方法提供支持
+            foreach($filters as $filter){
+                $data   =   array_map_recursive($filter,$data); //循环过滤
+            }
+        }
+    }elseif(isset($input[$name])) { // 取值操作
+        $data       =   $input[$name];
+        $filters    =   isset($filter)?$filter:C(&apos;DEFAULT_FILTER&apos;);
+        if($filters) {      /*对参数进行过滤，支持正则表达式验证*/
+            /*此处省略*/
+        }
+        if(!empty($type)){  //如果设定了强制转换类型
+            switch(strtolower($type)){
+                case &apos;a&apos;: $data = (array)$data;break;   // 数组  
+                case &apos;d&apos;: $data = (int)$data;break;   // 数字 
+                case &apos;f&apos;: $data = (float)$data;break;    // 浮点   
+                case &apos;b&apos;: $data = (boolean)$data;break;    // 布尔
+                case &apos;s&apos;:   // 字符串
+                default:$data   =   (string)$data;
+            }
+        }
+    }else{ // 变量默认值
+        $data       =    isset($default)?$default:null;
+    }
+
+    is_array($data) &amp;&amp; array_walk_recursive($data,&apos;think_filter&apos;);  //如果$data是数组，那么用think_filter对数组过滤
+    return $data;
+}
+</code></pre><p>恩，函数基本分成三块：第一块，获取各种格式的数据。第二块，对获取的数据进行循环编码，不管是二维数组还是三维数组。第三块，也就是倒数第二行，调用了think_filter对数据进行了最后一步的神秘处理。</p>
+<p>让我们先来追踪一下think_filter函数：</p>
+<pre><code>//1536行 版本3.2.3最新添加
+function think_filter(&amp;$value){// 过滤查询特殊字符    
+    if(preg_match(&apos;/^(EXP|NEQ|GT|EGT|LT|ELT|OR|XOR|LIKE|NOTLIKE|NOT BETWEEN|NOTBETWEEN|BETWEEN|NOTIN|NOT IN|IN)$/i&apos;,$value)){        
+        $value .= &apos; &apos;;    
+    }
+}
+</code></pre><p>这个函数很简单，一眼就可以看出来，在一些特定的关键字后面加个空格。但是这个叫think_filter的函数，仅仅加了一个空格，到底起到了什么过滤的作用？</p>
+<blockquote>
+<p>我们都知道重要的逻辑验证，如验证是否已登录，用户是否能购买某商品等，必须从服务器端验证，如果从前端验证的话，就很容易被绕过。同一个道理，在程序中，in/exp一类的逻辑结构，最好也是由服务器端来控制。</p>
+</blockquote>
+<p>当从传递到服务器端的数据是这样：id[0]=in&amp;id[1]=1,2,3，如果没有think_filter函数的话，会被解析成下表中的1，也就会被当成服务器端逻辑解析。但如果变成如下表2的样子，因为多了一个空格，无法被匹配解析，也就避免了漏洞。</p>
+<pre><code>1. $data[&apos;id&apos;]=array(&apos;in&apos;=&gt;&apos;1,2,3&apos;)  
+
+//经过think_filter过滤之后，会变成介个样子：
+2. $data[&apos;id&apos;]=array(&apos;in &apos;=&gt;&apos;1,2,3&apos;)
+</code></pre><p>二、SQL注入</p>
+<p>相关的文件为:/ThinkPHP/Library/Think/Db.class.php(在3.2.3中改为了/ThinkPHP/Library/Think/Db/Driver.class.php) 以及 /ThinkPHP/Library/Think/Model.class.php。其中Model.class.php文件提供的是curd直接调用的函数，直接对外提供接口，Driver.class.php中的函数被curd操作间接调用。</p>
+<pre><code>//此次主要分析如下语句：
+M(&apos;user&apos;)-&gt;where($map)-&gt;find();    //在user表根据$map的条件检索出一条数据
+</code></pre><p>大概说一下TP的处理思路。</p>
+<blockquote>
+<p>首先将Model类实例化为一个user对象，然后调用user对象中的where函数处理$map，也就是将$map进行一些格式化处理之后赋值给user对象的成员变量$options（如果有其他的连贯操作，也是先赋值给user对象的对应成员变量，而不是直接拼接SQL语句，所以在写连贯操作的时候，无需像拼接SQL语句一样考虑关键字的顺序），接下来调用find函数。find函数会调用底层的，也就是driver类中的函数——select来获取数据。到了select函数，又是另一个故事了。</p>
+</blockquote>
+<p>select除了要处理curd操作，还要处理pdo绑定，我们这里只关心curd操作，所以在select中调用了buildSelectSql，处理分页信息，并且调用parseSQL按照既定的顺序把SQL语句组装进去。虽然拼接SQL语句所需要的参数已经全部放在成员变量里了，但是格式不统一，有可能是字符串格式的，有可能是数组格式的，还有可能是TP提供的特殊查询格式，比如：$data[‘id’]=array(‘gt’,’100’);，所以在拼接之前，还要调用各自的处理函数，进行统一的格式化处理。我选取了parseWhere这个复杂的典型来分析。</p>
+<blockquote>
+<p>关于安全方面的，如果用I函数来获取数据，那么会默认进行htmlspecialchars处理，能有效抵御xss攻击，但是对SQL注入没有多大影响。在过滤有关SQL注入有关的符号的时候，TP的做法很机智：先是按正常逻辑处理用户的输入，然后在最接近最终的SQL语句的parseWhere、parseHaving等函数中进行安全处理。这样的顺序避免了在处理的过程中出现注入。当然处理的方法是最普通的addslashes，根据死在沙滩上的前浪们说，推荐使用mysql_real_escape_string来进行过滤，但是这个函数只能在已经连接了数据库的前提下使用。感觉TP在这个地方可以做一下优化，毕竟走到这一步的都是连接了数据库的。</p>
+</blockquote>
+<h5 id="分析Model"><a href="#分析Model" class="headerlink" title="分析Model"></a>分析Model</h5><p>先说几个Model对象中的成员变量：</p>
+<pre><code>// 主键名称
+protected $pk      = &apos;id&apos;;
+// 字段信息
+protected $fields  = array();
+// 数据信息
+protected $data    = array();
+// 查询表达式参数
+protected $options = array();
+// 链操作方法列表
+protected $methods = array(&apos;strict&apos;,&apos;order&apos;,&apos;alias&apos;,&apos;having&apos;,&apos;group&apos;,&apos;lock&apos;,&apos;distinct&apos;,&apos;auto&apos;,&apos;filter&apos;,&apos;validate&apos;,&apos;result&apos;,&apos;token&apos;,&apos;index&apos;,&apos;force&apos;)
+</code></pre><h5 id="接下来分析where函数："><a href="#接下来分析where函数：" class="headerlink" title="接下来分析where函数："></a>接下来分析where函数：</h5><pre><code>public function where($where,$parse=null){
+    //如果非数组格式，即where(&apos;id=%d&amp;name=%s&apos;,array($id,$name))，对传递到字符串中的数组调用mysql里的escapeString进行处理
+    if(!is_null($parse) &amp;&amp; is_string($where)) { 
+        if(!is_array($parse)){  $parse = func_get_args();array_shift($parse);}
+        $parse = array_map(array($this-&gt;db,&apos;escapeString&apos;),$parse);
+        $where = vsprintf($where,$parse); //vsprintf() 函数把格式化字符串写入变量中
+    }elseif(is_object($where)){
+        $where  =   get_object_vars($where);
+    }
+    if(is_string($where) &amp;&amp; &apos;&apos; != $where){
+        $map    =   array();
+        $map[&apos;_string&apos;]   =   $where;
+        $where  =   $map;
+    }      
+
+    //将$where赋值给$this-&gt;where
+    if(isset($this-&gt;options[&apos;where&apos;])){         
+        $this-&gt;options[&apos;where&apos;] =   array_merge($this-&gt;options[&apos;where&apos;],$where);
+    }else{
+        $this-&gt;options[&apos;where&apos;] =   $where;
+    }
+
+    return $this;
+}
+</code></pre><p>where函数的逻辑很简单，如果是where(‘id=%d&amp;name=%s’,array($id,$name))这种格式，那就对$id,$name变量调用mysql里的escapeString进行处理。escapeString的实质是调用mysql_real_escape_string、addslashes等函数进行处理。最后将分析之后的数组赋值到Model对象的成员函数——$where中供下一步处理。</p>
+<h5 id="再分析find函数："><a href="#再分析find函数：" class="headerlink" title="再分析find函数："></a>再分析find函数：</h5><pre><code>//model.class.php    行721    版本3.2.3
+public function find($options=array()) {
+    if(is_numeric($options) || is_string($options)){ /*如果传递过来的数据是字符串，不是数组*/
+        $where[$this-&gt;getPk()]  =   $options;
+        $options                =   array();
+        $options[&apos;where&apos;]       =   $where; /*提取出查询条件，并赋值*/
+    }
+
+    // 根据主键查找记录
+    $pk  =  $this-&gt;getPk();
+    if (is_array($options) &amp;&amp; (count($options) &gt; 0) &amp;&amp; is_array($pk)) {
+        /*构造复合主键查询条件，此处省略*/
+    }
+
+    $options[&apos;limit&apos;]   =   1;                                  // 总是查找一条记录
+    $options            =   $this-&gt;_parseOptions($options);     // 分析表达式
+
+    if(isset($options[&apos;cache&apos;])){
+        /*缓存查询，此处省略*/
+    }
+    $resultSet = $this-&gt;db-&gt;select($options);
+
+    if(false === $resultSet){   return false;}
+    if(empty($resultSet)) {    return null; }           // 查询结果为空       
+    if(is_string($resultSet)){   return $resultSet;}    //查询结果为字符串
+
+    // 读取数据后的处理，此处省略简写
+    $this-&gt;data = $this-&gt;_read_data($resultSet[0]);
+    return $this-&gt;data;
+}
+</code></pre><p>$Pk为主键，$options为表达式参数，本函数的作用就是完善成员变量——options数组，然后调用db层的select函数查询数据，处理后返回数据。</p>
+<h5 id="跟进-parseOptions函数："><a href="#跟进-parseOptions函数：" class="headerlink" title="跟进_parseOptions函数："></a>跟进_parseOptions函数：</h5><pre><code>protected function _parseOptions($options=array()) { //分析表达式
+if(is_array($options)){
+    $options =  array_merge($this-&gt;options,$options);
+}
+
+/*获取表名，此处省略*/
+/*添加数据表别名，此处省略*/
+
+$options[&apos;model&apos;]       =   $this-&gt;name;// 记录操作的模型名称
+
+/*对数组查询条件进行字段类型检查，如果在合理范围内，就进行过滤处理；否则抛出异常或者删除掉对应字段*/
+if(isset($options[&apos;where&apos;]) &amp;&amp; is_array($options[&apos;where&apos;]) &amp;&amp; !empty($fields) &amp;&amp; !isset($options[&apos;join&apos;])){
+    foreach ($options[&apos;where&apos;] as $key=&gt;$val){
+        $key = trim($key);
+        if(in_array($key,$fields,true)){    //如果$key在数据库字段内，过滤以及强制类型转换之
+            if(is_scalar($val)) {  
+            /*is_scalar 检测是否为标量。标量是指integer、float、string、boolean的变量，array则不是标量。*/         
+                $this-&gt;_parseType($options[&apos;where&apos;],$key);
+            }
+        }elseif(!is_numeric($key) &amp;&amp; &apos;_&apos; != substr($key,0,1) &amp;&amp; false === strpos($key,&apos;.&apos;) &amp;&amp; false === strpos($key,&apos;(&apos;) &amp;&amp; false === strpos($key,&apos;|&apos;) &amp;&amp; false === strpos($key,&apos;&amp;&apos;)){
+           // 如果$key不是数字且第一个字符不是_，不存在.(|&amp;等特殊字符
+            if(!empty($this-&gt;options[&apos;strict&apos;])){   //如果是strict模式，抛出异常
+                E(L(&apos;_ERROR_QUERY_EXPRESS_&apos;).&apos;:[&apos;.$key.&apos;=&gt;&apos;.$val.&apos;]&apos;);
+            }   
+            unset($options[&apos;where&apos;][$key]); //unset掉对应的值
+        }
+    }
+} 
+$this-&gt;options  =   array();            // 查询过后清空sql表达式组装 避免影响下次查询
+$this-&gt;_options_filter($options);       // 表达式过滤
+return $options;
+}
+</code></pre><p>本函数的结构大概是，先获取了表名，模型名，再对数据进行处理：如果该条数据不在数据库字段内，则做出异常处理或者删除掉该条数据。否则，进行_parseType处理。parseType此处不再跟进，功能为:数据类型检测,强制类型转换包括int,float,bool型的三种数据。</p>
+<blockquote>
+<p>函数运行到此处，就该把处理好的数据传到db层的select函数里了。此时的查询条件$options中的int,float,bool类型的数据都已经进行了强制类型转换，where（）函数中的字符串（非数组格式的查询）也进行了addslashes等处理。</p>
+</blockquote>
+<p>继续追踪到select函数，就到了driver对象中了，还是先列举几个有用的成员变量：</p>
+<pre><code>// 数据库表达式
+protected $exp = array(&apos;eq&apos;=&gt;&apos;=&apos;,&apos;neq&apos;=&gt;&apos;&lt;&gt;&apos;,&apos;gt&apos;=&gt;&apos;&gt;&apos;,&apos;egt&apos;=&gt;&apos;&gt;=&apos;,&apos;lt&apos;=&gt;&apos;&lt;&apos;,&apos;elt&apos;=&gt;&apos;&lt;=&apos;,&apos;notlike&apos;=&gt;&apos;NOT LIKE&apos;,&apos;like&apos;=&gt;&apos;LIKE&apos;,&apos;in&apos;=&gt;&apos;IN&apos;,&apos;notin&apos;=&gt;&apos;NOT IN&apos;,&apos;not in&apos;=&gt;&apos;NOT IN&apos;,&apos;between&apos;=&gt;&apos;BETWEEN&apos;,&apos;not between&apos;=&gt;&apos;NOT BETWEEN&apos;,&apos;notbetween&apos;=&gt;&apos;NOT BETWEEN&apos;);
+// 查询表达式
+protected $selectSql  = &apos;SELECT%DISTINCT% %FIELD% FROM %TABLE%%FORCE%%JOIN%%WHERE%%GROUP%%HAVING%%ORDER%%LIMIT% %UNION%%LOCK%%COMMENT%&apos;;
+// 当前SQL指令
+protected $queryStr   = &apos;&apos;;
+// 参数绑定
+protected $bind         =   array();
+</code></pre><h5 id="select函数："><a href="#select函数：" class="headerlink" title="select函数："></a>select函数：</h5><pre><code>public function select($options=array()) {
+    $this-&gt;model  =   $options[&apos;model&apos;];
+    $this-&gt;parseBind(!empty($options[&apos;bind&apos;])?$options[&apos;bind&apos;]:array());
+    $sql    = $this-&gt;buildSelectSql($options);
+    $result   = $this-&gt;query($sql,!empty($options[&apos;fetch_sql&apos;]) ? true : false);
+    return $result;
+}
+</code></pre><p>版本3.2.3经过改进之后，select精简了不少。parseBind函数是绑定参数，用于pdo查询，此处不表。</p>
+<p>buildSelectSql（）函数及其后续调用如下：</p>
+<pre><code>public function buildSelectSql($options=array()) {
+    if(isset($options[&apos;page&apos;])) {
+        /*页码计算及处理，此处省略*/
+    }
+    $sql  =   $this-&gt;parseSql($this-&gt;selectSql,$options);
+    return $sql;
+}
+
+/* 替换SQL语句中表达式*/
+public function parseSql($sql,$options=array()){
+    $sql   = str_replace(
+        array(&apos;%TABLE%&apos;,&apos;%DISTINCT%&apos;,&apos;%FIELD%&apos;,&apos;%JOIN%&apos;,&apos;%WHERE%&apos;,&apos;%GROUP%&apos;,&apos;%HAVING%&apos;,&apos;%ORDER%&apos;,&apos;%LIMIT%&apos;,&apos;%UNION%&apos;,&apos;%LOCK%&apos;,&apos;%COMMENT%&apos;,&apos;%FORCE%&apos;),
+        array(
+            $this-&gt;parseTable($options[&apos;table&apos;]),
+            $this-&gt;parseDistinct(isset($options[&apos;distinct&apos;])?$options[&apos;distinct&apos;]:false),
+            $this-&gt;parseField(!empty($options[&apos;field&apos;])?$options[&apos;field&apos;]:&apos;*&apos;),
+            $this-&gt;parseJoin(!empty($options[&apos;join&apos;])?$options[&apos;join&apos;]:&apos;&apos;),
+            $this-&gt;parseWhere(!empty($options[&apos;where&apos;])?$options[&apos;where&apos;]:&apos;&apos;),
+            $this-&gt;parseGroup(!empty($options[&apos;group&apos;])?$options[&apos;group&apos;]:&apos;&apos;),
+            $this-&gt;parseHaving(!empty($options[&apos;having&apos;])?$options[&apos;having&apos;]:&apos;&apos;),
+            $this-&gt;parseOrder(!empty($options[&apos;order&apos;])?$options[&apos;order&apos;]:&apos;&apos;),
+            $this-&gt;parseLimit(!empty($options[&apos;limit&apos;])?$options[&apos;limit&apos;]:&apos;&apos;),
+            $this-&gt;parseUnion(!empty($options[&apos;union&apos;])?$options[&apos;union&apos;]:&apos;&apos;),
+            $this-&gt;parseLock(isset($options[&apos;lock&apos;])?$options[&apos;lock&apos;]:false),
+            $this-&gt;parseComment(!empty($options[&apos;comment&apos;])?$options[&apos;comment&apos;]:&apos;&apos;),
+            $this-&gt;parseForce(!empty($options[&apos;force&apos;])?$options[&apos;force&apos;]:&apos;&apos;)
+        ),$sql);
+    return $sql;
+}
+</code></pre><p>可以看到，在parseSql中用正则表达式拼接了sql语句，但并没有直接的去处理各种插叙你的数据格式，而是在解析变量的过程中调用了多个函数，此处拿parseWhere举例子。</p>
+<pre><code>protected function parseWhere($where) {
+    $whereStr = &apos;&apos;;
+    if(is_string($where)) {     // 直接使用字符串条件
+        $whereStr = $where;
+    }
+    else{                       // 使用数组表达式
+        /*设定逻辑规则，如or and xor等，默认为and，此处省略*/
+        $operate=&apos; AND &apos;;
+
+        /*解析特殊格式的表达式并且格式化输出*/
+        foreach ($where as $key=&gt;$val){
+            if(0===strpos($key,&apos;_&apos;)) {    // 解析特殊条件表达式
+                $whereStr   .= $this-&gt;parseThinkWhere($key,$val);
+            }
+            else{                        // 查询字段的安全过滤
+                $multi  = is_array($val) &amp;&amp;  isset($val[&apos;_multi&apos;]); //判断是否有复合查询
+                $key    = trim($key);
+                /*处理字段中包含的| &amp;逻辑*/
+                if(strpos($key,&apos;|&apos;)) { // 支持 name|title|nickname 方式定义查询字段
+                    /*将|换成or，并格式化输出，此处省略*/
+                }
+                elseif(strpos($key,&apos;&amp;&apos;)){
+                    /*将&amp;换成and，并格式化输出，此处省略*/
+                }
+                else{
+                    $whereStr .= $this-&gt;parseWhereItem($this-&gt;parseKey($key),$val);
+                }
+            }
+            $whereStr .= $operate;
+        }
+        $whereStr = substr($whereStr,0,-strlen($operate));
+    }
+
+    return empty($whereStr)?&apos;&apos;:&apos; WHERE &apos;.$whereStr;
+}
+
+// where子单元分析
+protected function parseWhereItem($key,$val) {
+    $whereStr = &apos;&apos;;
+    if(is_array($val)){
+        if(is_string($val[0])){
+            $exp    =   strtolower($val[0]);
+            //如果是$map[&apos;id&apos;]=array(&apos;eq&apos;,100)一类的结构，那么解析成数据库可执行格式
+            if(preg_match(&apos;/^(eq|neq|gt|egt|lt|elt)$/&apos;,$exp)){
+                $whereStr .= $key.&apos; &apos;.$this-&gt;exp[$exp].&apos; &apos;.$this-&gt;parseValue($val[1]);
+            }
+            //如果是模糊查找格式
+            elseif(preg_match(&apos;/^(notlike|like)$/&apos;,$exp)){// 模糊查找,$map[&apos;name&apos;]=array(&apos;like&apos;,&apos;thinkphp%&apos;);
+                if(is_array($val[1])) { //解析格式如下：$map[&apos;b&apos;] =array(&apos;notlike&apos;,array(&apos;%thinkphp%&apos;,&apos;%tp&apos;),&apos;AND&apos;);
+                    $likeLogic  =   isset($val[2])?strtoupper($val[2]):&apos;OR&apos;;    //如果没有设定逻辑结构，则默认为OR
+                    if(in_array($likeLogic,array(&apos;AND&apos;,&apos;OR&apos;,&apos;XOR&apos;))){
+                        /* 根据逻辑结构，组合语句，此处省略*/
+                        $whereStr .= &apos;(&apos;.implode(&apos; &apos;.$likeLogic.&apos; &apos;,$like).&apos;)&apos;;                          
+                    }
+                }
+                else{
+                    $whereStr .= $key.&apos; &apos;.$this-&gt;exp[$exp].&apos; &apos;.$this-&gt;parseValue($val[1]);
+                }
+            }elseif(&apos;bind&apos; == $exp ){ // 使用表达式，pdo数据绑定
+                $whereStr .= $key.&apos; = :&apos;.$val[1];
+            }elseif(&apos;exp&apos; == $exp ){ // 使用表达式 $map[&apos;id&apos;]  = array(&apos;exp&apos;,&apos; IN (1,3,8) &apos;);
+                $whereStr .= $key.&apos; &apos;.$val[1];
+            }elseif(preg_match(&apos;/^(notin|not in|in)$/&apos;,$exp)){ //IN运算 $map[&apos;id&apos;]  = array(&apos;not in&apos;,&apos;1,5,8&apos;);
+                if(isset($val[2]) &amp;&amp; &apos;exp&apos;==$val[2]){
+                    $whereStr .= $key.&apos; &apos;.$this-&gt;exp[$exp].&apos; &apos;.$val[1];
+                }else{
+                    if(is_string($val[1])) {
+                         $val[1] =  explode(&apos;,&apos;,$val[1]);
+                    }
+                    $zone      =   implode(&apos;,&apos;,$this-&gt;parseValue($val[1]));
+                    $whereStr .= $key.&apos; &apos;.$this-&gt;exp[$exp].&apos; (&apos;.$zone.&apos;)&apos;;
+                }
+            }elseif(preg_match(&apos;/^(notbetween|not between|between)$/&apos;,$exp)){ //BETWEEN运算
+                $data = is_string($val[1])? explode(&apos;,&apos;,$val[1]):$val[1];
+                $whereStr .=  $key.&apos; &apos;.$this-&gt;exp[$exp].&apos; &apos;.$this-&gt;parseValue($data[0]).&apos; AND &apos;.$this-&gt;parseValue($data[1]);
+            }else{  //否则抛出异常
+                E(L(&apos;_EXPRESS_ERROR_&apos;).&apos;:&apos;.$val[0]);
+            }
+        }
+        else{   //解析如：$map[&apos;status&amp;score&amp;title&apos;] =array(&apos;1&apos;,array(&apos;gt&apos;,&apos;0&apos;),&apos;thinkphp&apos;,&apos;_multi&apos;=&gt;true);
+            $count = count($val);
+            $rule  = isset($val[$count-1]) ? (is_array($val[$count-1]) ? strtoupper($val[$count-1][0]) : strtoupper($val[$count-1]) ) : &apos;&apos; ; 
+            if(in_array($rule,array(&apos;AND&apos;,&apos;OR&apos;,&apos;XOR&apos;))){
+                $count  = $count -1;
+            }else{
+                $rule   = &apos;AND&apos;;
+            }
+            for($i=0;$i&lt;$count;$i++){
+                $data = is_array($val[$i])?$val[$i][1]:$val[$i];
+                if(&apos;exp&apos;==strtolower($val[$i][0])) {
+                    $whereStr .= $key.&apos; &apos;.$data.&apos; &apos;.$rule.&apos; &apos;;
+                }else{
+                    $whereStr .= $this-&gt;parseWhereItem($key,$val[$i]).&apos; &apos;.$rule.&apos; &apos;;
+                }
+            }
+            $whereStr = &apos;( &apos;.substr($whereStr,0,-4).&apos; )&apos;;
+        }
+    }
+    else {
+        //对字符串类型字段采用模糊匹配
+        $likeFields   =   $this-&gt;config[&apos;db_like_fields&apos;];
+        if($likeFields &amp;&amp; preg_match(&apos;/^(&apos;.$likeFields.&apos;)$/i&apos;,$key)) {
+            $whereStr .= $key.&apos; LIKE &apos;.$this-&gt;parseValue(&apos;%&apos;.$val.&apos;%&apos;);
+        }else {
+            $whereStr .= $key.&apos; = &apos;.$this-&gt;parseValue($val);
+        }
+    }
+
+    return $whereStr;
+}
+
+protected function parseThinkWhere($key,$val) {     //解析特殊格式的条件
+    $whereStr   = &apos;&apos;;
+    switch($key) {
+        case &apos;_string&apos;:$whereStr = $val;break;                                  // 字符串模式查询条件
+        case &apos;_complex&apos;:$whereStr = substr($this-&gt;parseWhere($val),6);break;    // 复合查询条件
+        case &apos;_query&apos;:// 字符串模式查询条件
+            /*处理逻辑结构，并且格式化输出字符串，此处省略*/
+    }
+    return &apos;( &apos;.$whereStr.&apos; )&apos;;
+}
+</code></pre><p>上面的两个函数很长，我们再精简一些来看：parseWhere首先判断查询数据是不是字符串，如果是字符串，直接返回字符串，否则，遍历查询条件的数组，挨个解析。由于TP支持_string，_complex之类的特殊查询，调用了parseThinkWhere来处理，对于普通查询，就调用了parseWhereItem。</p>
+<blockquote>
+<p>在各自的处理过程中，都调用了parseValue，追踪一下，其实是用了addslashes来过滤，虽然addslashes在非utf-8编码的页面中会造成宽字节注入，但是如果页面和数据库均正确编码的话，还是没什么问题的。</p>
+</blockquote>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="http://pd1l3bbt7.bkt.clouddn.com/img/wechatimg.jpg" alt="曹理鹏@iCocos 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="http://pd1l3bbt7.bkt.clouddn.com/img/alipayimg.jpg" alt="曹理鹏@iCocos 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>曹理鹏@iCocos</li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://icocos.github.io/2016/12/13/Tp5安全篇入门/" title="Tp5安全篇入门">https://icocos.github.io/2016/12/13/Tp5安全篇入门/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明出处！</li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/PHP/" rel="tag"># PHP</a>
+          
+            <a href="/tags/实战/" rel="tag"># 实战</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/11/23/Tp5入门——前后台分离/" rel="next" title="Tp5入门——前后台分离">
+                <i class="fa fa-chevron-left"></i> Tp5入门——前后台分离
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/12/22/PHP中常用自定义函数/" rel="prev" title="PHP中常用自定义函数">
+                PHP中常用自定义函数 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="SOHUCS"></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="http://pd1l3bbt7.bkt.clouddn.com/icocos_user_icon.JPG"
+                alt="曹理鹏@iCocos" />
+            
+              <p class="site-author-name" itemprop="name">曹理鹏@iCocos</p>
+              <p class="site-description motion-element" itemprop="description">纯码迷、爱学习、爱交友、喜欢接触新鲜事物、迎接新的挑战，更爱游离于错综复杂的编码与逻辑中！</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives">
+                
+                    <span class="site-state-item-count">182</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">11</span>
+                    <span class="site-state-item-name">分类</span>
+                  
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">111</span>
+                    <span class="site-state-item-name">标签</span>
+                  
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/al1020119" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:al1020119@163.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://stackoverflow.com/users/10186720" target="_blank" title="StackOverflow"><i class="fa fa-fw fa-stack-overflow"></i>StackOverflow</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.icocos.cn/" title="梦工厂" target="_blank">梦工厂</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://al1020119.github.io/" title="iOS梦工厂" target="_blank">iOS梦工厂</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#输入安全"><span class="nav-number">1.</span> <span class="nav-text">输入安全</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数据库安全"><span class="nav-number">2.</span> <span class="nav-text">数据库安全</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#上传安全"><span class="nav-number">3.</span> <span class="nav-text">上传安全</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#一、不得不说的I函数"><span class="nav-number">4.</span> <span class="nav-text">一、不得不说的I函数</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#分析Model"><span class="nav-number">4.0.1.</span> <span class="nav-text">分析Model</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#接下来分析where函数："><span class="nav-number">4.0.2.</span> <span class="nav-text">接下来分析where函数：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#再分析find函数："><span class="nav-number">4.0.3.</span> <span class="nav-text">再分析find函数：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#跟进-parseOptions函数："><span class="nav-number">4.0.4.</span> <span class="nav-text">跟进_parseOptions函数：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#select函数："><span class="nav-number">4.0.5.</span> <span class="nav-text">select函数：</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2017 – <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">曹理鹏@iCocos</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">站点总字数：</span>
+    
+    <span title="站点总字数">1.1m</span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    
+    <span title="站点阅读时长">16:05</span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv" title="总访客量">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="site-pv" title="总访问量">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/reading_progress/reading_progress.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.3.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.3.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.3.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.3.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+  
+    <script type="text/javascript">
+    (function(){
+      var appid = 'cytKHBEtW';
+      var conf = '43989b8e63b25c4e9f1fde821c996a39';
+      var width = window.innerWidth || document.documentElement.clientWidth;
+      if (width < 960) {
+      window.document.write('<script id="changyan_mobile_js" charset="utf-8" type="text/javascript" src="https://changyan.sohu.com/upload/mobile/wap-js/changyan_mobile.js?client_id=' + appid + '&conf=' + conf + '"><\/script>'); } else { var loadJs=function(d,a){var c=document.getElementsByTagName("head")[0]||document.head||document.documentElement;var b=document.createElement("script");b.setAttribute("type","text/javascript");b.setAttribute("charset","UTF-8");b.setAttribute("src",d);if(typeof a==="function"){if(window.attachEvent){b.onreadystatechange=function(){var e=b.readyState;if(e==="loaded"||e==="complete"){b.onreadystatechange=null;a()}}}else{b.onload=a}}c.appendChild(b)};loadJs("https://changyan.sohu.com/upload/changyan.js",function(){
+        window.changyan.api.config({appid:appid,conf:conf})});
+      }
+    })();
+    </script>
+    <script type="text/javascript" src="https://assets.changyan.sohu.com/upload/plugins/plugins.count.js"></script>
+  
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("Tc7k1mbaieCUSgmM8LPk1IBO-gzGzoHsz", "sAb7L2vwENJTteRrvFKQacUU");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            
+              var $element = $(document.getElementById(url));
+              $element.find('.leancloud-visitors-count').text(counter.get('time'));
+            
+            counter.save(null, {
+              success: function(counter) {
+                
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            
+              var $element = $(document.getElementById(url));
+              $element.find('.leancloud-visitors-count').text('Counter not initialized! See more at console err msg.');
+              console.error('ATTENTION! LeanCloud counter has security bug, see here how to solve it: https://github.com/theme-next/hexo-leancloud-counter-security. \n But you also can use LeanCloud without security, by set \'security\' option to \'false\'.');
+            
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #333;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #eee;
+      background-image: linear-gradient(#fcfcfc, #eee);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('复制').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+          if(result)$(this).text('复制成功')
+          else $(this).text('复制失败')
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('复制')
+        }, 300)
+      }).append(e)
+    })
+  </script>
+
+
+  
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("Tc7k1mbaieCUSgmM8LPk1IBO-gzGzoHsz", "sAb7L2vwENJTteRrvFKQacUU");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+  
+</body>
+</html>
