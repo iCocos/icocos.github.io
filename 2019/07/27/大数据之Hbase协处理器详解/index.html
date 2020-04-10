@@ -1,0 +1,2414 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.3.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="http://pd1l3bbt7.bkt.clouddn.com/img/favicon.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="http://pd1l3bbt7.bkt.clouddn.com/img/favicon.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="http://pd1l3bbt7.bkt.clouddn.com/img/favicon.png?v=6.3.0">
+
+
+  <link rel="mask-icon" href="http://pd1l3bbt7.bkt.clouddn.com/img/favicon.png?v=6.3.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="keywords" content="大数据,HBase,协处理器">
+<meta property="og:type" content="article">
+<meta property="og:title" content="大数据之Hbase协处理器详解">
+<meta property="og:url" content="https://icocos.github.io/2019/07/27/大数据之Hbase协处理器详解/index.html">
+<meta property="og:site_name" content="iCocos">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/iCocos/icocos_hexo_images/master/2020/god_of_bd/pictures/hbase-coprocessor.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/iCocos/icocos_hexo_images/master/2020/god_of_bd/pictures/RegionObserver.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/iCocos/icocos_hexo_images/master/2020/god_of_bd/pictures/RegionObservers-works.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/iCocos/icocos_hexo_images/master/2020/god_of_bd/pictures/hbase-cp-hdfs.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/iCocos/icocos_hexo_images/master/2020/god_of_bd/pictures/hbase-cp-load.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/iCocos/icocos_hexo_images/master/2020/god_of_bd/pictures/hbase-cp-helloworld.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/iCocos/icocos_hexo_images/master/2020/god_of_bd/pictures/hbase-cp-lisi.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/iCocos/icocos_hexo_images/master/2020/god_of_bd/pictures/hbase-co-unload.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/iCocos/icocos_hexo_images/master/2020/god_of_bd/pictures/hbase-unload-test.png">
+<meta property="og:updated_time" content="2020-04-09T14:45:08.845Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="大数据之Hbase协处理器详解">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/iCocos/icocos_hexo_images/master/2020/god_of_bd/pictures/hbase-coprocessor.png">
+
+
+
+  <link rel="alternate" href="/atom.xml" title="iCocos" type="application/atom+xml" />
+
+
+
+
+  <link rel="canonical" href="https://icocos.github.io/2019/07/27/大数据之Hbase协处理器详解/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>大数据之Hbase协处理器详解 | iCocos</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">iCocos</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">www.icocos.cn</p>
+      
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-首页">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-归档">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-关于">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-作品">
+    <a href="/works/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-calendar"></i> <br />作品</a>
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+    <div class="reading-progress-bar"></div>
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://icocos.github.io/2019/07/27/大数据之Hbase协处理器详解/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="曹理鹏@iCocos">
+      <meta itemprop="description" content="纯码迷、爱学习、爱交友、喜欢接触新鲜事物、迎接新的挑战，更爱游离于错综复杂的编码与逻辑中！">
+      <meta itemprop="image" content="http://pd1l3bbt7.bkt.clouddn.com/icocos_user_icon.JPG">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="iCocos">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">大数据之Hbase协处理器详解
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-07-27 21:37:43" itemprop="dateCreated datePublished" datetime="2019-07-27T21:37:43+08:00">2019-07-27</time>
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/HBase/" itemprop="url" rel="index"><span itemprop="name">HBase</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+              <span class="post-meta-divider">|</span>
+              <span class="post-meta-item-icon">
+                <i class="fa fa-comment-o"></i>
+              </span>
+              
+                <a href="/2019/07/27/大数据之Hbase协处理器详解/#SOHUCS" itemprop="discussionUrl">
+                  <span class="post-meta-item-text">评论数：</span> <span id="changyan_count_unit" class="post-comments-count hc-comment-count" data-xid="2019/07/27/大数据之Hbase协处理器详解/" itemprop="commentsCount"></span>
+                </a>
+              
+            
+          
+
+          
+          
+             <span id="/2019/07/27/大数据之Hbase协处理器详解/" class="leancloud_visitors" data-flag-title="大数据之Hbase协处理器详解">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数：</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon"
+            >
+            <i class="fa fa-eye"></i>
+             阅读次数： 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+            <div class="post-symbolscount">
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">本文字数：</span>
+                
+                <span title="本文字数">11k</span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">10 分钟</span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <hr>
+<a id="more"></a>
+<h1 id="Hbase-协处理器"><a href="#Hbase-协处理器" class="headerlink" title="Hbase 协处理器"></a>Hbase 协处理器</h1><nav><br><a href="#一简述">一、简述</a><br><br><a href="#二协处理器类型">二、协处理器类型</a><br><br><a href="#21-Observer协处理器">2.1 Observer协处理器</a><br><br><a href="#22--Endpoint协处理器">2.2  Endpoint协处理器</a><br><br><a href="#三协处理的加载方式">三、协处理的加载方式</a><br><br><a href="#四静态加载与卸载">四、静态加载与卸载</a><br><br><a href="#41-静态加载">4.1 静态加载</a><br><br><a href="#42-静态卸载">4.2 静态卸载</a><br><br><a href="#五动态加载与卸载">五、动态加载与卸载</a><br><br><a href="#51-HBase-Shell动态加载">5.1 HBase Shell动态加载</a><br><br><a href="#52-HBase-Shell动态卸载">5.2 HBase Shell动态卸载</a><br><br><a href="#53-Java-API-动态加载">5.3 Java API 动态加载</a><br><br><a href="#54-Java-API-动态卸载">5.4 Java API 动态卸载</a><br><br><a href="#六协处理器案例">六、协处理器案例</a><br><br></nav>
+
+
+<h2 id="一、简述"><a href="#一、简述" class="headerlink" title="一、简述"></a>一、简述</h2><p>在使用 HBase 时，如果你的数据量达到了数十亿行或数百万列，此时能否在查询中返回大量数据将受制于网络的带宽，即便网络状况允许，但是客户端的计算处理也未必能够满足要求。在这种情况下，协处理器（Coprocessors）应运而生。它允许你将业务计算代码放入在 RegionServer 的协处理器中，将处理好的数据再返回给客户端，这可以极大地降低需要传输的数据量，从而获得性能上的提升。同时协处理器也允许用户扩展实现 HBase 目前所不具备的功能，如权限校验、二级索引、完整性约束等。</p>
+<h2 id="二、协处理器类型"><a href="#二、协处理器类型" class="headerlink" title="二、协处理器类型"></a>二、协处理器类型</h2><h3 id="2-1-Observer协处理器"><a href="#2-1-Observer协处理器" class="headerlink" title="2.1 Observer协处理器"></a>2.1 Observer协处理器</h3><h4 id="1-功能"><a href="#1-功能" class="headerlink" title="1. 功能"></a>1. 功能</h4><p>Observer 协处理器类似于关系型数据库中的触发器，当发生某些事件的时候这类协处理器会被 Server 端调用。通常可以用来实现下面功能：</p>
+<ul>
+<li><strong>权限校验</strong>：在执行 <code>Get</code> 或 <code>Put</code> 操作之前，您可以使用 <code>preGet</code> 或 <code>prePut</code> 方法检查权限；</li>
+<li><strong>完整性约束</strong>： HBase 不支持关系型数据库中的外键功能，可以通过触发器在插入或者删除数据的时候，对关联的数据进行检查；</li>
+<li><strong>二级索引</strong>： 可以使用协处理器来维护二级索引。</li>
+</ul>
+<p><br></p>
+<h4 id="2-类型"><a href="#2-类型" class="headerlink" title="2. 类型"></a>2. 类型</h4><p>当前 Observer 协处理器有以下四种类型：</p>
+<ul>
+<li><strong>RegionObserver</strong> :<br>允许您观察 Region 上的事件，例如 Get 和 Put 操作。</li>
+<li><strong>RegionServerObserver</strong> :<br>允许您观察与 RegionServer 操作相关的事件，例如启动，停止或执行合并，提交或回滚。</li>
+<li><strong>MasterObserver</strong> :<br>允许您观察与 HBase Master 相关的事件，例如表创建，删除或 schema 修改。</li>
+<li><strong>WalObserver</strong> :<br>允许您观察与预写日志（WAL）相关的事件。</li>
+</ul>
+<p><br></p>
+<h4 id="3-接口"><a href="#3-接口" class="headerlink" title="3. 接口"></a>3. 接口</h4><p>以上四种类型的 Observer 协处理器均继承自 <code>Coprocessor</code> 接口，这四个接口中分别定义了所有可用的钩子方法，以便在对应方法前后执行特定的操作。通常情况下，我们并不会直接实现上面接口，而是继承其 Base 实现类，Base 实现类只是简单空实现了接口中的方法，这样我们在实现自定义的协处理器时，就不必实现所有方法，只需要重写必要方法即可。</p>
+<div align="center"> <img src="https://raw.githubusercontent.com/iCocos/icocos_hexo_images/master/2020/god_of_bd/pictures/hbase-coprocessor.png"> </div>
+
+<p>这里以 <code>RegionObservers</code> 为例，其接口类中定义了所有可用的钩子方法，下面截取了部分方法的定义，多数方法都是成对出现的，有 <code>pre</code> 就有 <code>post</code>：</p>
+<div align="center"> <img src="https://raw.githubusercontent.com/iCocos/icocos_hexo_images/master/2020/god_of_bd/pictures/RegionObserver.png"> </div>
+
+<p><br></p>
+<h4 id="4-执行流程"><a href="#4-执行流程" class="headerlink" title="4. 执行流程"></a>4. 执行流程</h4><div align="center"> <img src="https://raw.githubusercontent.com/iCocos/icocos_hexo_images/master/2020/god_of_bd/pictures/RegionObservers-works.png"> </div>
+
+<ul>
+<li>客户端发出 put 请求</li>
+<li>该请求被分派给合适的 RegionServer 和 region</li>
+<li>coprocessorHost 拦截该请求，然后在该表的每个 RegionObserver 上调用 prePut()</li>
+<li>如果没有被 <code>prePut()</code> 拦截，该请求继续送到 region，然后进行处理</li>
+<li>region 产生的结果再次被 CoprocessorHost 拦截，调用 <code>postPut()</code></li>
+<li>假如没有 <code>postPut()</code> 拦截该响应，最终结果被返回给客户端</li>
+</ul>
+<p>如果大家了解 Spring，可以将这种执行方式类比于其 AOP 的执行原理即可，官方文档当中也是这样类比的：</p>
+<blockquote>
+<p>If you are familiar with Aspect Oriented Programming (AOP), you can think of a coprocessor as applying advice by intercepting a request and then running some custom code,before passing the request on to its final destination (or even changing the destination).</p>
+<p>如果您熟悉面向切面编程（AOP），您可以将协处理器视为通过拦截请求然后运行一些自定义代码来使用 Advice，然后将请求传递到其最终目标（或者更改目标）。</p>
+</blockquote>
+<h3 id="2-2-Endpoint协处理器"><a href="#2-2-Endpoint协处理器" class="headerlink" title="2.2  Endpoint协处理器"></a>2.2  Endpoint协处理器</h3><p>Endpoint 协处理器类似于关系型数据库中的存储过程。客户端可以调用 Endpoint 协处理器在服务端对数据进行处理，然后再返回。</p>
+<p>以聚集操作为例，如果没有协处理器，当用户需要找出一张表中的最大数据，即 max 聚合操作，就必须进行全表扫描，然后在客户端上遍历扫描结果，这必然会加重了客户端处理数据的压力。利用 Coprocessor，用户可以将求最大值的代码部署到 HBase Server 端，HBase 将利用底层 cluster 的多个节点并发执行求最大值的操作。即在每个 Region 范围内执行求最大值的代码，将每个 Region 的最大值在 Region Server 端计算出来，仅仅将该 max 值返回给客户端。之后客户端只需要将每个 Region 的最大值进行比较而找到其中最大的值即可。</p>
+<h2 id="三、协处理的加载方式"><a href="#三、协处理的加载方式" class="headerlink" title="三、协处理的加载方式"></a>三、协处理的加载方式</h2><p>要使用我们自己开发的协处理器，必须通过静态（使用 HBase 配置）或动态（使用 HBase Shell 或 Java API）加载它。</p>
+<ul>
+<li>静态加载的协处理器称之为 <strong>System Coprocessor</strong>（系统级协处理器）,作用范围是整个 HBase 上的所有表，需要重启 HBase 服务；</li>
+<li>动态加载的协处理器称之为 <strong>Table Coprocessor</strong>（表处理器），作用于指定的表，不需要重启 HBase 服务。</li>
+</ul>
+<p>其加载和卸载方式分别介绍如下。</p>
+<h2 id="四、静态加载与卸载"><a href="#四、静态加载与卸载" class="headerlink" title="四、静态加载与卸载"></a>四、静态加载与卸载</h2><h3 id="4-1-静态加载"><a href="#4-1-静态加载" class="headerlink" title="4.1 静态加载"></a>4.1 静态加载</h3><p>静态加载分以下三步：</p>
+<ol>
+<li>在 <code>hbase-site.xml</code> 定义需要加载的协处理器。</li>
+</ol>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">name</span>&gt;</span>hbase.coprocessor.region.classes<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">value</span>&gt;</span>org.myname.hbase.coprocessor.endpoint.SumEndPoint<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p> <code>&lt;name&gt;</code> 标签的值必须是下面其中之一：</p>
+<ul>
+<li>RegionObservers 和 Endpoints 协处理器：<code>hbase.coprocessor.region.classes</code> </li>
+<li>WALObservers 协处理器： <code>hbase.coprocessor.wal.classes</code> </li>
+<li><p>MasterObservers 协处理器：<code>hbase.coprocessor.master.classes</code></p>
+<p><code>&lt;value&gt;</code> 必须是协处理器实现类的全限定类名。如果为加载指定了多个类，则类名必须以逗号分隔。</p>
+</li>
+</ul>
+<ol start="2">
+<li><p>将 jar(包含代码和所有依赖项) 放入 HBase 安装目录中的 <code>lib</code> 目录下；</p>
+</li>
+<li><p>重启 HBase。</p>
+</li>
+</ol>
+<p><br></p>
+<h3 id="4-2-静态卸载"><a href="#4-2-静态卸载" class="headerlink" title="4.2 静态卸载"></a>4.2 静态卸载</h3><ol>
+<li><p>从 hbase-site.xml 中删除配置的协处理器的\<property>元素及其子元素；</property></p>
+</li>
+<li><p>从类路径或 HBase 的 lib 目录中删除协处理器的 JAR 文件（可选）；</p>
+</li>
+<li><p>重启 HBase。</p>
+</li>
+</ol>
+<h2 id="五、动态加载与卸载"><a href="#五、动态加载与卸载" class="headerlink" title="五、动态加载与卸载"></a>五、动态加载与卸载</h2><p>使用动态加载协处理器，不需要重新启动 HBase。但动态加载的协处理器是基于每个表加载的，只能用于所指定的表。<br>此外，在使用动态加载必须使表脱机（disable）以加载协处理器。动态加载通常有两种方式：Shell 和 Java API 。 </p>
+<blockquote>
+<p>以下示例基于两个前提：</p>
+<ol>
+<li>coprocessor.jar 包含协处理器实现及其所有依赖项。</li>
+<li>JAR 包存放在 HDFS 上的路径为：hdfs：// \<namenode>：\<port> / user / \<hadoop-user> /coprocessor.jar</hadoop-user></port></namenode></li>
+</ol>
+</blockquote>
+<h3 id="5-1-HBase-Shell动态加载"><a href="#5-1-HBase-Shell动态加载" class="headerlink" title="5.1 HBase Shell动态加载"></a>5.1 HBase Shell动态加载</h3><ol>
+<li>使用 HBase Shell 禁用表</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hbase &gt; disable 'tableName'</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>使用如下命令加载协处理器</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hbase &gt; alter 'tableName', METHOD =&gt; 'table_att', 'Coprocessor'=&gt;'hdfs://&lt;namenode&gt;:&lt;port&gt;/</span><br><span class="line">user/&lt;hadoop-user&gt;/coprocessor.jar| org.myname.hbase.Coprocessor.RegionObserverExample|1073741823|</span><br><span class="line">arg1=1,arg2=2'</span><br></pre></td></tr></table></figure>
+<p><code>Coprocessor</code> 包含由管道（|）字符分隔的四个参数，按顺序解释如下：</p>
+<ul>
+<li><strong>JAR 包路径</strong>：通常为 JAR 包在 HDFS 上的路径。关于路径以下两点需要注意：</li>
+<li><p>允许使用通配符，例如：<code>hdfs://&lt;namenode&gt;:&lt;port&gt;/user/&lt;hadoop-user&gt;/*.jar</code> 来添加指定的 JAR 包；</p>
+</li>
+<li><p>可以使指定目录，例如：<code>hdfs://&lt;namenode&gt;:&lt;port&gt;/user/&lt;hadoop-user&gt;/</code> ，这会添加目录中的所有 JAR 包，但不会搜索子目录中的 JAR 包。</p>
+</li>
+<li><p><strong>类名</strong>：协处理器的完整类名。</p>
+</li>
+<li><strong>优先级</strong>：协处理器的优先级，遵循数字的自然序，即值越小优先级越高。可以为空，在这种情况下，将分配默认优先级值。</li>
+<li><strong>可选参数</strong> ：传递的协处理器的可选参数。</li>
+</ul>
+<ol start="3">
+<li>启用表</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hbase &gt; enable 'tableName'</span><br></pre></td></tr></table></figure>
+<ol start="4">
+<li>验证协处理器是否已加载</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hbase &gt; describe 'tableName'</span><br></pre></td></tr></table></figure>
+<p>协处理器出现在 <code>TABLE_ATTRIBUTES</code> 属性中则代表加载成功。</p>
+<p><br></p>
+<h3 id="5-2-HBase-Shell动态卸载"><a href="#5-2-HBase-Shell动态卸载" class="headerlink" title="5.2 HBase Shell动态卸载"></a>5.2 HBase Shell动态卸载</h3><ol>
+<li><p>禁用表</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">hbase&gt;</span><span class="bash"> <span class="built_in">disable</span> <span class="string">'tableName'</span></span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>移除表协处理器</p>
+</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">hbase&gt;</span><span class="bash"> alter <span class="string">'tableName'</span>, METHOD =&gt; <span class="string">'table_att_unset'</span>, NAME =&gt; <span class="string">'coprocessor$1'</span></span></span><br></pre></td></tr></table></figure>
+<ol start="3">
+<li>启用表</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">hbase&gt;</span><span class="bash"> <span class="built_in">enable</span> <span class="string">'tableName'</span></span></span><br></pre></td></tr></table></figure>
+<p><br></p>
+<h3 id="5-3-Java-API-动态加载"><a href="#5-3-Java-API-动态加载" class="headerlink" title="5.3 Java API 动态加载"></a>5.3 Java API 动态加载</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">TableName tableName = TableName.valueOf(<span class="string">"users"</span>);</span><br><span class="line">String path = <span class="string">"hdfs://&lt;namenode&gt;:&lt;port&gt;/user/&lt;hadoop-user&gt;/coprocessor.jar"</span>;</span><br><span class="line">Configuration conf = HBaseConfiguration.create();</span><br><span class="line">Connection connection = ConnectionFactory.createConnection(conf);</span><br><span class="line">Admin admin = connection.getAdmin();</span><br><span class="line">admin.disableTable(tableName);</span><br><span class="line">HTableDescriptor hTableDescriptor = <span class="keyword">new</span> HTableDescriptor(tableName);</span><br><span class="line">HColumnDescriptor columnFamily1 = <span class="keyword">new</span> HColumnDescriptor(<span class="string">"personalDet"</span>);</span><br><span class="line">columnFamily1.setMaxVersions(<span class="number">3</span>);</span><br><span class="line">hTableDescriptor.addFamily(columnFamily1);</span><br><span class="line">HColumnDescriptor columnFamily2 = <span class="keyword">new</span> HColumnDescriptor(<span class="string">"salaryDet"</span>);</span><br><span class="line">columnFamily2.setMaxVersions(<span class="number">3</span>);</span><br><span class="line">hTableDescriptor.addFamily(columnFamily2);</span><br><span class="line">hTableDescriptor.setValue(<span class="string">"COPROCESSOR$1"</span>, path + <span class="string">"|"</span></span><br><span class="line">+ RegionObserverExample.class.getCanonicalName() + <span class="string">"|"</span></span><br><span class="line">+ Coprocessor.PRIORITY_USER);</span><br><span class="line">admin.modifyTable(tableName, hTableDescriptor);</span><br><span class="line">admin.enableTable(tableName);</span><br></pre></td></tr></table></figure>
+<p>在 HBase 0.96 及其以后版本中，HTableDescriptor 的 addCoprocessor() 方法提供了一种更为简便的加载方法。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">TableName tableName = TableName.valueOf(<span class="string">"users"</span>);</span><br><span class="line">Path path = <span class="keyword">new</span> Path(<span class="string">"hdfs://&lt;namenode&gt;:&lt;port&gt;/user/&lt;hadoop-user&gt;/coprocessor.jar"</span>);</span><br><span class="line">Configuration conf = HBaseConfiguration.create();</span><br><span class="line">Connection connection = ConnectionFactory.createConnection(conf);</span><br><span class="line">Admin admin = connection.getAdmin();</span><br><span class="line">admin.disableTable(tableName);</span><br><span class="line">HTableDescriptor hTableDescriptor = <span class="keyword">new</span> HTableDescriptor(tableName);</span><br><span class="line">HColumnDescriptor columnFamily1 = <span class="keyword">new</span> HColumnDescriptor(<span class="string">"personalDet"</span>);</span><br><span class="line">columnFamily1.setMaxVersions(<span class="number">3</span>);</span><br><span class="line">hTableDescriptor.addFamily(columnFamily1);</span><br><span class="line">HColumnDescriptor columnFamily2 = <span class="keyword">new</span> HColumnDescriptor(<span class="string">"salaryDet"</span>);</span><br><span class="line">columnFamily2.setMaxVersions(<span class="number">3</span>);</span><br><span class="line">hTableDescriptor.addFamily(columnFamily2);</span><br><span class="line">hTableDescriptor.addCoprocessor(RegionObserverExample.class.getCanonicalName(), path,</span><br><span class="line">Coprocessor.PRIORITY_USER, <span class="keyword">null</span>);</span><br><span class="line">admin.modifyTable(tableName, hTableDescriptor);</span><br><span class="line">admin.enableTable(tableName);</span><br></pre></td></tr></table></figure>
+<h3 id="5-4-Java-API-动态卸载"><a href="#5-4-Java-API-动态卸载" class="headerlink" title="5.4 Java API 动态卸载"></a>5.4 Java API 动态卸载</h3><p>卸载其实就是重新定义表但不设置协处理器。这会删除所有表上的协处理器。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">TableName tableName = TableName.valueOf(<span class="string">"users"</span>);</span><br><span class="line">String path = <span class="string">"hdfs://&lt;namenode&gt;:&lt;port&gt;/user/&lt;hadoop-user&gt;/coprocessor.jar"</span>;</span><br><span class="line">Configuration conf = HBaseConfiguration.create();</span><br><span class="line">Connection connection = ConnectionFactory.createConnection(conf);</span><br><span class="line">Admin admin = connection.getAdmin();</span><br><span class="line">admin.disableTable(tableName);</span><br><span class="line">HTableDescriptor hTableDescriptor = <span class="keyword">new</span> HTableDescriptor(tableName);</span><br><span class="line">HColumnDescriptor columnFamily1 = <span class="keyword">new</span> HColumnDescriptor(<span class="string">"personalDet"</span>);</span><br><span class="line">columnFamily1.setMaxVersions(<span class="number">3</span>);</span><br><span class="line">hTableDescriptor.addFamily(columnFamily1);</span><br><span class="line">HColumnDescriptor columnFamily2 = <span class="keyword">new</span> HColumnDescriptor(<span class="string">"salaryDet"</span>);</span><br><span class="line">columnFamily2.setMaxVersions(<span class="number">3</span>);</span><br><span class="line">hTableDescriptor.addFamily(columnFamily2);</span><br><span class="line">admin.modifyTable(tableName, hTableDescriptor);</span><br><span class="line">admin.enableTable(tableName);</span><br></pre></td></tr></table></figure>
+<h2 id="六、协处理器案例"><a href="#六、协处理器案例" class="headerlink" title="六、协处理器案例"></a>六、协处理器案例</h2><p>这里给出一个简单的案例，实现一个类似于 Redis 中 <code>append</code> 命令的协处理器，当我们对已有列执行 put 操作时候，HBase 默认执行的是 update 操作，这里我们修改为执行 append 操作。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> redis append 命令示例</span></span><br><span class="line"><span class="meta">redis&gt;</span><span class="bash">  EXISTS mykey</span></span><br><span class="line">(integer) 0</span><br><span class="line"><span class="meta">redis&gt;</span><span class="bash">  APPEND mykey <span class="string">"Hello"</span></span></span><br><span class="line">(integer) 5</span><br><span class="line"><span class="meta">redis&gt;</span><span class="bash">  APPEND mykey <span class="string">" World"</span></span></span><br><span class="line">(integer) 11</span><br><span class="line"><span class="meta">redis&gt;</span><span class="bash">  GET mykey </span></span><br><span class="line">"Hello World"</span><br></pre></td></tr></table></figure>
+<h3 id="6-1-创建测试表"><a href="#6-1-创建测试表" class="headerlink" title="6.1 创建测试表"></a>6.1 创建测试表</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 创建一张杂志表 有文章和图片两个列族</span></span><br><span class="line">hbase &gt;  create 'magazine','article','picture'</span><br></pre></td></tr></table></figure>
+<h3 id="6-2-协处理器编程"><a href="#6-2-协处理器编程" class="headerlink" title="6.2 协处理器编程"></a>6.2 协处理器编程</h3><blockquote>
+<p>完整代码可见本仓库：<a href="https://github.com/heibaiying/BigData-Notes/tree/master/code/Hbase\hbase-observer-coprocessor" target="_blank" rel="noopener">hbase-observer-coprocessor</a></p>
+</blockquote>
+<p>新建 Maven 工程，导入下面依赖：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.hbase<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>hbase-common<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.2.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.hbase<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>hbase-server<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.2.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>继承 <code>BaseRegionObserver</code> 实现我们自定义的 <code>RegionObserver</code>,对相同的 <code>article:content</code> 执行 put 命令时，将新插入的内容添加到原有内容的末尾，代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AppendRegionObserver</span> <span class="keyword">extends</span> <span class="title">BaseRegionObserver</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">byte</span>[] columnFamily = Bytes.toBytes(<span class="string">"article"</span>);</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">byte</span>[] qualifier = Bytes.toBytes(<span class="string">"content"</span>);</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">prePut</span><span class="params">(ObserverContext&lt;RegionCoprocessorEnvironment&gt; e, Put put, WALEdit edit,</span></span></span><br><span class="line"><span class="function"><span class="params">                       Durability durability)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (put.has(columnFamily, qualifier)) &#123;</span><br><span class="line">            <span class="comment">// 遍历查询结果，获取指定列的原值</span></span><br><span class="line">            Result rs = e.getEnvironment().getRegion().get(<span class="keyword">new</span> Get(put.getRow()));</span><br><span class="line">            String oldValue = <span class="string">""</span>;</span><br><span class="line">            <span class="keyword">for</span> (Cell cell : rs.rawCells())</span><br><span class="line">                <span class="keyword">if</span> (CellUtil.matchingColumn(cell, columnFamily, qualifier)) &#123;</span><br><span class="line">                    oldValue = Bytes.toString(CellUtil.cloneValue(cell));</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 获取指定列新插入的值</span></span><br><span class="line">            List&lt;Cell&gt; cells = put.get(columnFamily, qualifier);</span><br><span class="line">            String newValue = <span class="string">""</span>;</span><br><span class="line">            <span class="keyword">for</span> (Cell cell : cells) &#123;</span><br><span class="line">                <span class="keyword">if</span> (CellUtil.matchingColumn(cell, columnFamily, qualifier)) &#123;</span><br><span class="line">                    newValue = Bytes.toString(CellUtil.cloneValue(cell));</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// Append 操作</span></span><br><span class="line">            put.addColumn(columnFamily, qualifier, Bytes.toBytes(oldValue + newValue));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="6-3-打包项目"><a href="#6-3-打包项目" class="headerlink" title="6.3 打包项目"></a>6.3 打包项目</h3><p>使用 maven 命令进行打包，打包后的文件名为 <code>hbase-observer-coprocessor-1.0-SNAPSHOT.jar</code></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> mvn clean package</span></span><br></pre></td></tr></table></figure>
+<h3 id="6-4-上传JAR包到HDFS"><a href="#6-4-上传JAR包到HDFS" class="headerlink" title="6.4 上传JAR包到HDFS"></a>6.4 上传JAR包到HDFS</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 上传项目到HDFS上的hbase目录</span></span><br><span class="line">hadoop fs -put /usr/app/hbase-observer-coprocessor-1.0-SNAPSHOT.jar /hbase</span><br><span class="line"><span class="meta">#</span><span class="bash"> 查看上传是否成功</span></span><br><span class="line">hadoop fs -ls /hbase</span><br></pre></td></tr></table></figure>
+<div align="center"> <img src="https://raw.githubusercontent.com/iCocos/icocos_hexo_images/master/2020/god_of_bd/pictures/hbase-cp-hdfs.png"> </div>
+
+<h3 id="6-5-加载协处理器"><a href="#6-5-加载协处理器" class="headerlink" title="6.5 加载协处理器"></a>6.5 加载协处理器</h3><ol>
+<li>加载协处理器前需要先禁用表</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hbase &gt;  disable 'magazine'</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>加载协处理器</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hbase &gt;   alter 'magazine', METHOD =&gt; 'table_att', 'Coprocessor'=&gt;'hdfs://hadoop001:8020/hbase/hbase-observer-coprocessor-1.0-SNAPSHOT.jar|com.heibaiying.AppendRegionObserver|1001|'</span><br></pre></td></tr></table></figure>
+<ol start="3">
+<li>启用表</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hbase &gt;  enable 'magazine'</span><br></pre></td></tr></table></figure>
+<ol start="4">
+<li>查看协处理器是否加载成功</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hbase &gt;  desc 'magazine'</span><br></pre></td></tr></table></figure>
+<p>协处理器出现在 <code>TABLE_ATTRIBUTES</code> 属性中则代表加载成功，如下图：</p>
+<div align="center"> <img src="https://raw.githubusercontent.com/iCocos/icocos_hexo_images/master/2020/god_of_bd/pictures/hbase-cp-load.png"> </div>
+
+<h3 id="6-6-测试加载结果"><a href="#6-6-测试加载结果" class="headerlink" title="6.6 测试加载结果"></a>6.6 测试加载结果</h3><p>插入一组测试数据：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">hbase &gt; put 'magazine', 'rowkey1','article:content','Hello'</span><br><span class="line">hbase &gt; get 'magazine','rowkey1','article:content'</span><br><span class="line">hbase &gt; put 'magazine', 'rowkey1','article:content','World'</span><br><span class="line">hbase &gt; get 'magazine','rowkey1','article:content'</span><br></pre></td></tr></table></figure>
+<p>可以看到对于指定列的值已经执行了 append 操作：</p>
+<div align="center"> <img src="https://raw.githubusercontent.com/iCocos/icocos_hexo_images/master/2020/god_of_bd/pictures/hbase-cp-helloworld.png"> </div>
+
+<p>插入一组对照数据：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">hbase &gt; put 'magazine', 'rowkey1','article:author','zhangsan'</span><br><span class="line">hbase &gt; get 'magazine','rowkey1','article:author'</span><br><span class="line">hbase &gt; put 'magazine', 'rowkey1','article:author','lisi'</span><br><span class="line">hbase &gt; get 'magazine','rowkey1','article:author'</span><br></pre></td></tr></table></figure>
+<p>可以看到对于正常的列还是执行 update 操作:</p>
+<div align="center"> <img src="https://raw.githubusercontent.com/iCocos/icocos_hexo_images/master/2020/god_of_bd/pictures/hbase-cp-lisi.png"> </div>
+
+<h3 id="6-7-卸载协处理器"><a href="#6-7-卸载协处理器" class="headerlink" title="6.7 卸载协处理器"></a>6.7 卸载协处理器</h3><ol>
+<li>卸载协处理器前需要先禁用表</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hbase &gt;  disable 'magazine'</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>卸载协处理器</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hbase &gt; alter 'magazine', METHOD =&gt; 'table_att_unset', NAME =&gt; 'coprocessor$1'</span><br></pre></td></tr></table></figure>
+<ol start="3">
+<li>启用表</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hbase &gt;  enable 'magazine'</span><br></pre></td></tr></table></figure>
+<ol start="4">
+<li>查看协处理器是否卸载成功</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hbase &gt;  desc 'magazine'</span><br></pre></td></tr></table></figure>
+<div align="center"> <img src="https://raw.githubusercontent.com/iCocos/icocos_hexo_images/master/2020/god_of_bd/pictures/hbase-co-unload.png"> </div>
+
+<h3 id="6-8-测试卸载结果"><a href="#6-8-测试卸载结果" class="headerlink" title="6.8 测试卸载结果"></a>6.8 测试卸载结果</h3><p>依次执行下面命令可以测试卸载是否成功</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hbase &gt; get 'magazine','rowkey1','article:content'</span><br><span class="line">hbase &gt; put 'magazine', 'rowkey1','article:content','Hello'</span><br><span class="line">hbase &gt; get 'magazine','rowkey1','article:content'</span><br></pre></td></tr></table></figure>
+<div align="center"> <img src="https://raw.githubusercontent.com/iCocos/icocos_hexo_images/master/2020/god_of_bd/pictures/hbase-unload-test.png"> </div>
+
+
+
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ol>
+<li><a href="http://hbase.apache.org/book.html#cp" target="_blank" rel="noopener">Apache HBase Coprocessors</a></li>
+<li><a href="https://blogs.apache.org/hbase/entry/coprocessor_introduction" target="_blank" rel="noopener">Apache HBase Coprocessor Introduction</a></li>
+<li><a href="https://www.itread01.com/content/1546245908.html" target="_blank" rel="noopener">HBase 高階知識</a></li>
+</ol>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="http://pd1l3bbt7.bkt.clouddn.com/img/wechatimg.jpg" alt="曹理鹏@iCocos 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="http://pd1l3bbt7.bkt.clouddn.com/img/alipayimg.jpg" alt="曹理鹏@iCocos 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>曹理鹏@iCocos</li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://icocos.github.io/2019/07/27/大数据之Hbase协处理器详解/" title="大数据之Hbase协处理器详解">https://icocos.github.io/2019/07/27/大数据之Hbase协处理器详解/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明出处！</li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/大数据/" rel="tag"># 大数据</a>
+          
+            <a href="/tags/HBase/" rel="tag"># HBase</a>
+          
+            <a href="/tags/协处理器/" rel="tag"># 协处理器</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/07/27/大数据之Hbase过滤器详解/" rel="next" title="大数据之Hbase过滤器详解">
+                <i class="fa fa-chevron-left"></i> 大数据之Hbase过滤器详解
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/07/29/大数据之Hbase容灾与备份/" rel="prev" title="大数据之Hbase容灾与备份">
+                大数据之Hbase容灾与备份 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="SOHUCS"></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="http://pd1l3bbt7.bkt.clouddn.com/icocos_user_icon.JPG"
+                alt="曹理鹏@iCocos" />
+            
+              <p class="site-author-name" itemprop="name">曹理鹏@iCocos</p>
+              <p class="site-description motion-element" itemprop="description">纯码迷、爱学习、爱交友、喜欢接触新鲜事物、迎接新的挑战，更爱游离于错综复杂的编码与逻辑中！</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives">
+                
+                    <span class="site-state-item-count">324</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">27</span>
+                    <span class="site-state-item-name">分类</span>
+                  
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">268</span>
+                    <span class="site-state-item-name">标签</span>
+                  
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/al1020119" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:al1020119@163.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://stackoverflow.com/users/10186720" target="_blank" title="StackOverflow"><i class="fa fa-fw fa-stack-overflow"></i>StackOverflow</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.icocos.cn/" title="梦工厂" target="_blank">梦工厂</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://al1020119.github.io/" title="iOS梦工厂" target="_blank">iOS梦工厂</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Hbase-协处理器"><span class="nav-number">1.</span> <span class="nav-text">Hbase 协处理器</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#一、简述"><span class="nav-number">1.1.</span> <span class="nav-text">一、简述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二、协处理器类型"><span class="nav-number">1.2.</span> <span class="nav-text">二、协处理器类型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-Observer协处理器"><span class="nav-number">1.2.1.</span> <span class="nav-text">2.1 Observer协处理器</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-功能"><span class="nav-number">1.2.1.1.</span> <span class="nav-text">1. 功能</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-类型"><span class="nav-number">1.2.1.2.</span> <span class="nav-text">2. 类型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-接口"><span class="nav-number">1.2.1.3.</span> <span class="nav-text">3. 接口</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-执行流程"><span class="nav-number">1.2.1.4.</span> <span class="nav-text">4. 执行流程</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-Endpoint协处理器"><span class="nav-number">1.2.2.</span> <span class="nav-text">2.2  Endpoint协处理器</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#三、协处理的加载方式"><span class="nav-number">1.3.</span> <span class="nav-text">三、协处理的加载方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#四、静态加载与卸载"><span class="nav-number">1.4.</span> <span class="nav-text">四、静态加载与卸载</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-1-静态加载"><span class="nav-number">1.4.1.</span> <span class="nav-text">4.1 静态加载</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-静态卸载"><span class="nav-number">1.4.2.</span> <span class="nav-text">4.2 静态卸载</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#五、动态加载与卸载"><span class="nav-number">1.5.</span> <span class="nav-text">五、动态加载与卸载</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#5-1-HBase-Shell动态加载"><span class="nav-number">1.5.1.</span> <span class="nav-text">5.1 HBase Shell动态加载</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-2-HBase-Shell动态卸载"><span class="nav-number">1.5.2.</span> <span class="nav-text">5.2 HBase Shell动态卸载</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-3-Java-API-动态加载"><span class="nav-number">1.5.3.</span> <span class="nav-text">5.3 Java API 动态加载</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-4-Java-API-动态卸载"><span class="nav-number">1.5.4.</span> <span class="nav-text">5.4 Java API 动态卸载</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#六、协处理器案例"><span class="nav-number">1.6.</span> <span class="nav-text">六、协处理器案例</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#6-1-创建测试表"><span class="nav-number">1.6.1.</span> <span class="nav-text">6.1 创建测试表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-2-协处理器编程"><span class="nav-number">1.6.2.</span> <span class="nav-text">6.2 协处理器编程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-3-打包项目"><span class="nav-number">1.6.3.</span> <span class="nav-text">6.3 打包项目</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-4-上传JAR包到HDFS"><span class="nav-number">1.6.4.</span> <span class="nav-text">6.4 上传JAR包到HDFS</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-5-加载协处理器"><span class="nav-number">1.6.5.</span> <span class="nav-text">6.5 加载协处理器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-6-测试加载结果"><span class="nav-number">1.6.6.</span> <span class="nav-text">6.6 测试加载结果</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-7-卸载协处理器"><span class="nav-number">1.6.7.</span> <span class="nav-text">6.7 卸载协处理器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-8-测试卸载结果"><span class="nav-number">1.6.8.</span> <span class="nav-text">6.8 测试卸载结果</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料"><span class="nav-number">1.7.</span> <span class="nav-text">参考资料</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2017 – <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">曹理鹏@iCocos</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">站点总字数：</span>
+    
+    <span title="站点总字数">1.8m</span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    
+    <span title="站点阅读时长">27:03</span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv" title="总访客量">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="site-pv" title="总访问量">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/reading_progress/reading_progress.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.3.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.3.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.3.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.3.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+  
+    <script type="text/javascript">
+    (function(){
+      var appid = 'cytKHBEtW';
+      var conf = '43989b8e63b25c4e9f1fde821c996a39';
+      var width = window.innerWidth || document.documentElement.clientWidth;
+      if (width < 960) {
+      window.document.write('<script id="changyan_mobile_js" charset="utf-8" type="text/javascript" src="https://changyan.sohu.com/upload/mobile/wap-js/changyan_mobile.js?client_id=' + appid + '&conf=' + conf + '"><\/script>'); } else { var loadJs=function(d,a){var c=document.getElementsByTagName("head")[0]||document.head||document.documentElement;var b=document.createElement("script");b.setAttribute("type","text/javascript");b.setAttribute("charset","UTF-8");b.setAttribute("src",d);if(typeof a==="function"){if(window.attachEvent){b.onreadystatechange=function(){var e=b.readyState;if(e==="loaded"||e==="complete"){b.onreadystatechange=null;a()}}}else{b.onload=a}}c.appendChild(b)};loadJs("https://changyan.sohu.com/upload/changyan.js",function(){
+        window.changyan.api.config({appid:appid,conf:conf})});
+      }
+    })();
+    </script>
+    <script type="text/javascript" src="https://assets.changyan.sohu.com/upload/plugins/plugins.count.js"></script>
+  
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("Tc7k1mbaieCUSgmM8LPk1IBO-gzGzoHsz", "sAb7L2vwENJTteRrvFKQacUU");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            
+              var $element = $(document.getElementById(url));
+              $element.find('.leancloud-visitors-count').text(counter.get('time'));
+            
+            counter.save(null, {
+              success: function(counter) {
+                
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            
+              var $element = $(document.getElementById(url));
+              $element.find('.leancloud-visitors-count').text('Counter not initialized! See more at console err msg.');
+              console.error('ATTENTION! LeanCloud counter has security bug, see here how to solve it: https://github.com/theme-next/hexo-leancloud-counter-security. \n But you also can use LeanCloud without security, by set \'security\' option to \'false\'.');
+            
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #333;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #eee;
+      background-image: linear-gradient(#fcfcfc, #eee);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('复制').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+          if(result)$(this).text('复制成功')
+          else $(this).text('复制失败')
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('复制')
+        }, 300)
+      }).append(e)
+    })
+  </script>
+
+
+  
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("Tc7k1mbaieCUSgmM8LPk1IBO-gzGzoHsz", "sAb7L2vwENJTteRrvFKQacUU");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+  
+</body>
+</html>

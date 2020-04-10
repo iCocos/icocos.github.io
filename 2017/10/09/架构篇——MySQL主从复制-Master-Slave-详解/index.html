@@ -1,0 +1,2738 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.3.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="http://pd1l3bbt7.bkt.clouddn.com/img/favicon.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="http://pd1l3bbt7.bkt.clouddn.com/img/favicon.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="http://pd1l3bbt7.bkt.clouddn.com/img/favicon.png?v=6.3.0">
+
+
+  <link rel="mask-icon" href="http://pd1l3bbt7.bkt.clouddn.com/img/favicon.png?v=6.3.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="keywords" content="PHP,MySQL,主从复制">
+<meta property="og:type" content="article">
+<meta property="og:title" content="架构篇——MySQL主从复制(Master-Slave)详解">
+<meta property="og:url" content="https://icocos.github.io/2017/10/09/架构篇——MySQL主从复制-Master-Slave-详解/index.html">
+<meta property="og:site_name" content="iCocos">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2020-04-09T14:45:08.472Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="架构篇——MySQL主从复制(Master-Slave)详解">
+
+
+
+  <link rel="alternate" href="/atom.xml" title="iCocos" type="application/atom+xml" />
+
+
+
+
+  <link rel="canonical" href="https://icocos.github.io/2017/10/09/架构篇——MySQL主从复制-Master-Slave-详解/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>架构篇——MySQL主从复制(Master-Slave)详解 | iCocos</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">iCocos</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">www.icocos.cn</p>
+      
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-首页">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-归档">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-关于">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-作品">
+    <a href="/works/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-calendar"></i> <br />作品</a>
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+    <div class="reading-progress-bar"></div>
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://icocos.github.io/2017/10/09/架构篇——MySQL主从复制-Master-Slave-详解/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="曹理鹏@iCocos">
+      <meta itemprop="description" content="纯码迷、爱学习、爱交友、喜欢接触新鲜事物、迎接新的挑战，更爱游离于错综复杂的编码与逻辑中！">
+      <meta itemprop="image" content="http://pd1l3bbt7.bkt.clouddn.com/icocos_user_icon.JPG">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="iCocos">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">架构篇——MySQL主从复制(Master-Slave)详解
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2017-10-09 17:55:42" itemprop="dateCreated datePublished" datetime="2017-10-09T17:55:42+08:00">2017-10-09</time>
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/PHP/" itemprop="url" rel="index"><span itemprop="name">PHP</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+              <span class="post-meta-divider">|</span>
+              <span class="post-meta-item-icon">
+                <i class="fa fa-comment-o"></i>
+              </span>
+              
+                <a href="/2017/10/09/架构篇——MySQL主从复制-Master-Slave-详解/#SOHUCS" itemprop="discussionUrl">
+                  <span class="post-meta-item-text">评论数：</span> <span id="changyan_count_unit" class="post-comments-count hc-comment-count" data-xid="2017/10/09/架构篇——MySQL主从复制-Master-Slave-详解/" itemprop="commentsCount"></span>
+                </a>
+              
+            
+          
+
+          
+          
+             <span id="/2017/10/09/架构篇——MySQL主从复制-Master-Slave-详解/" class="leancloud_visitors" data-flag-title="架构篇——MySQL主从复制(Master-Slave)详解">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数：</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon"
+            >
+            <i class="fa fa-eye"></i>
+             阅读次数： 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+            <div class="post-symbolscount">
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">本文字数：</span>
+                
+                <span title="本文字数">21k</span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">19 分钟</span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <hr>
+<a id="more"></a>
+<h3 id="主从"><a href="#主从" class="headerlink" title="主从"></a>主从</h3><p>Mysql主从又叫Replication、AB复制(不同于PXC)。简单讲就是A与B两台机器做主从后，在A上写数据，另外一台B也会跟着写数据，实现数据实时同步</p>
+<blockquote>
+<p>mysql主从是基于binlog，主上需开启binlog才能进行主从</p>
+</blockquote>
+<h5 id="主从过程大概有3个步骤"><a href="#主从过程大概有3个步骤" class="headerlink" title="主从过程大概有3个步骤"></a>主从过程大概有3个步骤</h5><ul>
+<li>主将更改操作记录到binlog里</li>
+<li>从将主的binlog事件（sql语句） 同步本机上并记录在relaylog里</li>
+<li>从根据relaylog里面的sql语句按顺序执行</li>
+</ul>
+<h4 id="主从作用"><a href="#主从作用" class="headerlink" title="主从作用"></a>主从作用</h4><pre><code>实时灾备，用于故障切换
+读写分离，提供查询服务
+备份，避免影响业务
+</code></pre><h4 id="主从形式"><a href="#主从形式" class="headerlink" title="主从形式"></a>主从形式</h4><ul>
+<li>一主一从</li>
+<li>主主复制</li>
+<li>一主多从—扩展系统读取的性能，因为读是在从库读取的</li>
+<li>多主一从—5.7版本开始支持</li>
+<li>联级复制</li>
+</ul>
+<p>MySQL数据库自身提供的主从复制功能可以方便的实现数据的多处自动备份，实现数据库的拓展。多个数据备份不仅可以加强数据的安全性，通过实现读写分离还能进一步提升数据库的负载性能。</p>
+<h3 id="原理："><a href="#原理：" class="headerlink" title="原理："></a>原理：</h3><blockquote>
+<p>MySQL之间数据复制的基础是二进制日志文件（binary log file）。一台MySQL数据库一旦启用二进制日志后，其作为master，它的数据库中所有操作都会以“事件”的方式记录在二进制日志中，其他数据库作为slave通过一个I/O线程与主服务器保持通信，并监控master的二进制日志文件的变化，如果发现master二进制日志文件发生变化，则会把变化复制到自己的中继日志中，然后slave的一个SQL线程会把相关的“事件”执行到自己的数据库中，以此实现从数据库和主数据库的一致性，也就实现了主从复制。</p>
+</blockquote>
+<ul>
+<li>主库将所有的写操作记录在binlog日志中，并生成log dump线程，将binlog日志传给从库的I/O线程</li>
+<li>从库生成两个线程，一个是I/O线程，另一个是SQL线程</li>
+<li>I/O线程去请求主库的binlog日志，并将binlog日志中的文件写入relay log（中继日志）中</li>
+<li>SQL线程会读取relay loy中的内容，并解析成具体的操作，来实现主从的操作一致，达到最终数据一致的目的</li>
+</ul>
+<h3 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h3><p>实现MySQL主从复制需要进行的配置：</p>
+<ul>
+<li><p>主服务器：</p>
+<ul>
+<li>开启二进制日志</li>
+<li>配置唯一的server-id</li>
+<li>获得master二进制日志文件名及位置</li>
+<li>创建一个用于slave和master通信的用户账号</li>
+</ul>
+</li>
+<li><p>从服务器：</p>
+<ul>
+<li>配置唯一的server-id</li>
+<li>使用master分配的用户账号读取master二进制日志</li>
+<li>启用slave服务</li>
+</ul>
+</li>
+</ul>
+<h4 id="具体实现过程如下："><a href="#具体实现过程如下：" class="headerlink" title="具体实现过程如下："></a>具体实现过程如下：</h4><p>主从复制配置步骤：</p>
+<ul>
+<li>确保从数据库与主数据库里的数据一致</li>
+<li>在主数据库里创建一个同步账户授权给从数据库使用</li>
+<li>配合主数据库（修改配置文件）</li>
+<li>配置从数据库（修改配置文件）</li>
+</ul>
+<h5 id="一、准备工作："><a href="#一、准备工作：" class="headerlink" title="一、准备工作："></a>一、准备工作：</h5><ol>
+<li>主从数据库版本最好一致</li>
+<li>主从数据库内数据保持一致</li>
+</ol>
+<p>搭建两台MYSQL服务器，一台作为主服务器，一台作为从服务器，主服务器进行写操作，从服务器进行读操作</p>
+<pre><code>+ 主数据库：192.168.0.1 /Linux-MySQL
++ 从数据库：192.168.0.2 /Linux-MySQL
+</code></pre><h5 id="二、主数据库master修改："><a href="#二、主数据库master修改：" class="headerlink" title="二、主数据库master修改："></a>二、主数据库master修改：</h5><p>1.修改mysql配置</p>
+<p>找到主数据库的配置文件my.cnf(或者my.ini)，我的在/etc/mysql/my.cnf,在[mysqld]部分插入如下两行：</p>
+<pre><code>[mysqld]
+log-bin=mysql-bin #开启二进制日志
+server-id=1 #设置server-id
+</code></pre><p>2.重启mysql，创建用于同步的用户账号</p>
+<p>打开mysql会话shell</p>
+<pre><code>mysql -hlocalhost -uname -ppassword
+</code></pre><p>创建用户：用户：rel1密码：slavepass</p>
+<p>3.授权</p>
+<p>主服务器授权从服务器特定账号登录</p>
+<pre><code>mysql&gt; CREATE USER &apos;repl&apos;@&apos;192.168.0.2&apos; IDENTIFIED BY &apos;slavepass&apos;;#创建用户
+mysql&gt; GRANT REPLICATION SLAVE ON *.* TO &apos;repl&apos;@&apos;192.168.0.2&apos;;#分配权限
+mysql&gt;flush privileges;   #刷新权限
+</code></pre><p>4.查看master状态，记录二进制文件名(mysql-bin.000003)和位置(73)：</p>
+<pre><code>mysql &gt; SHOW MASTER STATUS;
++------------------+----------+--------------+------------------+
+| File             | Position | Binlog_Do_DB | Binlog_Ignore_DB |
++------------------+----------+--------------+------------------+
+| mysql-bin.000003 | 73       | test         | manual,mysql     |
++------------------+----------+--------------+------------------+
+</code></pre><h5 id="三、从服务器slave修改："><a href="#三、从服务器slave修改：" class="headerlink" title="三、从服务器slave修改："></a>三、从服务器slave修改：</h5><p>1.修改mysql配置</p>
+<p>同样找到my.cnf配置文件，添加server-id</p>
+<pre><code>[mysqld]
+server-id=2 #设置server-id，必须唯一
+</code></pre><p>2.重启mysql，打开mysql会话，执行同步SQL语句(需要主服务器主机名，登陆凭据，二进制文件的名称和位置)：<br>复制代码</p>
+<pre><code>mysql&gt; CHANGE MASTER TO
+    -&gt;     MASTER_HOST=&apos;192.168.0.1&apos;,
+    -&gt;     MASTER_USER=&apos;rep1&apos;,
+    -&gt;     MASTER_PASSWORD=&apos;slavepass&apos;,
+    -&gt;     MASTER_LOG_FILE=&apos;mysql-bin.000003&apos;,
+    -&gt;     MASTER_LOG_POS=73;
+</code></pre><p>3.启动slave同步进程：</p>
+<pre><code>mysql&gt;start slave;
+</code></pre><p>4.查看slave状态：</p>
+<pre><code>mysql&gt; show slave status\G;
+*************************** 1. row ***************************
+               Slave_IO_State: Waiting for master to send event
+                  Master_Host: 192.168.0.1
+                  Master_User: rep1
+                  Master_Port: 3306
+                Connect_Retry: 60
+              Master_Log_File: mysql-bin.000013
+          Read_Master_Log_Pos: 11662
+               Relay_Log_File: mysqld-relay-bin.000022
+                Relay_Log_Pos: 11765
+        Relay_Master_Log_File: mysql-bin.000013
+             Slave_IO_Running: Yes
+            Slave_SQL_Running: Yes
+              Replicate_Do_DB: 
+          Replicate_Ignore_DB: 
+        ...
+</code></pre><p>当Slave_IO_Running和Slave_SQL_Running都为YES的时候就表示主从同步设置成功了。</p>
+<p>接下来就可以进行一些验证了，比如在主master数据库的test数据库的一张表中插入一条数据，在slave的test库的相同数据表中查看是否有新增的数据即可验证主从复制功能是否有效，还可以关闭slave（mysql&gt;stop slave;）,然后再修改master，看slave是否也相应修改（停止slave后，master的修改不会同步到slave），就可以完成主从复制功能的验证了。</p>
+<p>还可以用到的其他相关参数：</p>
+<blockquote>
+<p>master开启二进制日志后默认记录所有库所有表的操作，可以通过配置来指定只记录指定的数据库甚至指定的表的操作，具体在mysql配置文件的[mysqld]可添加修改如下选项：</p>
+</blockquote>
+<pre><code># 不同步哪些数据库  
+binlog-ignore-db = mysql  
+binlog-ignore-db = test  
+binlog-ignore-db = information_schema  
+
+# 只同步哪些数据库，除此之外，其他不同步  
+binlog-do-db = game  
+</code></pre><blockquote>
+<p>如之前查看master状态时就可以看到只记录了test库，忽略了manual和mysql库。</p>
+</blockquote>
+<h3 id="操作流程汇总"><a href="#操作流程汇总" class="headerlink" title="操作流程汇总"></a>操作流程汇总</h3><h5 id="关闭防火墙以SELINUX"><a href="#关闭防火墙以SELINUX" class="headerlink" title="关闭防火墙以SELINUX"></a>关闭防火墙以SELINUX</h5><pre><code>[root@icocos ~]# systemctl stop firewalld
+[root@icocos ~]# systemctl disable firewalld
+[root@icocos ~]#  sed -ri &apos;s/(SELINUX=).*/\1disabled/g&apos; /etc/selinux/config
+[root@icocos ~]# setenforce 0
+</code></pre><h5 id="安装mysql"><a href="#安装mysql" class="headerlink" title="安装mysql"></a>安装mysql</h5><pre><code>安装依赖包
+[root@icocos ~]# yum -y install ncurses-devel openssl-devel openssl cmake mariadb-devel
+</code></pre><h5 id="创建用户和组"><a href="#创建用户和组" class="headerlink" title="创建用户和组"></a>创建用户和组</h5><pre><code>[root@icocos ~]# groupadd -r -g 306 mysql
+[root@icocos ~]# useradd -M -s /sbin/nologin -g 306 -u 306 mysql
+</code></pre><h5 id="下载二进制格式的mysql软件包"><a href="#下载二进制格式的mysql软件包" class="headerlink" title="下载二进制格式的mysql软件包"></a>下载二进制格式的mysql软件包</h5><pre><code>[root@icocos ~]# cd /usr/src/
+[root@icocos src]#wget https://downloads.mysql.com/archives/get/file/mysql-5.7.22-linux-glibc2.12-x86_64.tar.gz
+</code></pre><h5 id="解压软件至-usr-local"><a href="#解压软件至-usr-local" class="headerlink" title="解压软件至/usr/local/"></a>解压软件至/usr/local/</h5><pre><code>[root@icocos src]# ls
+debug  kernels  mysql-5.7.22-linux-glibc2.12-x86_64.tar.gz
+[root@icocos src]# tar xf mysql-5.7.22-linux-glibc2.12-x86_64.tar.gz -C /usr/local/
+[root@icocos src]#  ls  /usr/local/
+bin  etc  games  include  lib  lib64  libexec  mysql-5.7.22-linux-glibc2.12-x86_64  sbin  share  src
+[root@icocos src]#  cd  /usr/local/
+[root@icocos local]# ln -sv mysql-5.7.22-linux-glibc2.12-x86_64/ mysql
+&quot;mysql&quot; -&gt; &quot;mysql-5.7.22-linux-glibc2.12-x86_64/&quot;
+[root@icocos local]# ll
+
+总用量 0
+drwxr-xr-x. 2 root root   6 11月  5 2016 bin
+drwxr-xr-x. 2 root root   6 11月  5 2016 etc
+drwxr-xr-x. 2 root root   6 11月  5 2016 games
+drwxr-xr-x. 2 root root   6 11月  5 2016 include
+drwxr-xr-x. 2 root root   6 11月  5 2016 lib
+drwxr-xr-x. 2 root root   6 11月  5 2016 lib64
+drwxr-xr-x. 2 root root   6 11月  5 2016 libexec
+lrwxrwxrwx. 1 root root  36 9月   7 22:20 mysql -&gt; mysql-5.7.22-linux-glibc2.12-x86_64/
+drwxr-xr-x. 9 root root 129 9月   7 22:19 mysql-5.7.22-linux-glibc2.12-x86_64
+drwxr-xr-x. 2 root root   6 11月  5 2016 sbin
+drwxr-xr-x. 5 root root  49 9月   3 23:02 share
+drwxr-xr-x. 2 root root   6 11月  5 2016 src
+</code></pre><h5 id="修改目录-usr-locaal-mysql的属主属组"><a href="#修改目录-usr-locaal-mysql的属主属组" class="headerlink" title="修改目录/usr/locaal/mysql的属主属组"></a>修改目录/usr/locaal/mysql的属主属组</h5><pre><code>[root@icocos local]# chown -R mysql.mysql /usr/local/mysql
+[root@icocos local]#  ll /usr/local/mysql -d
+lrwxrwxrwx. 1 mysql mysql 36 9月   7 22:20 /usr/local/mysql -&gt; mysql-5.7.22-linux-glibc2.12-x86_64/
+</code></pre><h5 id="添加环境变量"><a href="#添加环境变量" class="headerlink" title="添加环境变量"></a>添加环境变量</h5><pre><code>[root@icocos local]# ls /usr/local/mysql
+bin  COPYING  docs  include  lib  man  README  share  support-files
+[root@icocos local]# cd
+[root@icocos ~]# echo &apos;export PATH=/usr/local/mysql/bin:$PATH&apos; &gt; /etc/profile.d/mysql.sh
+[root@icocos ~]# . /etc/profile.d/mysql.sh
+[root@icocos ~]# echo $PATH
+/usr/local/mysql/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/root/bin
+</code></pre><h5 id="建立数据存放目录"><a href="#建立数据存放目录" class="headerlink" title="建立数据存放目录"></a>建立数据存放目录</h5><pre><code>[root@icocos ~]# cd /usr/local/mysql
+[root@icocos mysql]# mkdir /opt/data
+[root@icocos mysql]#  chown -R mysql.mysql /opt/data/
+[root@icocos mysql]#  ll /opt/
+总用量 0
+drwxr-xr-x. 2 mysql mysql 6 9月   7 22:25 data
+</code></pre><h5 id="初始化数据库"><a href="#初始化数据库" class="headerlink" title="初始化数据库"></a>初始化数据库</h5><pre><code>[root@icocos mysql]# /usr/local/mysql/bin/mysqld --initialize --user=mysql --datadir=/opt/data/
+//这个命令的最后会生成一个临时密码，此处密码是1EbNA-k*BtKo
+</code></pre><h5 id="配置mysql"><a href="#配置mysql" class="headerlink" title="配置mysql"></a>配置mysql</h5><pre><code>[root@icocos ~]# ln -sv /usr/local/mysql/include/ /usr/local/include/mysql
+&quot;/usr/local/include/mysql&quot; -&gt; &quot;/usr/local/mysql/include/&quot;
+[root@icocos ~]# echo &apos;/usr/local/mysql/lib&apos; &gt; /etc/ld.so.conf.d/mysql.conf
+[root@icocos ~]#  ldconfig -v
+</code></pre><h5 id="生成配置文件"><a href="#生成配置文件" class="headerlink" title="生成配置文件"></a>生成配置文件</h5><pre><code>[root@icocos ~]# cat &gt; /etc/my.cnf &lt;&lt;EOF
+&gt; [mysqld]
+&gt; basedir = /usr/local/mysql
+&gt; datadir = /opt/data
+&gt; socket = /tmp/mysql.sock
+&gt; port = 3306
+&gt; pid-file = /opt/data/mysql.pid
+&gt; user = mysql
+&gt; skip-name-resolve
+&gt; EOF
+</code></pre><h5 id="配置服务启动脚本"><a href="#配置服务启动脚本" class="headerlink" title="配置服务启动脚本"></a>配置服务启动脚本</h5><pre><code>[root@icocos ~]# cp -a /usr/local/mysql/support-files/mysql.server /etc/init.d/mysqld
+[root@icocos ~]#  sed -ri &apos;s#^(basedir=).*#\1/usr/local/mysql#g&apos; /etc/init.d/mysqld
+[root@icocos ~]# sed -ri &apos;s#^(datadir=).*#\1/opt/data#g&apos; /etc/init.d/mysqld
+</code></pre><h5 id="启动mysql"><a href="#启动mysql" class="headerlink" title="启动mysql"></a>启动mysql</h5><pre><code>[root@icocos ~]#  service mysqld start
+Starting MySQL.Logging to &apos;/opt/data/icocos.err&apos;.
+.. SUCCESS!
+[root@icocos ~]#  ps -ef|grep mysql
+root       4897      1  0 22:38 pts/2    00:00:00 /bin/sh /usr/local/mysql/bin/mysqld_safe --datadir=/opt/data --pid-file=/opt/data/mysql.pid
+mysql      5075   4897  6 22:38 pts/2    00:00:01 /usr/local/mysql/bin/mysqld --basedir=/usr/local/mysql --datadir=/opt/data --plugin-dir=/usr/local/mysql/lib/plugin --user=mysql --log-error=icocos.err --pid-file=/opt/data/mysql.pid --socket=/tmp/mysql.sock --port=3306
+root       5109   4668  0 22:38 pts/2    00:00:00 grep --color=auto mysql
+[root@icocos ~]# ss -antl
+State       Recv-Q Send-Q                     Local Address:Port                                    Peer Address:Port              
+LISTEN      0      128                                    *:22                                                 *:*                  
+LISTEN      0      100                            127.0.0.1:25                                                 *:*                  
+LISTEN      0      128                                   :::22                                                :::*                  
+LISTEN      0      100                                  ::1:25                                                :::*                  
+LISTEN      0      80                                    :::3306                                              :::*                  
+</code></pre><h5 id="修改密码"><a href="#修改密码" class="headerlink" title="修改密码"></a>修改密码</h5><p>使用临时密码修改</p>
+<pre><code>[root@icocos ~]# mysql -uroot -p
+Enter password:
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 2
+Server version: 5.7.22
+
+Copyright (c) 2000, 2018, Oracle and/or its affiliates. All rights reserved.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type &apos;help;&apos; or &apos;\h&apos; for help. Type &apos;\c&apos; to clear the current input statement.
+
+mysql&gt; set password = password(&apos;123456&apos;);
+Query OK, 0 rows affected, 1 warning (0.00 sec)
+
+mysql&gt; quit
+Bye
+</code></pre><h5 id="mysql主从配置"><a href="#mysql主从配置" class="headerlink" title="mysql主从配置"></a>mysql主从配置</h5><p>确保从数据库与主数据库的数据一样先在主数据库创建所需要同步的库和表</p>
+<pre><code>[root@icocos ~]# mysql -uroot -p
+Enter password:
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 4
+Server version: 5.7.22 MySQL Community Server (GPL)
+
+Copyright (c) 2000, 2018, Oracle and/or its affiliates. Al
+
+Oracle is a registered trademark of Oracle Corporation and
+affiliates. Other names may be trademarks of their respect
+owners.
+
+Type &apos;help;&apos; or &apos;\h&apos; for help. Type &apos;\c&apos; to clear the curr
+
+mysql&gt; create database yan;
+Query OK, 1 row affected (0.00 sec)
+
+mysql&gt; create database lisi;
+Query OK, 1 row affected (0.00 sec)
+
+mysql&gt; create database wangwu;
+Query OK, 1 row affected (0.00 sec)
+
+mysql&gt; use yan;
+Database changed
+mysql&gt; create table tom (id int not null,name varchar(100)not null ,age tinyint);
+Query OK, 0 rows affected (11.83 sec)
+
+mysql&gt; insert tom (id,name,age) values(1,&apos;zhangshan&apos;,20),(2,&apos;wangwu&apos;,7),(3,&apos;lisi&apos;,23);
+Query OK, 3 rows affected (0.07 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+mysql&gt; select * from tom;
++----+-----------+------+
+| id | name      | age  |
++----+-----------+------+
+|  1 | zhangshan |   20 |
+|  2 | wangwu    |    7 |
+|  3 | lisi      |   23 |
++----+-----------+------+
+3 rows in set (0.00 sec)
+</code></pre><h5 id="备份主库"><a href="#备份主库" class="headerlink" title="备份主库"></a>备份主库</h5><p>备份主库时需要另开一个终端，给数据库上读锁，避免在备份期间有其他人在写入导致数据同步的不一致</p>
+<pre><code>[root@icocos ~]# mysql -uroot -p
+Enter password:
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 5
+Server version: 5.7.22 MySQL Community Server (GPL)
+
+Copyright (c) 2000, 2018, Oracle and/or its affiliates. All rights reserved.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type &apos;help;&apos; or &apos;\h&apos; for help. Type &apos;\c&apos; to clear the current input statement.
+
+mysql&gt; flush tables with read lock;
+Query OK, 0 rows affected (0.76 sec)
+</code></pre><p>此锁表的终端必须在备份完成以后才能退出（退出锁表失效）</p>
+<h5 id="备份主库并将备份文件传送到从库"><a href="#备份主库并将备份文件传送到从库" class="headerlink" title="备份主库并将备份文件传送到从库"></a>备份主库并将备份文件传送到从库</h5><pre><code>[root@icocos ~]# mysqldump -uroot -p123456 --all-databases &gt; /opt/all-20180907.sql
+mysqldump: [Warning] Using a password on the command line interface can be insecure.
+[root@icocos ~]# ls /opt/
+all-20180907.sql  data
+[root@icocos ~]# scp /opt/all-20180907.sql root@192.168.0.2:/opt/
+The authenticity of host &apos;192.168.0.2 (192.168.0.2)&apos; can&apos;t be established.
+ECDSA key fingerprint is SHA256:7mLj77SFk7sPkhjpMPfdK3nZ98hOuyP4OKzjXeijSJ0.
+ECDSA key fingerprint is MD5:a0:1b:eb:7f:f0:b6:7b:73:97:91:4c:f3:b1:89:d8:ea.
+Are you sure you want to continue connecting (yes/no)? yes
+Warning: Permanently added &apos;192.168.0.2&apos; (ECDSA) to the list of known hosts.
+root@192.168.0.2&apos;s password:
+all-20180907.sql       100%  784KB 783.3KB/s   00:01    
+</code></pre><h5 id="解除主库的锁表状态，直接退出交互式界面即可"><a href="#解除主库的锁表状态，直接退出交互式界面即可" class="headerlink" title="解除主库的锁表状态，直接退出交互式界面即可"></a>解除主库的锁表状态，直接退出交互式界面即可</h5><pre><code>mysql&gt; quit
+Bye
+</code></pre><h5 id="在从库上恢复主库的备份并查看是否与主库的数据保持一致"><a href="#在从库上恢复主库的备份并查看是否与主库的数据保持一致" class="headerlink" title="在从库上恢复主库的备份并查看是否与主库的数据保持一致"></a>在从库上恢复主库的备份并查看是否与主库的数据保持一致</h5><pre><code>[root@icocos ~]# mysql -uroot -p123456 &lt; /opt/all-20180907.sql
+mysql: [Warning] Using a password on the command line interface can be insecure.
+[root@icocos ~]# mysql -uroot -p123456
+mysql: [Warning] Using a password on the command line interface can be insecure.
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 4
+Server version: 5.7.22 MySQL Community Server (GPL)
+
+Copyright (c) 2000, 2018, Oracle and/or its affiliates. All rights reserved.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type &apos;help;&apos; or &apos;\h&apos; for help. Type &apos;\c&apos; to clear the current input statement.
+
+mysql&gt; show databases;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| lisi               |
+| mysql              |
+| performance_schema |
+| sys                |
+| wangwu             |
+| yan                |
++--------------------+
+7 rows in set (0.18 sec)
+
+mysql&gt; use yan;
+Reading table information for completion of table and column names
+You can turn off this feature to get a quicker startup with -A
+
+Database changed
+mysql&gt; select * from tom;
++----+-----------+------+
+| id | name      | age  |
++----+-----------+------+
+|  1 | zhangshan |   20 |
+|  2 | wangwu    |    7 |
+|  3 | lisi      |   23 |
++----+-----------+------+
+3 rows in set (0.06 sec)
+</code></pre><h5 id="在主数据库创建一个同步账户授权给从数据使用"><a href="#在主数据库创建一个同步账户授权给从数据使用" class="headerlink" title="在主数据库创建一个同步账户授权给从数据使用"></a>在主数据库创建一个同步账户授权给从数据使用</h5><pre><code>[root@icocos ~]# mysql -uroot -p
+Enter password:
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 7
+Server version: 5.7.22 MySQL Community Server (GPL)
+
+Copyright (c) 2000, 2018, Oracle and/or its affiliates. All rights reserved.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type &apos;help;&apos; or &apos;\h&apos; for help. Type &apos;\c&apos; to clear the current input statement.
+
+mysql&gt; create user &apos;repl&apos;@&apos;192.168.0.2&apos; identified by &apos;123456&apos;;
+Query OK, 0 rows affected (5.50 sec)
+
+mysql&gt; grant replication slave on *.* to &apos;repl&apos;@&apos;192.168.0.2&apos;;
+Query OK, 0 rows affected (0.04 sec)
+
+mysql&gt; flush privileges;
+Query OK, 0 rows affected (0.09 sec)
+</code></pre><h5 id="配置主数据库编辑配置文件"><a href="#配置主数据库编辑配置文件" class="headerlink" title="配置主数据库编辑配置文件"></a>配置主数据库编辑配置文件</h5><pre><code>[root@icocos ~]# vim /etc/my.cnf
+[root@icocos ~]# cat /etc/my.cnf
+[mysqld]
+basedir = /usr/local/mysql
+datadir = /opt/data
+socket = /tmp/mysql.sock
+port = 3306
+pid-file = /opt/data/mysql.pid
+user = mysql
+skip-name-resolve
+//添加以下内容
+log-bin=mysql-bin //启用binlog日志
+server-id=1 //主数据库服务器唯一标识符 主的必须必从大
+log-error=/opt/data/mysql.log
+</code></pre><h5 id="重启mysql服务"><a href="#重启mysql服务" class="headerlink" title="重启mysql服务"></a>重启mysql服务</h5><pre><code>[root@icocos ~]# service mysqld restart
+Shutting down MySQL..... SUCCESS!
+Starting MySQL.Logging to &apos;/opt/data/mysql.log&apos;.
+............................... SUCCESS!
+[root@icocos ~]# ss -antl
+State       Recv-Q Send-Q Local Address:Port               Peer Address:Port              
+LISTEN      0      128     *:22                  *:*                  
+LISTEN      0      100    127.0.0.1:25                  *:*                  
+LISTEN      0      128    :::22                 :::*                  
+LISTEN      0      100       ::1:25                 :::*                  
+LISTEN      0      80     :::3306               :::*
+</code></pre><h5 id="查看主库的状态"><a href="#查看主库的状态" class="headerlink" title="查看主库的状态"></a>查看主库的状态</h5><pre><code>mysql&gt; show master status;
++------------------+----------+--------------+------------------+-------------------+
+| File             | Position | Binlog_Do_DB | Binlog_Ignore_DB | Executed_Gtid_Set |
++------------------+----------+--------------+------------------+-------------------+
+| mysql-bin.000001 |      154 |              |                  |                   |
++------------------+----------+--------------+------------------+-------------------+
+1 row in set (0.00 sec)
+</code></pre><h5 id="配置从数据库"><a href="#配置从数据库" class="headerlink" title="配置从数据库"></a>配置从数据库</h5><p>编辑配置文件</p>
+<pre><code>[root@icocos ~]# cat /etc/my.cnf
+[mysqld]
+basedir = /usr/local/mysql
+datadir = /opt/data
+socket = /tmp/mysql.sock
+port = 3306
+pid-file = /opt/data/mysql.pid
+user = mysql
+skip-name-resolve
+//添加以下内容：
+server-id=2 //设置从库的唯一标识符 从的必须比主小
+relay-log=mysql-relay-bin //启用中继日志relay log
+error-log=/opt/data/mysql.log
+</code></pre><h5 id="重启从库的mysql服务"><a href="#重启从库的mysql服务" class="headerlink" title="重启从库的mysql服务"></a>重启从库的mysql服务</h5><pre><code>[root@icocos ~]# service mysqld restart
+Shutting down MySQL.. SUCCESS!
+Starting MySQL.. SUCCESS!
+[root@icocos ~]# ss -antl
+State       Recv-Q Send-Q Local Address:Port               Peer Address:Port              
+LISTEN      0      128     *:22                  *:*                  
+LISTEN      0      100    127.0.0.1:25                  *:*                  
+LISTEN      0      128    :::22                 :::*                  
+LISTEN      0      100       ::1:25                 :::*                  
+LISTEN      0      80     :::3306               :::*                  
+</code></pre><h5 id="配置并启动主从复制"><a href="#配置并启动主从复制" class="headerlink" title="配置并启动主从复制"></a>配置并启动主从复制</h5><pre><code>mysql&gt; change master to
+    -&gt; master_host=&apos;192.168.0.1&apos;,
+    -&gt; master_user=&apos;repl&apos;,
+    -&gt; master_password=&apos;123456&apos;,
+    -&gt; master_log_file=&apos;mysql-bin.000001&apos;,
+    -&gt; master_log_pos=154;
+Query OK, 0 rows affected, 2 warnings (0.28 sec)
+</code></pre><h5 id="查看从服务器状态"><a href="#查看从服务器状态" class="headerlink" title="查看从服务器状态"></a>查看从服务器状态</h5><pre><code>mysql&gt; show slave status\G;
+*************************** 1. row ***************************
+               Slave_IO_State: Waiting for master to send event
+                  Master_Host: 192.168.0.1
+                  Master_User: repl
+                  Master_Port: 3306
+                Connect_Retry: 60
+              Master_Log_File: mysql-bin.000001
+          Read_Master_Log_Pos: 154
+               Relay_Log_File: mysql-relay-bin.000003
+                Relay_Log_Pos: 320
+        Relay_Master_Log_File: mysql-bin.000001
+             Slave_IO_Running: Yes                                     //此处必须是yes
+            Slave_SQL_Running: Yes                                    //此处必须是yes       
+              Replicate_Do_DB:
+          Replicate_Ignore_DB:
+           Replicate_Do_Table:
+       Replicate_Ignore_Table:
+      Replicate_Wild_Do_Table:
+  Replicate_Wild_Ignore_Table:
+                   Last_Errno: 0
+                   Last_Error:
+                 Skip_Counter: 0
+          Exec_Master_Log_Pos: 154
+              Relay_Log_Space: 527
+              Until_Condition: None
+               Until_Log_File:
+                Until_Log_Pos: 0
+           Master_SSL_Allowed: No
+           Master_SSL_CA_File:
+           Master_SSL_CA_Path:
+              Master_SSL_Cert:
+            Master_SSL_Cipher:
+               Master_SSL_Key:
+        Seconds_Behind_Master: 0
+Master_SSL_Verify_Server_Cert: No
+                Last_IO_Errno: 0
+                Last_IO_Error:
+               Last_SQL_Errno: 0
+               Last_SQL_Error:
+  Replicate_Ignore_Server_Ids:
+             Master_Server_Id: 1
+                  Master_UUID: 5abf1791-b2af-11e8-b6ad-000c2980fbb4
+             Master_Info_File: /opt/data/master.info
+                    SQL_Delay: 0
+          SQL_Remaining_Delay: NULL
+      Slave_SQL_Running_State: Slave has read all relay log; waiting for more updates
+           Master_Retry_Count: 86400
+                  Master_Bind:
+      Last_IO_Error_Timestamp:
+     Last_SQL_Error_Timestamp:
+               Master_SSL_Crl:
+           Master_SSL_Crlpath:
+           Retrieved_Gtid_Set:
+            Executed_Gtid_Set:
+                Auto_Position: 0
+         Replicate_Rewrite_DB:
+                 Channel_Name:
+           Master_TLS_Version:
+1 row in set (0.00 sec)
+
+ERROR:
+No query specified
+</code></pre><h5 id="测试验证在主服务器的yan库的tom表插入数据"><a href="#测试验证在主服务器的yan库的tom表插入数据" class="headerlink" title="测试验证在主服务器的yan库的tom表插入数据:"></a>测试验证在主服务器的yan库的tom表插入数据:</h5><pre><code>mysql&gt; use yan;
+Reading table information for completion of table and column names
+You can turn off this feature to get a quicker startup with -A
+
+Database changed
+mysql&gt; select * from tom;
++----+-----------+------+
+| id | name      | age  |
++----+-----------+------+
+|  1 | zhangshan |   20 |
+|  2 | wangwu    |    7 |
+|  3 | lisi      |   23 |
++----+-----------+------+
+3 rows in set (0.09 sec)
+
+mysql&gt; insert tom(id,name,age) value (4,&quot;yyl&quot;,18);
+Query OK, 1 row affected (0.14 sec)
+
+mysql&gt; select * from tom;
++----+-----------+------+
+| id | name      | age  |
++----+-----------+------+
+|  1 | zhangshan |   20 |
+|  2 | wangwu    |    7 |
+|  3 | lisi      |   23 |
+|  4 | yyl       |   18 |
++----+-----------+------+
+4 rows in set (0.00 sec)
+</code></pre><h5 id="在从数据库查看是否数据同步"><a href="#在从数据库查看是否数据同步" class="headerlink" title="在从数据库查看是否数据同步"></a>在从数据库查看是否数据同步</h5><pre><code>mysql&gt; use yan;
+Reading table information for completion of table and column names
+You can turn off this feature to get a quicker startup with -A
+
+Database changed
+mysql&gt; select * from tom;
++----+-----------+------+
+| id | name      | age  |
++----+-----------+------+
+|  1 | zhangshan |   20 |
+|  2 | wangwu    |    7 |
+|  3 | lisi      |   23 |
+|  4 | yyl       |   18 |
++----+-----------+------+
+4 rows in set (0.00 sec)
+</code></pre>
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="http://pd1l3bbt7.bkt.clouddn.com/img/wechatimg.jpg" alt="曹理鹏@iCocos 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="http://pd1l3bbt7.bkt.clouddn.com/img/alipayimg.jpg" alt="曹理鹏@iCocos 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>曹理鹏@iCocos</li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://icocos.github.io/2017/10/09/架构篇——MySQL主从复制-Master-Slave-详解/" title="架构篇——MySQL主从复制(Master-Slave)详解">https://icocos.github.io/2017/10/09/架构篇——MySQL主从复制-Master-Slave-详解/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明出处！</li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/PHP/" rel="tag"># PHP</a>
+          
+            <a href="/tags/MySQL/" rel="tag"># MySQL</a>
+          
+            <a href="/tags/主从复制/" rel="tag"># 主从复制</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/10/07/常用负载均衡调度算法实现/" rel="next" title="常用负载均衡调度算法实现">
+                <i class="fa fa-chevron-left"></i> 常用负载均衡调度算法实现
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/10/11/架构篇——MySQL高可用集群-PXC-详解/" rel="prev" title="架构篇——MySQL高可用集群(PXC)详解">
+                架构篇——MySQL高可用集群(PXC)详解 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="SOHUCS"></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="http://pd1l3bbt7.bkt.clouddn.com/icocos_user_icon.JPG"
+                alt="曹理鹏@iCocos" />
+            
+              <p class="site-author-name" itemprop="name">曹理鹏@iCocos</p>
+              <p class="site-description motion-element" itemprop="description">纯码迷、爱学习、爱交友、喜欢接触新鲜事物、迎接新的挑战，更爱游离于错综复杂的编码与逻辑中！</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives">
+                
+                    <span class="site-state-item-count">324</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">27</span>
+                    <span class="site-state-item-name">分类</span>
+                  
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">268</span>
+                    <span class="site-state-item-name">标签</span>
+                  
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/al1020119" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:al1020119@163.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://stackoverflow.com/users/10186720" target="_blank" title="StackOverflow"><i class="fa fa-fw fa-stack-overflow"></i>StackOverflow</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.icocos.cn/" title="梦工厂" target="_blank">梦工厂</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://al1020119.github.io/" title="iOS梦工厂" target="_blank">iOS梦工厂</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#主从"><span class="nav-number">1.</span> <span class="nav-text">主从</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#主从过程大概有3个步骤"><span class="nav-number">1.0.1.</span> <span class="nav-text">主从过程大概有3个步骤</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#主从作用"><span class="nav-number">1.1.</span> <span class="nav-text">主从作用</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#主从形式"><span class="nav-number">1.2.</span> <span class="nav-text">主从形式</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#原理："><span class="nav-number">2.</span> <span class="nav-text">原理：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#配置"><span class="nav-number">3.</span> <span class="nav-text">配置</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#具体实现过程如下："><span class="nav-number">3.1.</span> <span class="nav-text">具体实现过程如下：</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#一、准备工作："><span class="nav-number">3.1.1.</span> <span class="nav-text">一、准备工作：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#二、主数据库master修改："><span class="nav-number">3.1.2.</span> <span class="nav-text">二、主数据库master修改：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#三、从服务器slave修改："><span class="nav-number">3.1.3.</span> <span class="nav-text">三、从服务器slave修改：</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#操作流程汇总"><span class="nav-number">4.</span> <span class="nav-text">操作流程汇总</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#关闭防火墙以SELINUX"><span class="nav-number">4.0.1.</span> <span class="nav-text">关闭防火墙以SELINUX</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#安装mysql"><span class="nav-number">4.0.2.</span> <span class="nav-text">安装mysql</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#创建用户和组"><span class="nav-number">4.0.3.</span> <span class="nav-text">创建用户和组</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#下载二进制格式的mysql软件包"><span class="nav-number">4.0.4.</span> <span class="nav-text">下载二进制格式的mysql软件包</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#解压软件至-usr-local"><span class="nav-number">4.0.5.</span> <span class="nav-text">解压软件至/usr/local/</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#修改目录-usr-locaal-mysql的属主属组"><span class="nav-number">4.0.6.</span> <span class="nav-text">修改目录/usr/locaal/mysql的属主属组</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#添加环境变量"><span class="nav-number">4.0.7.</span> <span class="nav-text">添加环境变量</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#建立数据存放目录"><span class="nav-number">4.0.8.</span> <span class="nav-text">建立数据存放目录</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#初始化数据库"><span class="nav-number">4.0.9.</span> <span class="nav-text">初始化数据库</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#配置mysql"><span class="nav-number">4.0.10.</span> <span class="nav-text">配置mysql</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#生成配置文件"><span class="nav-number">4.0.11.</span> <span class="nav-text">生成配置文件</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#配置服务启动脚本"><span class="nav-number">4.0.12.</span> <span class="nav-text">配置服务启动脚本</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#启动mysql"><span class="nav-number">4.0.13.</span> <span class="nav-text">启动mysql</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#修改密码"><span class="nav-number">4.0.14.</span> <span class="nav-text">修改密码</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#mysql主从配置"><span class="nav-number">4.0.15.</span> <span class="nav-text">mysql主从配置</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#备份主库"><span class="nav-number">4.0.16.</span> <span class="nav-text">备份主库</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#备份主库并将备份文件传送到从库"><span class="nav-number">4.0.17.</span> <span class="nav-text">备份主库并将备份文件传送到从库</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#解除主库的锁表状态，直接退出交互式界面即可"><span class="nav-number">4.0.18.</span> <span class="nav-text">解除主库的锁表状态，直接退出交互式界面即可</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#在从库上恢复主库的备份并查看是否与主库的数据保持一致"><span class="nav-number">4.0.19.</span> <span class="nav-text">在从库上恢复主库的备份并查看是否与主库的数据保持一致</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#在主数据库创建一个同步账户授权给从数据使用"><span class="nav-number">4.0.20.</span> <span class="nav-text">在主数据库创建一个同步账户授权给从数据使用</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#配置主数据库编辑配置文件"><span class="nav-number">4.0.21.</span> <span class="nav-text">配置主数据库编辑配置文件</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#重启mysql服务"><span class="nav-number">4.0.22.</span> <span class="nav-text">重启mysql服务</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#查看主库的状态"><span class="nav-number">4.0.23.</span> <span class="nav-text">查看主库的状态</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#配置从数据库"><span class="nav-number">4.0.24.</span> <span class="nav-text">配置从数据库</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#重启从库的mysql服务"><span class="nav-number">4.0.25.</span> <span class="nav-text">重启从库的mysql服务</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#配置并启动主从复制"><span class="nav-number">4.0.26.</span> <span class="nav-text">配置并启动主从复制</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#查看从服务器状态"><span class="nav-number">4.0.27.</span> <span class="nav-text">查看从服务器状态</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#测试验证在主服务器的yan库的tom表插入数据"><span class="nav-number">4.0.28.</span> <span class="nav-text">测试验证在主服务器的yan库的tom表插入数据:</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#在从数据库查看是否数据同步"><span class="nav-number">4.0.29.</span> <span class="nav-text">在从数据库查看是否数据同步</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2017 – <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">曹理鹏@iCocos</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">站点总字数：</span>
+    
+    <span title="站点总字数">1.8m</span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    
+    <span title="站点阅读时长">27:03</span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv" title="总访客量">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="site-pv" title="总访问量">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/reading_progress/reading_progress.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.3.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.3.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.3.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.3.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+  
+    <script type="text/javascript">
+    (function(){
+      var appid = 'cytKHBEtW';
+      var conf = '43989b8e63b25c4e9f1fde821c996a39';
+      var width = window.innerWidth || document.documentElement.clientWidth;
+      if (width < 960) {
+      window.document.write('<script id="changyan_mobile_js" charset="utf-8" type="text/javascript" src="https://changyan.sohu.com/upload/mobile/wap-js/changyan_mobile.js?client_id=' + appid + '&conf=' + conf + '"><\/script>'); } else { var loadJs=function(d,a){var c=document.getElementsByTagName("head")[0]||document.head||document.documentElement;var b=document.createElement("script");b.setAttribute("type","text/javascript");b.setAttribute("charset","UTF-8");b.setAttribute("src",d);if(typeof a==="function"){if(window.attachEvent){b.onreadystatechange=function(){var e=b.readyState;if(e==="loaded"||e==="complete"){b.onreadystatechange=null;a()}}}else{b.onload=a}}c.appendChild(b)};loadJs("https://changyan.sohu.com/upload/changyan.js",function(){
+        window.changyan.api.config({appid:appid,conf:conf})});
+      }
+    })();
+    </script>
+    <script type="text/javascript" src="https://assets.changyan.sohu.com/upload/plugins/plugins.count.js"></script>
+  
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("Tc7k1mbaieCUSgmM8LPk1IBO-gzGzoHsz", "sAb7L2vwENJTteRrvFKQacUU");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            
+              var $element = $(document.getElementById(url));
+              $element.find('.leancloud-visitors-count').text(counter.get('time'));
+            
+            counter.save(null, {
+              success: function(counter) {
+                
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            
+              var $element = $(document.getElementById(url));
+              $element.find('.leancloud-visitors-count').text('Counter not initialized! See more at console err msg.');
+              console.error('ATTENTION! LeanCloud counter has security bug, see here how to solve it: https://github.com/theme-next/hexo-leancloud-counter-security. \n But you also can use LeanCloud without security, by set \'security\' option to \'false\'.');
+            
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #333;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #eee;
+      background-image: linear-gradient(#fcfcfc, #eee);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('复制').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+          if(result)$(this).text('复制成功')
+          else $(this).text('复制失败')
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('复制')
+        }, 300)
+      }).append(e)
+    })
+  </script>
+
+
+  
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("Tc7k1mbaieCUSgmM8LPk1IBO-gzGzoHsz", "sAb7L2vwENJTteRrvFKQacUU");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+  
+</body>
+</html>

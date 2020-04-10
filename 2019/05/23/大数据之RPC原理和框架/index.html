@@ -1,0 +1,2339 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.3.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="http://pd1l3bbt7.bkt.clouddn.com/img/favicon.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="http://pd1l3bbt7.bkt.clouddn.com/img/favicon.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="http://pd1l3bbt7.bkt.clouddn.com/img/favicon.png?v=6.3.0">
+
+
+  <link rel="mask-icon" href="http://pd1l3bbt7.bkt.clouddn.com/img/favicon.png?v=6.3.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="keywords" content="大数据,原理,RPC">
+<meta property="og:type" content="article">
+<meta property="og:title" content="大数据之RPC原理和框架">
+<meta property="og:url" content="https://icocos.github.io/2019/05/23/大数据之RPC原理和框架/index.html">
+<meta property="og:site_name" content="iCocos">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/iCocos/icocos_hexo_images/master/2020/god_of_bd/branchs/RPC的原理和框架.resources/C5A0EF49-E0B0-4C66-A113-C7DF6F913415.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/iCocos/icocos_hexo_images/master/2020/god_of_bd/branchs/RPC的原理和框架.resources/DBE43382-274A-4E34-8D8B-A9F91644E2E9.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/iCocos/icocos_hexo_images/master/2020/god_of_bd/branchs/RPC的原理和框架.resources/3BE7233B-EA64-424D-9FDC-472A2D7DAC50.png">
+<meta property="og:updated_time" content="2020-04-09T14:45:07.754Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="大数据之RPC原理和框架">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/iCocos/icocos_hexo_images/master/2020/god_of_bd/branchs/RPC的原理和框架.resources/C5A0EF49-E0B0-4C66-A113-C7DF6F913415.png">
+
+
+
+  <link rel="alternate" href="/atom.xml" title="iCocos" type="application/atom+xml" />
+
+
+
+
+  <link rel="canonical" href="https://icocos.github.io/2019/05/23/大数据之RPC原理和框架/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>大数据之RPC原理和框架 | iCocos</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">iCocos</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">www.icocos.cn</p>
+      
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-首页">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-归档">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-关于">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-作品">
+    <a href="/works/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-calendar"></i> <br />作品</a>
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+    <div class="reading-progress-bar"></div>
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://icocos.github.io/2019/05/23/大数据之RPC原理和框架/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="曹理鹏@iCocos">
+      <meta itemprop="description" content="纯码迷、爱学习、爱交友、喜欢接触新鲜事物、迎接新的挑战，更爱游离于错综复杂的编码与逻辑中！">
+      <meta itemprop="image" content="http://pd1l3bbt7.bkt.clouddn.com/icocos_user_icon.JPG">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="iCocos">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">大数据之RPC原理和框架
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-05-23 23:01:17" itemprop="dateCreated datePublished" datetime="2019-05-23T23:01:17+08:00">2019-05-23</time>
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/RPC/" itemprop="url" rel="index"><span itemprop="name">RPC</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+              <span class="post-meta-divider">|</span>
+              <span class="post-meta-item-icon">
+                <i class="fa fa-comment-o"></i>
+              </span>
+              
+                <a href="/2019/05/23/大数据之RPC原理和框架/#SOHUCS" itemprop="discussionUrl">
+                  <span class="post-meta-item-text">评论数：</span> <span id="changyan_count_unit" class="post-comments-count hc-comment-count" data-xid="2019/05/23/大数据之RPC原理和框架/" itemprop="commentsCount"></span>
+                </a>
+              
+            
+          
+
+          
+          
+             <span id="/2019/05/23/大数据之RPC原理和框架/" class="leancloud_visitors" data-flag-title="大数据之RPC原理和框架">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数：</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon"
+            >
+            <i class="fa fa-eye"></i>
+             阅读次数： 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+            <div class="post-symbolscount">
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">本文字数：</span>
+                
+                <span title="本文字数">24k</span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">22 分钟</span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <hr>
+<a id="more"></a>
+<p>本文来自：csdn博客，作者在其中做了一些补充并添加了示例</p>
+<p>Nelson 的论文中指出实现 RPC 的程序包括 5 个部分：</p>
+<ol>
+<li><p>User</p>
+</li>
+<li><p>User-stub</p>
+</li>
+<li><p>RPCRuntime</p>
+</li>
+<li><p>Server-stub</p>
+</li>
+<li><p>Server</p>
+</li>
+</ol>
+<p>这 5 个部分的关系如下图所示</p>
+<p><img src="https://raw.githubusercontent.com/iCocos/icocos_hexo_images/master/2020/god_of_bd/branchs/RPC的原理和框架.resources/C5A0EF49-E0B0-4C66-A113-C7DF6F913415.png" alt="a3615b0de4fd967132726e4ffd191b03"></p>
+<p>这里 user 就是 client 端，当 user 想发起一个远程调用时，它实际是通过本地调用user-stub。user-stub 负责将调用的接口、方法和参数通过约定的协议规范进行编码并通过本地的 RPCRuntime 实例传输到远端的实例。远端 RPCRuntime 实例收到请求后交给 server-stub 进行解码后发起本地端调用，调用结果再返回给 user 端。</p>
+<p><img src="https://raw.githubusercontent.com/iCocos/icocos_hexo_images/master/2020/god_of_bd/branchs/RPC的原理和框架.resources/DBE43382-274A-4E34-8D8B-A9F91644E2E9.png" alt="0834cc951b7fbaf68dbbe767869158ce"></p>
+<p>粗粒度的 RPC 实现概念结构，这里我们进一步细化它应该由哪些组件构成，如下图所示。</p>
+<p><img src="https://raw.githubusercontent.com/iCocos/icocos_hexo_images/master/2020/god_of_bd/branchs/RPC的原理和框架.resources/3BE7233B-EA64-424D-9FDC-472A2D7DAC50.png" alt="ebd6ff5bee2bba18f3f8598f05e27ddd"></p>
+<p>RPC 服务方通过 RpcServer 去导出（export）远程接口方法，而客户方通过 RpcClient 去引入（import）远程接口方法。客户方像调用本地方法一样去调用远程接口方法，RPC 框架提供接口的代理实现，实际的调用将委托给代理RpcProxy 。代理封装调用信息并将调用转交给RpcInvoker 去实际执行。在客户端的RpcInvoker 通过连接器RpcConnector 去维持与服务端的通道RpcChannel，并使用RpcProtocol 执行协议编码（encode）并将编码后的请求消息通过通道发送给服务方。</p>
+<p>RPC 服务端接收器 RpcAcceptor 接收客户端的调用请求，同样使用RpcProtocol 执行协议解码（decode）。解码后的调用信息传递给RpcProcessor 去控制处理调用过程，最后再委托调用给RpcInvoker 去实际执行并返回调用结果。如下是各个部分的详细职责：</p>
+<pre><code>1. RpcServer  
+
+   负责导出（export）远程接口  
+
+2. RpcClient  
+
+   负责导入（import）远程接口的代理实现  
+
+3. RpcProxy  
+
+   远程接口的代理实现  
+
+4. RpcInvoker  
+
+   客户方实现：负责编码调用信息和发送调用请求到服务方并等待调用结果返回  
+
+   服务方实现：负责调用服务端接口的具体实现并返回调用结果  
+
+5. RpcProtocol  
+
+   负责协议编/解码  
+
+6. RpcConnector  
+
+   负责维持客户方和服务方的连接通道和发送数据到服务方  
+
+7. RpcAcceptor  
+
+   负责接收客户方请求并返回请求结果  
+
+8. RpcProcessor  
+
+   负责在服务方控制调用过程，包括管理调用线程池、超时时间等  
+
+9. RpcChannel  
+
+   数据传输通道  
+</code></pre><h3 id="Java中常用的RPC框架"><a href="#Java中常用的RPC框架" class="headerlink" title="Java中常用的RPC框架"></a>Java中常用的RPC框架</h3><p>目前常用的RPC框架如下：</p>
+<ol>
+<li><p>Thrift：thrift是一个软件框架，用来进行可扩展且跨语言的服务的开发。它结合了功能强大的软件堆栈和代码生成引擎，以构建在 C++, Java, Python, PHP, Ruby, Erlang, Perl, Haskell, C#, Cocoa, JavaScript, Node.js, Smalltalk, and OCaml 这些编程语言间无缝结合的、高效的服务。</p>
+</li>
+<li><p>Dubbo：Dubbo是一个分布式服务框架，以及SOA治理方案。其功能主要包括：高性能NIO通讯及多协议集成，服务动态寻址与路由，软负载均衡与容错，依赖分析与降级等。 Dubbo是阿里巴巴内部的SOA服务化治理方案的核心框架，Dubbo自2011年开源后，已被许多非阿里系公司使用。 </p>
+</li>
+<li><p>Spring Cloud：Spring Cloud由众多子项目组成，如Spring Cloud Config、Spring Cloud Netflix、Spring Cloud Consul 等，提供了搭建分布式系统及微服务常用的工具，如配置管理、服务发现、断路器、智能路由、微代理、控制总线、一次性token、全局锁、选主、分布式会话和集群状态等，满足了构建微服务所需的所有解决方案。Spring Cloud基于Spring Boot, 使得开发部署极其简单。</p>
+</li>
+</ol>
+<h3 id="RPC和消息队列的差异"><a href="#RPC和消息队列的差异" class="headerlink" title="RPC和消息队列的差异"></a>RPC和消息队列的差异</h3><h4 id="1-功能差异"><a href="#1-功能差异" class="headerlink" title="1. 功能差异"></a>1. 功能差异</h4><p>在架构上，RPC和Message的差异点是，Message有一个中间结点Message Queue，可以把消息存储。<br>消息的特点</p>
+<ol>
+<li>Message Queue把请求的压力保存一下，逐渐释放出来，让处理者按照自己的节奏来处理。</li>
+<li>Message Queue引入一下新的结点，系统的可靠性会受Message Queue结点的影响。</li>
+<li>Message Queue是异步单向的消息。发送消息设计成是不需要等待消息处理的完成。<br>所以对于有同步返回需求，用Message Queue则变得麻烦了。<br>RPC的特点<br>同步调用，对于要等待返回结果/处理结果的场景，RPC是可以非常自然直觉的使用方式(<a href="https://raw.githubusercontent.com/iCocos/icocos_hexo_images/master/2020/god_of_bd/branchs/RPC也可以是异步调用)。" target="_blank" rel="noopener">https://raw.githubusercontent.com/iCocos/icocos_hexo_images/master/2020/god_of_bd/branchs/RPC也可以是异步调用)。</a><br>由于等待结果，Consumer（Client）会有线程消耗。如果以异步RPC的方式使用，Consumer（Client）线程消耗可以去掉。但不能做到像消息一样暂存消息/请求，压力会直接传导到服务Provider。<h4 id="2-适用场合差异"><a href="#2-适用场合差异" class="headerlink" title="2. 适用场合差异"></a>2. 适用场合差异</h4></li>
+<li>希望同步得到结果的场合，RPC合适。</li>
+<li>希望使用简单，则RPC；RPC操作基于接口，使用简单，使用方式模拟本地调用。异步的方式编程比较复杂。</li>
+<li>不希望发送端（RPC Consumer、Message Sender）受限于处理端（RPC Provider、Message Receiver）的速度时，使用Message Queue。<br>随着业务增长，有的处理端处理量会成为瓶颈，会进行同步调用到异步消息的改造。这样的改造实际上有调整业务的使用方式。比如原来一个操作页面提交后就下一个页面会看到处理结果；改造后异步消息后，下一个页面就会变成“操作已提交，完成后会得到通知”。<h4 id="3-不适用场合说明"><a href="#3-不适用场合说明" class="headerlink" title="3. 不适用场合说明"></a>3. 不适用场合说明</h4></li>
+<li>RPC同步调用使用Message Queue来传输调用信息。 上面分析可以知道，这样的做法，发送端是在等待，同时占用一个中间点的资源。变得复杂了，但没有对等的收益。</li>
+<li>对于返回值是void的调用，可以这样做，因为实际上这个调用业务上往往不需要同步得到处理结果的，只要保证会处理即可。（RPC的方式可以保证调用返回即处理完成，使用消息方式后这一点不能保证了。）</li>
+<li>返回值是void的调用，使用消息，效果上是把消息的使用方式Wrap成了服务调用（服务调用使用方式成简单，基于业务接口）。</li>
+</ol>
+<h3 id="RPC框架的核心技术点"><a href="#RPC框架的核心技术点" class="headerlink" title="RPC框架的核心技术点"></a>RPC框架的核心技术点</h3><p>RPC框架实现的几个核心技术点：</p>
+<p>（1）服务暴露：</p>
+<p>远程提供者需要以某种形式提供服务调用相关的信息，包括但不限于服务接口定义、数据结构、或者中间态的服务定义文件。例如Facebook的Thrift的IDL文件，Web service的WSDL文件；服务的调用者需要通过一定的途径获取远程服务调用相关的信息。</p>
+<p>目前，大部分跨语言平台 RPC 框架采用根据 IDL 定义通过 code generator 去生成 stub 代码，这种方式下实际导入的过程就是通过代码生成器在编译期完成的。代码生成的方式对跨语言平台 RPC 框架而言是必然的选择，而对于同一语言平台的 RPC 则可以通过共享接口定义来实现。这里的导入方式本质也是一种代码生成技术，只不过是在运行时生成，比静态编译期的代码生成看起来更简洁些。</p>
+<p>java 中还有一种比较特殊的调用就是多态，也就是一个接口可能有多个实现，那么远程调用时到底调用哪个？这个本地调用的语义是通过 jvm 提供的引用多态性隐式实现的，那么对于 RPC 来说跨进程的调用就没法隐式实现了。如果前面DemoService 接口有 2 个实现，那么在导出接口时就需要特殊标记不同的实现需要，那么远程调用时也需要传递该标记才能调用到正确的实现类，这样就解决了多态调用的语义问题。</p>
+<p>（2）远程代理对象：</p>
+<p>服务调用者用的服务实际是远程服务的本地代理。说白了就是通过动态代理来实现。</p>
+<p>java 里至少提供了两种技术来提供动态代码生成，一种是 jdk 动态代理，另外一种是字节码生成。动态代理相比字节码生成使用起来更方便，但动态代理方式在性能上是要逊色于直接的字节码生成的，而字节码生成在代码可读性上要差很多。两者权衡起来，个人认为牺牲一些性能来获得代码可读性和可维护性显得更重要。</p>
+<p>（3）通信：</p>
+<p>RPC框架与具体的协议无关。RPC 可基于 HTTP 或 TCP 协议，Web Service 就是基于 HTTP 协议的 RPC，它具有良好的跨平台性，但其性能却不如基于 TCP 协议的 RPC。</p>
+<ol>
+<li><p>TCP/HTTP：众所周知，TCP 是传输层协议，HTTP 是应用层协议，而传输层较应用层更加底层，在数据传输方面，越底层越快，因此，在一般情况下，TCP 一定比 HTTP 快。</p>
+</li>
+<li><p>消息ID：RPC 的应用场景实质是一种可靠的请求应答消息流，和 HTTP 类似。因此选择长连接方式的 TCP 协议会更高效，与 HTTP 不同的是在协议层面我们定义了每个消息的唯一 id，因此可以更容易的复用连接。</p>
+</li>
+<li><p>IO方式：为了支持高并发，传统的阻塞式 IO 显然不太合适，因此我们需要异步的 IO，即 NIO。Java 提供了 NIO 的解决方案，Java 7 也提供了更优秀的 NIO.2 支持。</p>
+</li>
+<li><p>多连接：既然使用长连接，那么第一个问题是到底 client 和 server 之间需要多少根连接？实际上单连接和多连接在使用上没有区别，对于数据传输量较小的应用类型，单连接基本足够。单连接和多连接最大的区别在于，每根连接都有自己私有的发送和接收缓冲区，因此大数据量传输时分散在不同的连接缓冲区会得到更好的吞吐效率。所以，如果你的数据传输量不足以让单连接的缓冲区一直处于饱和状态的话，那么使用多连接并不会产生任何明显的提升，反而会增加连接管理的开销。</p>
+</li>
+<li>心跳：连接是由 client 端发起建立并维持。如果 client 和 server 之间是直连的，那么连接一般不会中断（当然物理链路故障除外）。如果 client 和 server 连接经过一些负载中转设备，有可能连接一段时间不活跃时会被这些中间设备中断。为了保持连接有必要定时为每个连接发送心跳数据以维持连接不中断。心跳消息是 RPC 框架库使用的内部消息，在前文协议头结构中也有一个专门的心跳位，就是用来标记心跳消息的，它对业务应用透明。</li>
+</ol>
+<p>（4）序列化：</p>
+<p>两方面会直接影响 RPC 的性能，一是传输方式，二是序列化。</p>
+<ol>
+<li><p>序列化方式：毕竟是远程通信，需要将对象转化成二进制流进行传输。不同的RPC框架应用的场景不同，在序列化上也会采取不同的技术。 就序列化而言，Java 提供了默认的序列化方式，但在高并发的情况下，这种方式将会带来一些性能上的瓶颈，于是市面上出现了一系列优秀的序列化框架，比如：Protobuf、Kryo、Hessian、Jackson 等，它们可以取代 Java 默认的序列化，从而提供更高效的性能。</p>
+</li>
+<li><p>编码内容：出于效率考虑，编码的信息越少越好（传输数据少），编码的规则越简单越好（执行效率高）。如下是编码需具备的信息：</p>
+</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">-- 调用编码 --  </span><br><span class="line">1. 接口方法  </span><br><span class="line">   包括接口名、方法名  </span><br><span class="line">2. 方法参数  </span><br><span class="line">   包括参数类型、参数值  </span><br><span class="line">3. 调用属性  </span><br><span class="line">   包括调用属性信息，例如调用附件隐式参数、调用超时时间等  </span><br><span class="line">  </span><br><span class="line">-- 返回编码 --  </span><br><span class="line">1. 返回结果  </span><br><span class="line">   接口方法中定义的返回值  </span><br><span class="line">2. 返回码  </span><br><span class="line">   异常返回码  </span><br><span class="line">3. 返回异常信息  </span><br><span class="line">   调用异常信息</span><br></pre></td></tr></table></figure>
+<p>除了以上这些必须的调用信息，我们可能还需要一些元信息以方便程序编解码以及未来可能的扩展。这样我们的编码消息里面就分成了两部分，一部分是元信息、另一部分是调用的必要信息。如果设计一种 RPC 协议消息的话，元信息我们把它放在协议消息头中，而必要信息放在协议消息体中。下面给出一种概念上的 RPC 协议消息设计格式：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">-- 消息头 --  </span><br><span class="line">magic      : 协议魔数，为解码设计  </span><br><span class="line">header size: 协议头长度，为扩展设计  </span><br><span class="line">version    : 协议版本，为兼容设计  </span><br><span class="line">st         : 消息体序列化类型  </span><br><span class="line">hb         : 心跳消息标记，为长连接传输层心跳设计  </span><br><span class="line">ow         : 单向消息标记，  </span><br><span class="line">rp         : 响应消息标记，不置位默认是请求消息  </span><br><span class="line">status code: 响应消息状态码  </span><br><span class="line">reserved   : 为字节对齐保留  </span><br><span class="line">message id : 消息 id  </span><br><span class="line">body size  : 消息体长度  </span><br><span class="line">  </span><br><span class="line">-- 消息体 --  </span><br><span class="line">采用序列化编码，常见有以下格式  </span><br><span class="line">xml   : 如 webservie soap  </span><br><span class="line">json  : 如 JSON-RPC  </span><br><span class="line">binary: 如 thrift; hession; kryo 等</span><br></pre></td></tr></table></figure>
+<h3 id="RPC框架简易实现及其实例分析"><a href="#RPC框架简易实现及其实例分析" class="headerlink" title="RPC框架简易实现及其实例分析"></a>RPC框架简易实现及其实例分析</h3><p>(1).服务端</p>
+<p>　　服务端提供客户端所期待的服务，一般包括三个部分：服务接口，服务实现以及服务的注册暴露三部分，如下：服务接口<br>  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">  public interface HelloService &#123;</span><br><span class="line">    String hello(String name);</span><br><span class="line">    String hi(String msg);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>服务实现</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">public class HelloServiceImpl implements HelloService&#123;</span><br><span class="line">    @Override</span><br><span class="line">    public String hello(String name) &#123;</span><br><span class="line">        return &quot;Hello &quot; + name;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    @Override</span><br><span class="line">    public String hi(String msg) &#123;</span><br><span class="line">        return &quot;Hi, &quot; + msg;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>服务暴露：只有把服务暴露出来，才能让客户端进行调用，这是RPC框架功能之一。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">public class RpcProvider &#123;</span><br><span class="line">    public static void main(String[] args) throws Exception &#123;</span><br><span class="line">        HelloService service = new HelloServiceImpl();</span><br><span class="line">        // RPC框架将服务暴露出来，供客户端消费</span><br><span class="line">        RpcFramework.export(service, 1234);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>(2).客户端</p>
+<p>　　客户端消费服务端所提供的服务，一般包括两个部分：服务接口和服务引用两个部分，如下：服务接口：与服务端共享同一个服务接口<br>  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">  public interface HelloService &#123;</span><br><span class="line">    String hello(String name);</span><br><span class="line">    String hi(String msg);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>服务引用：消费端通过RPC框架进行远程调用，这也是RPC框架功能之一</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">public class RpcConsumer &#123;</span><br><span class="line">    public static void main(String[] args) throws Exception &#123;</span><br><span class="line">        // 由RpcFramework生成的HelloService的代理</span><br><span class="line">        HelloService service = RpcFramework.refer(HelloService.class, &quot;127.0.0.1&quot;, 1234);</span><br><span class="line">        String hello = service.hello(&quot;World&quot;);</span><br><span class="line">        System.out.println(&quot;客户端收到远程调用的结果 ： &quot; + hello);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>(3).RPC框架原型实现</p>
+<p>　　RPC框架主要包括两大功能：一个用于服务端暴露服务，一个用于客户端引用服务。服务端暴露服务</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br></pre></td><td class="code"><pre><span class="line">    /**</span><br><span class="line">     * 暴露服务</span><br><span class="line">     *</span><br><span class="line">     * @param service 服务实现</span><br><span class="line">     * @param port    服务端口</span><br><span class="line">     * @throws Exception</span><br><span class="line">     */</span><br><span class="line">    public static void export(final Object service, int port) throws Exception &#123;</span><br><span class="line">        if (service == null) &#123;</span><br><span class="line">            throw new IllegalArgumentException(&quot;service instance == null&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">        if (port &lt;= 0 || port &gt; 65535) &#123;</span><br><span class="line">            throw new IllegalArgumentException(&quot;Invalid port &quot; + port);</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(&quot;Export service &quot; + service.getClass().getName() + &quot; on port &quot; + port);</span><br><span class="line">        // 建立Socket服务端</span><br><span class="line">        ServerSocket server = new ServerSocket(port);</span><br><span class="line">        for (; ; ) &#123;</span><br><span class="line">            try &#123;</span><br><span class="line">                // 监听Socket请求</span><br><span class="line">                final Socket socket = server.accept();</span><br><span class="line">                new Thread(new Runnable() &#123;</span><br><span class="line">                    @Override</span><br><span class="line">                    public void run() &#123;</span><br><span class="line">                        try &#123;</span><br><span class="line">                            try &#123;</span><br><span class="line">                                /* 获取请求流，Server解析并获取请求*/</span><br><span class="line">                                // 构建对象输入流，从源中读取对象到程序中</span><br><span class="line">                                ObjectInputStream input = new ObjectInputStream(</span><br><span class="line">                                    socket.getInputStream());</span><br><span class="line">                                try &#123;</span><br><span class="line"> </span><br><span class="line">                                    System.out.println(&quot;\nServer解析请求 ： &quot;);</span><br><span class="line">                                    String methodName = input.readUTF();</span><br><span class="line">                                    System.out.println(&quot;methodName : &quot; + methodName);</span><br><span class="line">                                    // 泛型与数组是不兼容的，除了通配符作泛型参数以外</span><br><span class="line">                                    Class&lt;?&gt;[] parameterTypes = (Class&lt;?&gt;[])input.readObject();</span><br><span class="line">                                    System.out.println(</span><br><span class="line">                                        &quot;parameterTypes : &quot; + Arrays.toString(parameterTypes));</span><br><span class="line">                                    Object[] arguments = (Object[])input.readObject();</span><br><span class="line">                                    System.out.println(&quot;arguments : &quot; + Arrays.toString(arguments));</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line">                                    /* Server 处理请求，进行响应*/</span><br><span class="line">                                    ObjectOutputStream output = new ObjectOutputStream(</span><br><span class="line">                                        socket.getOutputStream());</span><br><span class="line">                                    try &#123;</span><br><span class="line">                                        // service类型为Object的(可以发布任何服务)，故只能通过反射调用处理请求</span><br><span class="line">                                        // 反射调用，处理请求</span><br><span class="line">                                        Method method = service.getClass().getMethod(methodName,</span><br><span class="line">                                            parameterTypes);</span><br><span class="line">                                        Object result = method.invoke(service, arguments);</span><br><span class="line">                                        System.out.println(&quot;\nServer 处理并生成响应 ：&quot;);</span><br><span class="line">                                        System.out.println(&quot;result : &quot; + result);</span><br><span class="line">                                        output.writeObject(result);</span><br><span class="line">                                    &#125; catch (Throwable t) &#123;</span><br><span class="line">                                        output.writeObject(t);</span><br><span class="line">                                    &#125; finally &#123;</span><br><span class="line">                                        output.close();</span><br><span class="line">                                    &#125;</span><br><span class="line">                                &#125; finally &#123;</span><br><span class="line">                                    input.close();</span><br><span class="line">                                &#125;</span><br><span class="line">                            &#125; finally &#123;</span><br><span class="line">                                socket.close();</span><br><span class="line">                            &#125;</span><br><span class="line">                        &#125; catch (Exception e) &#123;</span><br><span class="line">                            e.printStackTrace();</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;).start();</span><br><span class="line">            &#125; catch (Exception e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>从该RPC框架的简易实现来看，RPC服务端逻辑是：首先创建ServerSocket负责监听特定端口并接收客户连接请求，然后使用Java原生的序列化/反序列化机制来解析得到请求，包括所调用方法的名称、参数列表和实参，最后反射调用服务端对服务接口的具体实现并将得到的结果回传至客户端。至此，一次简单PRC调用的服务端流程执行完毕。客户端引用服务</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br></pre></td><td class="code"><pre><span class="line">    /**</span><br><span class="line">     * 引用服务</span><br><span class="line">     *</span><br><span class="line">     * @param &lt;T&gt;            接口泛型</span><br><span class="line">     * @param interfaceClass 接口类型</span><br><span class="line">     * @param host           服务器主机名</span><br><span class="line">     * @param port           服务器端口</span><br><span class="line">     * @return 远程服务，返回代理对象</span><br><span class="line">     * @throws Exception</span><br><span class="line">     */</span><br><span class="line">    @SuppressWarnings(&quot;unchecked&quot;)</span><br><span class="line">    public static &lt;T&gt; T refer(final Class&lt;T&gt; interfaceClass, final String host, final int port)</span><br><span class="line">        throws Exception &#123;</span><br><span class="line">        if (interfaceClass == null) &#123;</span><br><span class="line">            throw new IllegalArgumentException(&quot;Interface class == null&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">        // JDK 动态代理的约束，只能实现对接口的代理</span><br><span class="line">        if (!interfaceClass.isInterface()) &#123;</span><br><span class="line">            throw new IllegalArgumentException(</span><br><span class="line">                &quot;The &quot; + interfaceClass.getName() + &quot; must be interface class!&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">        if (host == null || host.length() == 0) &#123;</span><br><span class="line">            throw new IllegalArgumentException(&quot;Host == null!&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">        if (port &lt;= 0 || port &gt; 65535) &#123;</span><br><span class="line">            throw new IllegalArgumentException(&quot;Invalid port &quot; + port);</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(</span><br><span class="line">            &quot;Get remote service &quot; + interfaceClass.getName() + &quot; from server &quot; + host + &quot;:&quot; + port);</span><br><span class="line"> </span><br><span class="line">        // JDK 动态代理</span><br><span class="line">        T proxy = (T)Proxy.newProxyInstance(interfaceClass.getClassLoader(),</span><br><span class="line">            new Class&lt;?&gt;[] &#123;interfaceClass&#125;, new InvocationHandler() &#123;</span><br><span class="line">                // invoke方法本意是对目标方法的增强，在这里用于发送RPC请求和接收响应</span><br><span class="line">                @Override</span><br><span class="line">                public Object invoke(Object proxy, Method method, Object[] arguments)</span><br><span class="line">                    throws Throwable &#123;</span><br><span class="line">                    // 创建Socket客户端，并与服务端建立链接</span><br><span class="line">                    Socket socket = new Socket(host, port);</span><br><span class="line">                    try &#123;</span><br><span class="line">                        /* 客户端像服务端进行请求，并将请求参数写入流中*/</span><br><span class="line">                        // 将对象写入到对象输出流，并将其发送到Socket流中去</span><br><span class="line">                        ObjectOutputStream output = new ObjectOutputStream(</span><br><span class="line">                            socket.getOutputStream());</span><br><span class="line">                        try &#123;</span><br><span class="line">                            // 发送请求</span><br><span class="line">                            System.out.println(&quot;\nClient发送请求 ： &quot;);</span><br><span class="line">                            output.writeUTF(method.getName());</span><br><span class="line">                            System.out.println(&quot;methodName : &quot; + method.getName());</span><br><span class="line">                            output.writeObject(method.getParameterTypes());</span><br><span class="line">                            System.out.println(&quot;parameterTypes : &quot; + Arrays.toString(method</span><br><span class="line">                                .getParameterTypes()));</span><br><span class="line">                            output.writeObject(arguments);</span><br><span class="line">                            System.out.println(&quot;arguments : &quot; + Arrays.toString(arguments));</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line">                            /* 客户端读取并返回服务端的响应*/</span><br><span class="line">                            ObjectInputStream input = new ObjectInputStream(</span><br><span class="line">                                socket.getInputStream());</span><br><span class="line">                            try &#123;</span><br><span class="line">                                Object result = input.readObject();</span><br><span class="line">                                if (result instanceof Throwable) &#123;</span><br><span class="line">                                    throw (Throwable)result;</span><br><span class="line">                                &#125;</span><br><span class="line">                                System.out.println(&quot;\nClient收到响应 ： &quot;);</span><br><span class="line">                                System.out.println(&quot;result : &quot; + result);</span><br><span class="line">                                return result;</span><br><span class="line">                            &#125; finally &#123;</span><br><span class="line">                                input.close();</span><br><span class="line">                            &#125;</span><br><span class="line">                        &#125; finally &#123;</span><br><span class="line">                            output.close();</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125; finally &#123;</span><br><span class="line">                        socket.close();</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;);</span><br><span class="line">        return proxy;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>从该RPC框架的简易实现来看，RPC客户端逻辑是：首先创建Socket客户端并与服务端建立链接，然后使用Java原生的序列化/反序列化机制将调用请求发送给客户端，包括所调用方法的名称、参数列表将服务端的响应返回给用户即可。至此，一次简单PRC调用的客户端流程执行完毕。特别地，从代码实现来看，实现透明的PRC调用的关键就是 动态代理，这是RPC框架实现的灵魂所在。RPC原型实现</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br></pre></td><td class="code"><pre><span class="line">public class RpcFramework &#123;</span><br><span class="line">    /**</span><br><span class="line">     * 暴露服务</span><br><span class="line">     *</span><br><span class="line">     * @param service 服务实现</span><br><span class="line">     * @param port    服务端口</span><br><span class="line">     * @throws Exception</span><br><span class="line">     */</span><br><span class="line">    public static void export(final Object service, int port) throws Exception &#123;</span><br><span class="line">        if (service == null) &#123;</span><br><span class="line">            throw new IllegalArgumentException(&quot;service instance == null&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">        if (port &lt;= 0 || port &gt; 65535) &#123;</span><br><span class="line">            throw new IllegalArgumentException(&quot;Invalid port &quot; + port);</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(&quot;Export service &quot; + service.getClass().getName() + &quot; on port &quot; + port);</span><br><span class="line">        // 建立Socket服务端</span><br><span class="line">        ServerSocket server = new ServerSocket(port);</span><br><span class="line">        for (; ; ) &#123;</span><br><span class="line">            try &#123;</span><br><span class="line">                // 监听Socket请求</span><br><span class="line">                final Socket socket = server.accept();</span><br><span class="line">                new Thread(new Runnable() &#123;</span><br><span class="line">                    @Override</span><br><span class="line">                    public void run() &#123;</span><br><span class="line">                        try &#123;</span><br><span class="line">                            try &#123;</span><br><span class="line">                                /* 获取请求流，Server解析并获取请求*/</span><br><span class="line">                                // 构建对象输入流，从源中读取对象到程序中</span><br><span class="line">                                ObjectInputStream input = new ObjectInputStream(</span><br><span class="line">                                    socket.getInputStream());</span><br><span class="line">                                try &#123;</span><br><span class="line"> </span><br><span class="line">                                    System.out.println(&quot;\nServer解析请求 ： &quot;);</span><br><span class="line">                                    String methodName = input.readUTF();</span><br><span class="line">                                    System.out.println(&quot;methodName : &quot; + methodName);</span><br><span class="line">                                    // 泛型与数组是不兼容的，除了通配符作泛型参数以外</span><br><span class="line">                                    Class&lt;?&gt;[] parameterTypes = (Class&lt;?&gt;[])input.readObject();</span><br><span class="line">                                    System.out.println(</span><br><span class="line">                                        &quot;parameterTypes : &quot; + Arrays.toString(parameterTypes));</span><br><span class="line">                                    Object[] arguments = (Object[])input.readObject();</span><br><span class="line">                                    System.out.println(&quot;arguments : &quot; + Arrays.toString(arguments));</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line">                                    /* Server 处理请求，进行响应*/</span><br><span class="line">                                    ObjectOutputStream output = new ObjectOutputStream(</span><br><span class="line">                                        socket.getOutputStream());</span><br><span class="line">                                    try &#123;</span><br><span class="line">                                        // service类型为Object的(可以发布任何服务)，故只能通过反射调用处理请求</span><br><span class="line">                                        // 反射调用，处理请求</span><br><span class="line">                                        Method method = service.getClass().getMethod(methodName,</span><br><span class="line">                                            parameterTypes);</span><br><span class="line">                                        Object result = method.invoke(service, arguments);</span><br><span class="line">                                        System.out.println(&quot;\nServer 处理并生成响应 ：&quot;);</span><br><span class="line">                                        System.out.println(&quot;result : &quot; + result);</span><br><span class="line">                                        output.writeObject(result);</span><br><span class="line">                                    &#125; catch (Throwable t) &#123;</span><br><span class="line">                                        output.writeObject(t);</span><br><span class="line">                                    &#125; finally &#123;</span><br><span class="line">                                        output.close();</span><br><span class="line">                                    &#125;</span><br><span class="line">                                &#125; finally &#123;</span><br><span class="line">                                    input.close();</span><br><span class="line">                                &#125;</span><br><span class="line">                            &#125; finally &#123;</span><br><span class="line">                                socket.close();</span><br><span class="line">                            &#125;</span><br><span class="line">                        &#125; catch (Exception e) &#123;</span><br><span class="line">                            e.printStackTrace();</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;).start();</span><br><span class="line">            &#125; catch (Exception e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line">    /**</span><br><span class="line">     * 引用服务</span><br><span class="line">     *</span><br><span class="line">     * @param &lt;T&gt;            接口泛型</span><br><span class="line">     * @param interfaceClass 接口类型</span><br><span class="line">     * @param host           服务器主机名</span><br><span class="line">     * @param port           服务器端口</span><br><span class="line">     * @return 远程服务，返回代理对象</span><br><span class="line">     * @throws Exception</span><br><span class="line">     */</span><br><span class="line">    @SuppressWarnings(&quot;unchecked&quot;)</span><br><span class="line">    public static &lt;T&gt; T refer(final Class&lt;T&gt; interfaceClass, final String host, final int port)</span><br><span class="line">        throws Exception &#123;</span><br><span class="line">        if (interfaceClass == null) &#123;</span><br><span class="line">            throw new IllegalArgumentException(&quot;Interface class == null&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">        // JDK 动态代理的约束，只能实现对接口的代理</span><br><span class="line">        if (!interfaceClass.isInterface()) &#123;</span><br><span class="line">            throw new IllegalArgumentException(</span><br><span class="line">                &quot;The &quot; + interfaceClass.getName() + &quot; must be interface class!&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">        if (host == null || host.length() == 0) &#123;</span><br><span class="line">            throw new IllegalArgumentException(&quot;Host == null!&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">        if (port &lt;= 0 || port &gt; 65535) &#123;</span><br><span class="line">            throw new IllegalArgumentException(&quot;Invalid port &quot; + port);</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(</span><br><span class="line">            &quot;Get remote service &quot; + interfaceClass.getName() + &quot; from server &quot; + host + &quot;:&quot; + port);</span><br><span class="line"> </span><br><span class="line">        // JDK 动态代理</span><br><span class="line">        T proxy = (T)Proxy.newProxyInstance(interfaceClass.getClassLoader(),</span><br><span class="line">            new Class&lt;?&gt;[] &#123;interfaceClass&#125;, new InvocationHandler() &#123;</span><br><span class="line">                // invoke方法本意是对目标方法的增强，在这里用于发送RPC请求和接收响应</span><br><span class="line">                @Override</span><br><span class="line">                public Object invoke(Object proxy, Method method, Object[] arguments)</span><br><span class="line">                    throws Throwable &#123;</span><br><span class="line">                    // 创建Socket客户端，并与服务端建立链接</span><br><span class="line">                    Socket socket = new Socket(host, port);</span><br><span class="line">                    try &#123;</span><br><span class="line">                        /* 客户端像服务端进行请求，并将请求参数写入流中*/</span><br><span class="line">                        // 将对象写入到对象输出流，并将其发送到Socket流中去</span><br><span class="line">                        ObjectOutputStream output = new ObjectOutputStream(</span><br><span class="line">                            socket.getOutputStream());</span><br><span class="line">                        try &#123;</span><br><span class="line">                            // 发送请求</span><br><span class="line">                            System.out.println(&quot;\nClient发送请求 ： &quot;);</span><br><span class="line">                            output.writeUTF(method.getName());</span><br><span class="line">                            System.out.println(&quot;methodName : &quot; + method.getName());</span><br><span class="line">                            output.writeObject(method.getParameterTypes());</span><br><span class="line">                            System.out.println(&quot;parameterTypes : &quot; + Arrays.toString(method</span><br><span class="line">                                .getParameterTypes()));</span><br><span class="line">                            output.writeObject(arguments);</span><br><span class="line">                            System.out.println(&quot;arguments : &quot; + Arrays.toString(arguments));</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line">                            /* 客户端读取并返回服务端的响应*/</span><br><span class="line">                            ObjectInputStream input = new ObjectInputStream(</span><br><span class="line">                                socket.getInputStream());</span><br><span class="line">                            try &#123;</span><br><span class="line">                                Object result = input.readObject();</span><br><span class="line">                                if (result instanceof Throwable) &#123;</span><br><span class="line">                                    throw (Throwable)result;</span><br><span class="line">                                &#125;</span><br><span class="line">                                System.out.println(&quot;\nClient收到响应 ： &quot;);</span><br><span class="line">                                System.out.println(&quot;result : &quot; + result);</span><br><span class="line">                                return result;</span><br><span class="line">                            &#125; finally &#123;</span><br><span class="line">                                input.close();</span><br><span class="line">                            &#125;</span><br><span class="line">                        &#125; finally &#123;</span><br><span class="line">                            output.close();</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125; finally &#123;</span><br><span class="line">                        socket.close();</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;);</span><br><span class="line">        return proxy;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>以上是简易RPC框架实现的简易完整代码。</p>
+<h3 id="关于RPC框架的若干问题说明"><a href="#关于RPC框架的若干问题说明" class="headerlink" title="关于RPC框架的若干问题说明"></a>关于RPC框架的若干问题说明</h3><p>(1).RPC框架如何做到透明化远程服务调用？</p>
+<p>　　如何封装通信细节才能让用户像以本地调用方式调用远程服务呢？就Java而言，动态代理恰是解决之道。Java动态代理有JDK动态代理和CGLIB动态代理两种方式。尽管字节码生成方式实现的代理更为强大和高效，但代码维护不易，因此RPC框架的大部分实现还是选择JDK动态代理的方式。在上面的例子中，RPCFramework实现中的invoke方法封装了与远端服务通信的细节，消费方首先从RPCFramework获得服务提供方的接口，当执行helloService.hi(“Panda”)方法时就会调用invoke方法。</p>
+<p>(2).如何发布自己的服务？</p>
+<p>　　如何让别人使用我们的服务呢？难道就像我们上面的代码一样直接写死服务的IP以及端口就可以了吗？事实上，在实际生产实现中，使用人肉告知的方式是不现实的，因为实际生产中服务机器上/下线太频繁了。如果你发现一台机器提供服务不够，要再添加一台，这个时候就要告诉调用者我现在有两个IP了，你们要轮询调用来实现负载均衡；调用者咬咬牙改了，结果某天一台机器挂了，调用者发现服务有一半不可用，他又只能手动修改代码来删除挂掉那台机器的ip。这必然是相当痛苦的！</p>
+<p>　　有没有一种方法能实现自动告知，即机器的上线/下线对调用方透明，调用者不再需要写死服务提供方地址？当然可以，生产中的RPC框架都采用的是自动告知的方式，比如，阿里内部使用的RPC框架HSF是通过ConfigServer来完成这项任务的。此外，Zookeeper也被广泛用于实现服务自动注册与发现功能。不管具体采用何种技术，他们大都采用的都是 发布/订阅模式。</p>
+<p>(3).序列化与反序列化</p>
+<p>　　我们知道，Java对象是无法直接在网络中进行传输的。那么，我们的RPC请求如何发给服务端，客户端又如何接收来自服务端的响应呢？答案是，在传输Java对象时，首先对其进行序列化，然后在相应的终端进行反序列化还原对象以便进行处理。事实上，序列化/反序列化技术也有很多种，比如Java的原生序列化方式、JSON、阿里的Hessian和ProtoBuff序列化等，它们在效率上存在差异，但又有各自的特点。</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="http://pd1l3bbt7.bkt.clouddn.com/img/wechatimg.jpg" alt="曹理鹏@iCocos 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="http://pd1l3bbt7.bkt.clouddn.com/img/alipayimg.jpg" alt="曹理鹏@iCocos 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>曹理鹏@iCocos</li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://icocos.github.io/2019/05/23/大数据之RPC原理和框架/" title="大数据之RPC原理和框架">https://icocos.github.io/2019/05/23/大数据之RPC原理和框架/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明出处！</li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/大数据/" rel="tag"># 大数据</a>
+          
+            <a href="/tags/原理/" rel="tag"># 原理</a>
+          
+            <a href="/tags/RPC/" rel="tag"># RPC</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/05/23/大数据之RPC简单介绍/" rel="next" title="大数据之RPC简单介绍">
+                <i class="fa fa-chevron-left"></i> 大数据之RPC简单介绍
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/05/25/大数据之手把手教你实现一个简单的RPC/" rel="prev" title="大数据之手把手教你实现一个简单的RPC">
+                大数据之手把手教你实现一个简单的RPC <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="SOHUCS"></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="http://pd1l3bbt7.bkt.clouddn.com/icocos_user_icon.JPG"
+                alt="曹理鹏@iCocos" />
+            
+              <p class="site-author-name" itemprop="name">曹理鹏@iCocos</p>
+              <p class="site-description motion-element" itemprop="description">纯码迷、爱学习、爱交友、喜欢接触新鲜事物、迎接新的挑战，更爱游离于错综复杂的编码与逻辑中！</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives">
+                
+                    <span class="site-state-item-count">324</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">27</span>
+                    <span class="site-state-item-name">分类</span>
+                  
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">268</span>
+                    <span class="site-state-item-name">标签</span>
+                  
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/al1020119" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:al1020119@163.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://stackoverflow.com/users/10186720" target="_blank" title="StackOverflow"><i class="fa fa-fw fa-stack-overflow"></i>StackOverflow</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.icocos.cn/" title="梦工厂" target="_blank">梦工厂</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://al1020119.github.io/" title="iOS梦工厂" target="_blank">iOS梦工厂</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Java中常用的RPC框架"><span class="nav-number">1.</span> <span class="nav-text">Java中常用的RPC框架</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RPC和消息队列的差异"><span class="nav-number">2.</span> <span class="nav-text">RPC和消息队列的差异</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-功能差异"><span class="nav-number">2.1.</span> <span class="nav-text">1. 功能差异</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-适用场合差异"><span class="nav-number">2.2.</span> <span class="nav-text">2. 适用场合差异</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-不适用场合说明"><span class="nav-number">2.3.</span> <span class="nav-text">3. 不适用场合说明</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RPC框架的核心技术点"><span class="nav-number">3.</span> <span class="nav-text">RPC框架的核心技术点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RPC框架简易实现及其实例分析"><span class="nav-number">4.</span> <span class="nav-text">RPC框架简易实现及其实例分析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#关于RPC框架的若干问题说明"><span class="nav-number">5.</span> <span class="nav-text">关于RPC框架的若干问题说明</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2017 – <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">曹理鹏@iCocos</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">站点总字数：</span>
+    
+    <span title="站点总字数">1.8m</span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    
+    <span title="站点阅读时长">27:03</span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv" title="总访客量">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="site-pv" title="总访问量">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/reading_progress/reading_progress.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.3.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.3.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.3.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.3.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+  
+    <script type="text/javascript">
+    (function(){
+      var appid = 'cytKHBEtW';
+      var conf = '43989b8e63b25c4e9f1fde821c996a39';
+      var width = window.innerWidth || document.documentElement.clientWidth;
+      if (width < 960) {
+      window.document.write('<script id="changyan_mobile_js" charset="utf-8" type="text/javascript" src="https://changyan.sohu.com/upload/mobile/wap-js/changyan_mobile.js?client_id=' + appid + '&conf=' + conf + '"><\/script>'); } else { var loadJs=function(d,a){var c=document.getElementsByTagName("head")[0]||document.head||document.documentElement;var b=document.createElement("script");b.setAttribute("type","text/javascript");b.setAttribute("charset","UTF-8");b.setAttribute("src",d);if(typeof a==="function"){if(window.attachEvent){b.onreadystatechange=function(){var e=b.readyState;if(e==="loaded"||e==="complete"){b.onreadystatechange=null;a()}}}else{b.onload=a}}c.appendChild(b)};loadJs("https://changyan.sohu.com/upload/changyan.js",function(){
+        window.changyan.api.config({appid:appid,conf:conf})});
+      }
+    })();
+    </script>
+    <script type="text/javascript" src="https://assets.changyan.sohu.com/upload/plugins/plugins.count.js"></script>
+  
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("Tc7k1mbaieCUSgmM8LPk1IBO-gzGzoHsz", "sAb7L2vwENJTteRrvFKQacUU");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            
+              var $element = $(document.getElementById(url));
+              $element.find('.leancloud-visitors-count').text(counter.get('time'));
+            
+            counter.save(null, {
+              success: function(counter) {
+                
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            
+              var $element = $(document.getElementById(url));
+              $element.find('.leancloud-visitors-count').text('Counter not initialized! See more at console err msg.');
+              console.error('ATTENTION! LeanCloud counter has security bug, see here how to solve it: https://github.com/theme-next/hexo-leancloud-counter-security. \n But you also can use LeanCloud without security, by set \'security\' option to \'false\'.');
+            
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #333;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #eee;
+      background-image: linear-gradient(#fcfcfc, #eee);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('复制').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+          if(result)$(this).text('复制成功')
+          else $(this).text('复制失败')
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('复制')
+        }, 300)
+      }).append(e)
+    })
+  </script>
+
+
+  
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("Tc7k1mbaieCUSgmM8LPk1IBO-gzGzoHsz", "sAb7L2vwENJTteRrvFKQacUU");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+  
+</body>
+</html>
